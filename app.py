@@ -309,10 +309,6 @@ with st.sidebar:
         "<h2 style='color:#FFD700!important;font-family:Arial Black;letter-spacing:1px'>⚽ 2026 WC PREDICTOR</h2>",
         unsafe_allow_html=True
     )
-    st.markdown(
-        "<p style='color:rgba(255,255,255,0.6)!important;font-size:13px'>Elo · Poisson · Monte Carlo</p>",
-        unsafe_allow_html=True
-    )
     st.markdown("---")
     page = st.radio("Navigate", [
         "📅 Today's Matches",
@@ -350,7 +346,6 @@ except FileNotFoundError:
 # ══ PAGE 1: TODAY'S MATCHES ═══════════════════════════════════════════════════
 if page == "📅 Today's Matches":
     st.title("⚽ 2026 FIFA World Cup Predictions")
-    st.caption("Statistical match predictions · Elo + Poisson model · 49,478 historical matches")
 
     all_dates = sorted(predictions["date"].dt.date.unique())
     selected_date = st.date_input(
@@ -422,7 +417,7 @@ elif page == "📊 All Predictions":
 # ══ PAGE 3: TOURNAMENT ODDS ════════════════════════════════════════════════════
 elif page == "🏆 Tournament Odds":
     st.title("🏆 World Cup Win Probabilities")
-    st.caption("Based on 10,000 Monte Carlo tournament simulations")
+    st.caption("Each team's chance of winning the entire tournament")
 
     top_n = st.slider("Show top N teams", 10, 48, 24)
     chart_data = mc.head(top_n).copy()
@@ -580,7 +575,7 @@ elif page == "🗂️ Group Standings":
 elif page == "🔲 Bracket":
     st.title("🔲 2026 FIFA World Cup — Predicted Knockout Bracket")
     st.caption(
-        "Bracket seeded using the top 16 teams by Monte Carlo win probability, in standard "
+        "Bracket seeded using the top 16 teams by predicted win probability, in standard "
         "tournament seeding (so the top 2 favorites can only meet in the Final). "
         "Boxes are blank like the official template — the two predicted teams for each "
         "match are shown below it."
