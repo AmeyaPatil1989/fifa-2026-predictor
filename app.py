@@ -291,7 +291,7 @@ def render_match_card(row):
 
     bc1, bc2 = st.columns(2)
     with bc1:
-        st.info(f"🤖 Predicted: **{row['predicted_result']}**")
+        st.info(f"📊 Model Prediction: **{row['predicted_result']}**")
     if done:
         with bc2:
             ok = row["predicted_result"] == row["actual_result"]
@@ -329,7 +329,7 @@ with st.sidebar:
         f"<span style='color:#FFD700'>📅 Updated:</span> {datetime.date.today().strftime('%b %d, %Y')}<br>"
         f"<span style='color:#FFD700'>📊 Matches:</span> 49,478 historical<br>"
         f"<span style='color:#FFD700'>🎲 Simulations:</span> 10,000 Monte Carlo<br>"
-        f"<span style='color:#FFD700'>🤖 Model:</span> Elo + Poisson"
+        f"<span style='color:#FFD700'>⚙️ Model:</span> Elo + Poisson"
         f"</p>",
         unsafe_allow_html=True
     )
@@ -350,7 +350,7 @@ except FileNotFoundError:
 # ══ PAGE 1: TODAY'S MATCHES ═══════════════════════════════════════════════════
 if page == "📅 Today's Matches":
     st.title("⚽ 2026 FIFA World Cup Predictions")
-    st.caption("AI-powered match predictions · Elo + Poisson model · 49,478 historical matches")
+    st.caption("Statistical match predictions · Elo + Poisson model · 49,478 historical matches")
 
     all_dates = sorted(predictions["date"].dt.date.unique())
     selected_date = st.date_input(
@@ -1025,4 +1025,4 @@ elif page == "🔍 Head to Head":
 
         probs = {team_a: p_home, "Draw": p_draw, team_b: p_away}
         winner = max(probs, key=probs.get)
-        st.success(f"🤖 Model predicts: **{winner}**")
+        st.success(f"📊 Model predicts: **{winner}**")
