@@ -1,19 +1,19 @@
 date,home_team,away_team,city,country,home_elo,away_elo,p_home_win,p_draw,p_away_win,exp_home_goals,exp_away_goals,predicted_result,completed,actual_home_score,actual_away_score,actual_result
 2026-06-11,Mexico,South Africa,Mexico City,Mexico,2017.2,1622.1,0.616,0.2291,0.1549,1.76,0.75,Home Win,True,2.0,0.0,Home Win
 2026-06-11,South Korea,Czech Republic,Zapopan,Mexico,1953.0,1760.9,0.5077,0.2446,0.2477,1.65,1.08,Home Win,True,2.0,1.0,Home Win
-2026-06-12,Canada,Bosnia and Herzegovina,Toronto,Canada,1877.1,1815.6,0.6086,0.2153,0.1761,1.94,0.94,Home Win,True,1.0,1.0,Draw
-2026-06-12,United States,Paraguay,Inglewood,United States,1973.1,1880.0,0.592,0.2267,0.1813,1.82,0.9,Home Win,True,4.0,1.0,Home Win
-2026-06-13,Qatar,Switzerland,Santa Clara,United States,1571.8,2030.8,0.1787,0.219,0.6023,0.93,1.9,Away Win,False,,,Upcoming
-2026-06-13,Brazil,Morocco,East Rutherford,United States,2066.0,2058.3,0.3486,0.2831,0.3683,1.13,1.17,Away Win,False,,,Upcoming
-2026-06-13,Haiti,Scotland,Foxborough,United States,1807.8,1930.2,0.4063,0.2414,0.3523,1.57,1.45,Home Win,False,,,Upcoming
-2026-06-13,Australia,Turkey,Vancouver,Canada,1987.7,2145.0,0.3703,0.2565,0.3732,1.36,1.37,Away Win,False,,,Upcoming
+2026-06-12,Canada,Bosnia and Herzegovina,Toronto,Canada,1877.1,1815.6,0.6087,0.2153,0.1761,1.94,0.94,Home Win,True,1.0,1.0,Draw
+2026-06-12,United States,Paraguay,Inglewood,United States,1973.1,1880.0,0.592,0.2267,0.1813,1.82,0.89,Home Win,True,4.0,1.0,Home Win
+2026-06-13,Qatar,Switzerland,Santa Clara,United States,1648.1,1954.5,0.228,0.2345,0.5375,1.06,1.76,Away Win,True,1.0,1.0,Draw
+2026-06-13,Brazil,Morocco,East Rutherford,United States,2064.1,2060.2,0.3471,0.283,0.37,1.13,1.18,Away Win,True,1.0,1.0,Draw
+2026-06-13,Haiti,Scotland,Foxborough,United States,1765.4,1972.6,0.368,0.243,0.389,1.48,1.52,Away Win,True,0.0,1.0,Away Win
+2026-06-13,Australia,Turkey,Vancouver,Canada,2124.4,2008.3,0.4897,0.2476,0.2627,1.61,1.11,Home Win,True,2.0,0.0,Home Win
 2026-06-14,Sweden,Tunisia,Guadalupe,Mexico,1817.4,1798.5,0.3409,0.2703,0.3888,1.19,1.29,Away Win,False,,,Upcoming
 2026-06-14,Netherlands,Japan,Arlington,United States,1989.4,2037.8,0.324,0.2496,0.4264,1.3,1.53,Away Win,False,,,Upcoming
 2026-06-14,Germany,Curaçao,Houston,United States,2043.3,1713.9,0.5404,0.2251,0.2345,1.88,1.16,Home Win,False,,,Upcoming
 2026-06-14,Ivory Coast,Ecuador,Philadelphia,United States,1884.2,2117.7,0.3069,0.2763,0.4168,1.07,1.3,Away Win,False,,,Upcoming
 2026-06-15,Belgium,Egypt,Seattle,United States,1976.1,1840.7,0.4588,0.2629,0.2783,1.45,1.07,Home Win,False,,,Upcoming
 2026-06-15,Iran,New Zealand,Inglewood,United States,1909.8,1773.6,0.4937,0.252,0.2543,1.57,1.05,Home Win,False,,,Upcoming
-2026-06-15,Spain,Cape Verde,Atlanta,United States,2250.2,1707.5,0.6952,0.1979,0.1069,1.98,0.62,Home Win,False,,,Upcoming
+2026-06-15,Spain,Cape Verde,Atlanta,United States,2250.2,1707.5,0.6953,0.1979,0.1069,1.98,0.62,Home Win,False,,,Upcoming
 2026-06-15,Saudi Arabia,Uruguay,Miami Gardens,United States,1723.2,1978.2,0.223,0.2643,0.5128,0.87,1.48,Away Win,False,,,Upcoming
 2026-06-16,Austria,Jordan,Santa Clara,United States,1846.6,1842.2,0.4077,0.2598,0.3325,1.41,1.25,Home Win,False,,,Upcoming
 2026-06-16,Argentina,Algeria,Kansas City,United States,2144.5,1949.4,0.4668,0.2641,0.269,1.45,1.03,Home Win,False,,,Upcoming
@@ -21,53 +21,53 @@ date,home_team,away_team,city,country,home_elo,away_elo,p_home_win,p_draw,p_away
 2026-06-16,Iraq,Norway,Foxborough,United States,1847.2,2137.9,0.2109,0.2471,0.542,0.91,1.63,Away Win,False,,,Upcoming
 2026-06-17,Portugal,DR Congo,Houston,United States,1953.4,1880.6,0.4725,0.2636,0.2639,1.46,1.02,Home Win,False,,,Upcoming
 2026-06-17,Uzbekistan,Colombia,Mexico City,Mexico,1879.8,2094.5,0.2699,0.2671,0.4631,1.02,1.42,Away Win,False,,,Upcoming
-2026-06-17,England,Croatia,Arlington,United States,2183.2,1969.0,0.5649,0.2333,0.2017,1.77,0.95,Home Win,False,,,Upcoming
+2026-06-17,England,Croatia,Arlington,United States,2183.2,1969.0,0.565,0.2333,0.2017,1.77,0.95,Home Win,False,,,Upcoming
 2026-06-17,Ghana,Panama,Toronto,Canada,1711.7,1848.6,0.3275,0.261,0.4115,1.22,1.4,Away Win,False,,,Upcoming
-2026-06-18,Czech Republic,South Africa,Atlanta,United States,1760.9,1622.1,0.3973,0.2673,0.3353,1.33,1.2,Home Win,False,,,Upcoming
+2026-06-18,Czech Republic,South Africa,Atlanta,United States,1760.9,1622.1,0.3973,0.2674,0.3353,1.33,1.2,Home Win,False,,,Upcoming
 2026-06-18,Mexico,South Korea,Zapopan,Mexico,2017.2,1953.0,0.4516,0.2599,0.2886,1.47,1.12,Home Win,False,,,Upcoming
-2026-06-18,Switzerland,Bosnia and Herzegovina,Inglewood,United States,2030.8,1815.6,0.5538,0.2353,0.2109,1.75,0.98,Home Win,False,,,Upcoming
-2026-06-18,Canada,Qatar,Vancouver,Canada,1877.1,1571.8,0.6633,0.1956,0.1411,2.12,0.86,Home Win,False,,,Upcoming
-2026-06-19,Turkey,Paraguay,Santa Clara,United States,2145.0,1880.0,0.5591,0.2384,0.2025,1.71,0.93,Home Win,False,,,Upcoming
-2026-06-19,Scotland,Morocco,Foxborough,United States,1930.2,2058.3,0.2101,0.2444,0.5454,0.93,1.66,Away Win,False,,,Upcoming
-2026-06-19,Brazil,Haiti,Philadelphia,United States,2066.0,1807.8,0.5504,0.2333,0.2163,1.77,1.02,Home Win,False,,,Upcoming
-2026-06-19,United States,Australia,Seattle,United States,1973.1,1987.7,0.4168,0.2609,0.3222,1.41,1.21,Home Win,False,,,Upcoming
+2026-06-18,Switzerland,Bosnia and Herzegovina,Inglewood,United States,1954.5,1815.6,0.5201,0.2424,0.2375,1.68,1.05,Home Win,False,,,Upcoming
+2026-06-18,Canada,Qatar,Vancouver,Canada,1877.1,1648.1,0.6326,0.2059,0.1616,2.04,0.92,Home Win,False,,,Upcoming
+2026-06-19,Turkey,Paraguay,Santa Clara,United States,2008.3,1880.0,0.4968,0.2511,0.2521,1.58,1.05,Home Win,False,,,Upcoming
+2026-06-19,Scotland,Morocco,Foxborough,United States,1972.6,2060.2,0.2261,0.2493,0.5246,0.96,1.61,Away Win,False,,,Upcoming
+2026-06-19,Brazil,Haiti,Philadelphia,United States,2064.1,1765.4,0.5674,0.2299,0.2027,1.8,0.98,Home Win,False,,,Upcoming
+2026-06-19,United States,Australia,Seattle,United States,1973.1,2124.4,0.3547,0.2645,0.3808,1.27,1.32,Away Win,False,,,Upcoming
 2026-06-20,Netherlands,Sweden,Houston,United States,1989.4,1817.4,0.5297,0.2335,0.2368,1.78,1.11,Home Win,False,,,Upcoming
-2026-06-20,Tunisia,Japan,Guadalupe,Mexico,1798.5,2037.8,0.2225,0.2536,0.524,0.93,1.57,Away Win,False,,,Upcoming
+2026-06-20,Tunisia,Japan,Guadalupe,Mexico,1798.5,2037.8,0.2224,0.2536,0.524,0.93,1.57,Away Win,False,,,Upcoming
 2026-06-20,Germany,Ivory Coast,Toronto,Canada,2043.3,1884.2,0.4083,0.2548,0.3369,1.45,1.29,Home Win,False,,,Upcoming
-2026-06-20,Ecuador,Curaçao,Kansas City,United States,2117.7,1713.9,0.5299,0.2499,0.2202,1.6,0.94,Home Win,False,,,Upcoming
+2026-06-20,Ecuador,Curaçao,Kansas City,United States,2117.7,1713.9,0.5299,0.25,0.2202,1.6,0.94,Home Win,False,,,Upcoming
 2026-06-21,Belgium,Iran,Inglewood,United States,1976.1,1909.8,0.3926,0.261,0.3464,1.37,1.27,Home Win,False,,,Upcoming
 2026-06-21,New Zealand,Egypt,Vancouver,Canada,1773.6,1840.7,0.315,0.2705,0.4145,1.13,1.34,Away Win,False,,,Upcoming
 2026-06-21,Spain,Saudi Arabia,Atlanta,United States,2250.2,1723.2,0.7023,0.1933,0.1043,2.02,0.63,Home Win,False,,,Upcoming
 2026-06-21,Uruguay,Cape Verde,Miami Gardens,United States,1978.2,1707.5,0.5088,0.2665,0.2247,1.46,0.87,Home Win,False,,,Upcoming
-2026-06-22,France,Iraq,Philadelphia,United States,2120.5,1847.2,0.5446,0.2472,0.2083,1.63,0.9,Home Win,False,,,Upcoming
+2026-06-22,France,Iraq,Philadelphia,United States,2120.5,1847.2,0.5446,0.2472,0.2082,1.63,0.9,Home Win,False,,,Upcoming
 2026-06-22,Norway,Senegal,East Rutherford,United States,2137.9,1944.4,0.4329,0.266,0.3011,1.4,1.12,Home Win,False,,,Upcoming
 2026-06-22,Argentina,Austria,Arlington,United States,2144.5,1846.6,0.5633,0.2414,0.1954,1.68,0.88,Home Win,False,,,Upcoming
-2026-06-22,Jordan,Algeria,Santa Clara,United States,1842.2,1949.4,0.2483,0.2488,0.5028,1.05,1.61,Away Win,False,,,Upcoming
-2026-06-23,Portugal,Uzbekistan,Houston,United States,1953.4,1879.8,0.4524,0.2579,0.2897,1.49,1.14,Home Win,False,,,Upcoming
+2026-06-22,Jordan,Algeria,Santa Clara,United States,1842.2,1949.4,0.2483,0.2488,0.5029,1.05,1.61,Away Win,False,,,Upcoming
+2026-06-23,Portugal,Uzbekistan,Houston,United States,1953.4,1879.8,0.4525,0.2579,0.2897,1.49,1.14,Home Win,False,,,Upcoming
 2026-06-23,Colombia,DR Congo,Zapopan,Mexico,2094.5,1880.6,0.4872,0.2722,0.2406,1.4,0.9,Home Win,False,,,Upcoming
 2026-06-23,England,Ghana,Foxborough,United States,2183.2,1711.7,0.6868,0.2013,0.1119,1.96,0.64,Home Win,False,,,Upcoming
 2026-06-23,Panama,Croatia,Toronto,Canada,1848.6,1969.0,0.2797,0.2442,0.4761,1.2,1.64,Away Win,False,,,Upcoming
-2026-06-24,Morocco,Haiti,Atlanta,United States,2058.3,1807.8,0.5573,0.2382,0.2045,1.72,0.94,Home Win,False,,,Upcoming
-2026-06-24,Bosnia and Herzegovina,Qatar,Seattle,United States,1815.6,1571.8,0.4173,0.2586,0.3242,1.43,1.23,Home Win,False,,,Upcoming
-2026-06-24,Scotland,Brazil,Miami Gardens,United States,1930.2,2066.0,0.2141,0.2385,0.5474,0.98,1.72,Away Win,False,,,Upcoming
+2026-06-24,Morocco,Haiti,Atlanta,United States,2060.2,1765.4,0.5762,0.2339,0.1899,1.75,0.89,Home Win,False,,,Upcoming
+2026-06-24,Bosnia and Herzegovina,Qatar,Seattle,United States,1815.6,1648.1,0.385,0.2601,0.3549,1.36,1.3,Home Win,False,,,Upcoming
+2026-06-24,Scotland,Brazil,Miami Gardens,United States,1972.6,2064.1,0.2313,0.2437,0.525,1.02,1.66,Away Win,False,,,Upcoming
 2026-06-24,South Africa,South Korea,Guadalupe,Mexico,1622.1,1953.0,0.2149,0.2582,0.5269,0.87,1.53,Away Win,False,,,Upcoming
 2026-06-24,Mexico,Czech Republic,Mexico City,Mexico,2017.2,1760.9,0.5923,0.2228,0.1849,1.87,0.94,Home Win,False,,,Upcoming
-2026-06-24,Canada,Switzerland,Vancouver,Canada,1877.1,2030.8,0.4366,0.2477,0.3157,1.56,1.29,Home Win,False,,,Upcoming
-2026-06-25,United States,Turkey,Inglewood,United States,1973.1,2145.0,0.4293,0.2463,0.3243,1.56,1.33,Home Win,False,,,Upcoming
-2026-06-25,Paraguay,Australia,Santa Clara,United States,1880.0,1987.7,0.2217,0.2517,0.5265,0.93,1.59,Away Win,False,,,Upcoming
+2026-06-24,Canada,Switzerland,Vancouver,Canada,1877.1,1954.5,0.4699,0.2437,0.2864,1.64,1.23,Home Win,False,,,Upcoming
+2026-06-25,United States,Turkey,Inglewood,United States,1973.1,2008.3,0.4903,0.2384,0.2712,1.71,1.21,Home Win,False,,,Upcoming
+2026-06-25,Paraguay,Australia,Santa Clara,United States,1880.0,2124.4,0.1744,0.2369,0.5887,0.81,1.71,Away Win,False,,,Upcoming
 2026-06-25,Curaçao,Ivory Coast,Philadelphia,United States,1713.9,1884.2,0.2571,0.2511,0.4918,1.07,1.58,Away Win,False,,,Upcoming
 2026-06-25,Ecuador,Germany,East Rutherford,United States,2117.7,2043.3,0.3649,0.2611,0.374,1.31,1.33,Away Win,False,,,Upcoming
 2026-06-25,Japan,Sweden,Arlington,United States,2037.8,1817.4,0.5757,0.2261,0.1982,1.84,0.98,Home Win,False,,,Upcoming
 2026-06-25,Tunisia,Netherlands,Kansas City,United States,1798.5,1989.4,0.2618,0.2581,0.4801,1.04,1.51,Away Win,False,,,Upcoming
 2026-06-26,Senegal,Iraq,Toronto,Canada,1944.4,1847.2,0.4539,0.275,0.2711,1.35,0.98,Home Win,False,,,Upcoming
 2026-06-26,Norway,France,Foxborough,United States,2137.9,2120.5,0.3665,0.2543,0.3792,1.37,1.4,Away Win,False,,,Upcoming
-2026-06-26,Uruguay,Spain,Zapopan,Mexico,1978.2,2250.2,0.208,0.2464,0.5455,0.91,1.64,Away Win,False,,,Upcoming
+2026-06-26,Uruguay,Spain,Zapopan,Mexico,1978.2,2250.2,0.208,0.2464,0.5456,0.91,1.64,Away Win,False,,,Upcoming
 2026-06-26,New Zealand,Belgium,Vancouver,Canada,1773.6,1976.1,0.2333,0.2376,0.5291,1.07,1.73,Away Win,False,,,Upcoming
 2026-06-26,Egypt,Iran,Seattle,United States,1840.7,1909.8,0.3004,0.2744,0.4252,1.07,1.32,Away Win,False,,,Upcoming
 2026-06-26,Cape Verde,Saudi Arabia,Houston,United States,1707.5,1723.2,0.3628,0.2804,0.3568,1.18,1.17,Home Win,False,,,Upcoming
-2026-06-27,Panama,England,East Rutherford,United States,1848.6,2183.2,0.1353,0.1998,0.665,0.79,2.04,Away Win,False,,,Upcoming
+2026-06-27,Panama,England,East Rutherford,United States,1848.6,2183.2,0.1352,0.1998,0.665,0.79,2.04,Away Win,False,,,Upcoming
 2026-06-27,Algeria,Austria,Kansas City,United States,1949.4,1846.6,0.4659,0.2544,0.2797,1.53,1.13,Home Win,False,,,Upcoming
-2026-06-27,Jordan,Argentina,Arlington,United States,1842.2,2144.5,0.1714,0.232,0.5966,0.82,1.76,Away Win,False,,,Upcoming
+2026-06-27,Jordan,Argentina,Arlington,United States,1842.2,2144.5,0.1713,0.232,0.5966,0.82,1.76,Away Win,False,,,Upcoming
 2026-06-27,Colombia,Portugal,Miami Gardens,United States,2094.5,1953.4,0.3828,0.265,0.3522,1.32,1.26,Home Win,False,,,Upcoming
-2026-06-27,DR Congo,Uzbekistan,Atlanta,United States,1880.6,1879.8,0.3327,0.2814,0.3859,1.11,1.22,Away Win,False,,,Upcoming
+2026-06-27,DR Congo,Uzbekistan,Atlanta,United States,1880.6,1879.8,0.3327,0.2815,0.3859,1.11,1.22,Away Win,False,,,Upcoming
 2026-06-27,Croatia,Ghana,Philadelphia,United States,1969.0,1711.7,0.5088,0.2499,0.2413,1.6,1.02,Home Win,False,,,Upcoming
