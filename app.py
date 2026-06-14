@@ -119,6 +119,29 @@ def team_display(team, size=14):
 st.markdown("""
 <style>
     .stApp { background-color: #060b18; }
+    header[data-testid="stHeader"] {
+        background-color: #060b18 !important;
+    }
+    [data-testid="stToolbar"] {
+        background-color: #060b18 !important;
+    }
+    [data-testid="stDecoration"] {
+        background-color: #060b18 !important;
+    }
+    /* Sidebar collapse / expand toggle (the « » arrow) */
+    [data-testid="collapsedControl"],
+    [data-testid="stSidebarCollapsedControl"],
+    [data-testid="stSidebarCollapseButton"] {
+        background-color: #1b263b !important;
+        border: 1px solid #FFD700 !important;
+        border-radius: 6px !important;
+    }
+    [data-testid="collapsedControl"] svg,
+    [data-testid="stSidebarCollapsedControl"] svg,
+    [data-testid="stSidebarCollapseButton"] svg {
+        fill: #FFD700 !important;
+        color: #FFD700 !important;
+    }
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #0d1b2a 0%, #1b263b 100%);
         border-right: 2px solid #FFD700;
