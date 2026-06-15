@@ -1,4 +1,4 @@
-group,team,position,player,club,featured
+group,team,position,player,club,star_rank
 A,Mexico,GK,Guillermo Ochoa,AEL Limassol,
 A,Mexico,GK,Raúl Rangel,Guadalajara,
 A,Mexico,GK,Carlos Acevedo,Santos Laguna,
@@ -8,7 +8,7 @@ A,Mexico,DEF,Jorge Sánchez,PAOK,
 A,Mexico,DEF,Johan Vásquez,Genoa,
 A,Mexico,DEF,Israel Reyes,América,
 A,Mexico,DEF,Mateo Chávez,AZ,
-A,Mexico,MID,Edson Álvarez,Fenerbahçe,
+A,Mexico,MID,Edson Álvarez,Fenerbahçe,2
 A,Mexico,MID,Orbelín Pineda,AEK Athens,
 A,Mexico,MID,Roberto Alvarado,Guadalajara,
 A,Mexico,MID,Luis Romo,Guadalajara,
@@ -18,14 +18,14 @@ A,Mexico,MID,Gilberto Mora,Tijuana,
 A,Mexico,MID,Brian Gutiérrez,Guadalajara,
 A,Mexico,MID,Obed Vargas,Atlético Madrid,
 A,Mexico,MID,Álvaro Fidalgo,Real Betis,
-A,Mexico,FWD,Raúl Jiménez,Fulham,
+A,Mexico,FWD,Raúl Jiménez,Fulham,3
 A,Mexico,FWD,Alexis Vega,Toluca,
-A,Mexico,FWD,Santiago Giménez,AC Milan,Y
+A,Mexico,FWD,Santiago Giménez,AC Milan,1
 A,Mexico,FWD,César Huerta,Anderlecht,
 A,Mexico,FWD,Julián Quiñones,Al-Qadsiah,
 A,Mexico,FWD,Guillermo Martínez,UNAM,
 A,Mexico,FWD,Armando González,Guadalajara,
-A,South Africa,GK,Ronwen Williams,Mamelodi Sundowns,Y
+A,South Africa,GK,Ronwen Williams,Mamelodi Sundowns,1
 A,South Africa,GK,Ricardo Goss,Siwelele,
 A,South Africa,GK,Sipho Chaine,Orlando Pirates,
 A,South Africa,DEF,Aubrey Modiba,Mamelodi Sundowns,
@@ -43,8 +43,8 @@ A,South Africa,MID,Teboho Mokoena,Mamelodi Sundowns,
 A,South Africa,MID,Sphephelo Sithole,Tondela,
 A,South Africa,MID,Thalente Mbatha,Orlando Pirates,
 A,South Africa,MID,Jayden Adams,Mamelodi Sundowns,
-A,South Africa,FWD,Themba Zwane,Mamelodi Sundowns,
-A,South Africa,FWD,Lyle Foster,Burnley,
+A,South Africa,FWD,Themba Zwane,Mamelodi Sundowns,3
+A,South Africa,FWD,Lyle Foster,Burnley,2
 A,South Africa,FWD,Evidence Makgopa,Orlando Pirates,
 A,South Africa,FWD,Oswin Appollis,Orlando Pirates,
 A,South Africa,FWD,Iqraam Rayners,Mamelodi Sundowns,
@@ -54,7 +54,7 @@ A,South Africa,FWD,Tshepang Moremi,Orlando Pirates,
 A,South Korea,GK,Kim Seung-Gyu,FC Tokyo,
 A,South Korea,GK,Jo Hyeon-Woo,Ulsan HD,
 A,South Korea,GK,Song Bum-Keun,Jeonbuk,
-A,South Korea,DEF,Kim Min-Jae,Bayern Munich,
+A,South Korea,DEF,Kim Min-Jae,Bayern Munich,2
 A,South Korea,DEF,Kim Moon-Hwan,Daejeon,
 A,South Korea,DEF,Seol Young-Woo,Red Star Belgrade,
 A,South Korea,DEF,Lee Tae-Seok,Austria Wien,
@@ -67,14 +67,14 @@ A,South Korea,DEF,Cho Wi-Je,Jeonbuk,
 A,South Korea,MID,Lee Jae-Sung,Mainz 05,
 A,South Korea,MID,Hwang Hee-Chan,Wolverhampton,
 A,South Korea,MID,Hwang In-Beom,Feyenoord,
-A,South Korea,MID,Lee Kang-In,Paris Saint-Germain,
+A,South Korea,MID,Lee Kang-In,Paris Saint-Germain,3
 A,South Korea,MID,Paik Seung-Ho,Birmingham City,
 A,South Korea,MID,Kim Jin-Gyu,Jeonbuk,
 A,South Korea,MID,Lee Dong-Gyeong,Ulsan HD,
 A,South Korea,MID,Bae Jun-Ho,Stoke City,
 A,South Korea,MID,Eom Ji-Sung,Swansea City,
 A,South Korea,MID,Yang Hyun-Jun,Celtic,
-A,South Korea,FWD,Son Heung-Min,LAFC,Y
+A,South Korea,FWD,Son Heung-Min,LAFC,1
 A,South Korea,FWD,Cho Gue-Sung,Midtjylland,
 A,South Korea,FWD,Oh Hyeon-Gyu,Beşiktaş,
 A,Czech Republic,GK,Matěj Kovář,PSV Eindhoven,
@@ -89,7 +89,7 @@ A,Czech Republic,DEF,David Jurásek,Slavia Prague,
 A,Czech Republic,DEF,David Douděra,Slavia Prague,
 A,Czech Republic,DEF,Robin Hranáč,Hoffenheim,
 A,Czech Republic,DEF,Štěpán Chaloupek,Slavia Prague,
-A,Czech Republic,MID,Tomáš Souček,West Ham United,
+A,Czech Republic,MID,Tomáš Souček,West Ham United,2
 A,Czech Republic,MID,Vladimír Darida,Hradec Králové,
 A,Czech Republic,MID,Lukáš Provod,Slavia Prague,
 A,Czech Republic,MID,Michal Sadílek,Slavia Prague,
@@ -98,8 +98,8 @@ A,Czech Republic,MID,Lukáš Červ,Viktoria Plzeň,
 A,Czech Republic,MID,Hugo Sochůrek,Sparta Prague,
 A,Czech Republic,MID,Alexandr Sojka,Viktoria Plzeň,
 A,Czech Republic,MID,Denis Višinský,Viktoria Plzeň,
-A,Czech Republic,FWD,Patrik Schick,Bayer Leverkusen,Y
-A,Czech Republic,FWD,Adam Hložek,Hoffenheim,
+A,Czech Republic,FWD,Patrik Schick,Bayer Leverkusen,1
+A,Czech Republic,FWD,Adam Hložek,Hoffenheim,3
 A,Czech Republic,FWD,Jan Kuchta,Sparta Prague,
 A,Czech Republic,FWD,Mojmír Chytil,Slavia Prague,
 A,Czech Republic,FWD,Tomáš Chorý,Slavia Prague,
@@ -114,7 +114,7 @@ B,Canada,DEF,Derek Cornelius,Rangers,
 B,Canada,DEF,Moïse Bombito,Nice,
 B,Canada,DEF,Richie Laryea,Toronto FC,
 B,Canada,DEF,Niko Sigur,Hajduk Split,
-B,Canada,DEF,Alphonso Davies,Bayern Munich,Y
+B,Canada,DEF,Alphonso Davies,Bayern Munich,1
 B,Canada,MID,Mathieu Choinière,LAFC,
 B,Canada,MID,Stephen Eustáquio,LAFC,
 B,Canada,MID,Ismaël Koné,Sassuolo,
@@ -122,16 +122,16 @@ B,Canada,MID,Liam Millar,Hull City,
 B,Canada,MID,Jacob Shaffelburg,LAFC,
 B,Canada,MID,Ali Ahmed,Norwich City,
 B,Canada,MID,Jonathan Osorio,Toronto FC,
-B,Canada,MID,Tajon Buchanan,Villarreal,
+B,Canada,MID,Tajon Buchanan,Villarreal,3
 B,Canada,MID,Nathan Saliba,Anderlecht,
 B,Canada,FWD,Cyle Larin,Southampton,
-B,Canada,FWD,Jonathan David,Juventus,
+B,Canada,FWD,Jonathan David,Juventus,2
 B,Canada,FWD,Tani Oluwaseyi,Villarreal,
 B,Canada,FWD,Promise David,Union SG,
 B,Bosnia and Herzegovina,GK,Nikola Vasilj,FC St. Pauli,
 B,Bosnia and Herzegovina,GK,Martin Zlomislić,Rijeka,
 B,Bosnia and Herzegovina,GK,Osman Hadžikić,Slaven Belupo,
-B,Bosnia and Herzegovina,DEF,Sead Kolašinac,Atalanta,
+B,Bosnia and Herzegovina,DEF,Sead Kolašinac,Atalanta,2
 B,Bosnia and Herzegovina,DEF,Dennis Hadžikadunić,Sampdoria,
 B,Bosnia and Herzegovina,DEF,Amar Dedić,Benfica,
 B,Bosnia and Herzegovina,DEF,Nikola Katić,Schalke 04,
@@ -149,8 +149,8 @@ B,Bosnia and Herzegovina,MID,Amar Memić,Viktoria Plzeň,
 B,Bosnia and Herzegovina,MID,Ivan Šunjić,Pafos,
 B,Bosnia and Herzegovina,MID,Kerim Alajbegović,RB Salzburg,
 B,Bosnia and Herzegovina,MID,Ermin Mahmić,Slovan Liberec,
-B,Bosnia and Herzegovina,FWD,Edin Džeko,Schalke 04,Y
-B,Bosnia and Herzegovina,FWD,Ermedin Demirović,VfB Stuttgart,
+B,Bosnia and Herzegovina,FWD,Edin Džeko,Schalke 04,1
+B,Bosnia and Herzegovina,FWD,Ermedin Demirović,VfB Stuttgart,3
 B,Bosnia and Herzegovina,FWD,Samed Baždar,Jagiellonia,
 B,Bosnia and Herzegovina,FWD,Haris Tabaković,B. Mönchengladbach,
 B,Bosnia and Herzegovina,FWD,Jovo Lukić,Universitatea Cluj,
@@ -174,16 +174,16 @@ B,Qatar,MID,Mohammed Al-Manai,Al-Shamal,
 B,Qatar,FWD,Ahmed Alaa,Al-Rayyan,
 B,Qatar,FWD,Edmilson Junior,Al-Duhail,
 B,Qatar,FWD,Mohammed Muntari,Al-Gharafa,
-B,Qatar,FWD,Hassan Al-Haydos,Al-Sadd,
-B,Qatar,FWD,Akram Afif,Al-Sadd,Y
+B,Qatar,FWD,Hassan Al-Haydos,Al-Sadd,3
+B,Qatar,FWD,Akram Afif,Al-Sadd,1
 B,Qatar,FWD,Youssef Abdulrazzaq,Al-Wakrah,
 B,Qatar,FWD,Ahmed Al-Janahi,Al-Gharafa,
-B,Qatar,FWD,Almoez Ali,Al-Duhail,
+B,Qatar,FWD,Almoez Ali,Al-Duhail,2
 B,Qatar,FWD,Tahseen Mohammed,Al-Duhail,
 B,Switzerland,GK,Gregor Kobel,Borussia Dortmund,
 B,Switzerland,GK,Yvon Mvogo,Lorient,
 B,Switzerland,GK,Marvin Keller,Young Boys,
-B,Switzerland,DEF,Manuel Akanji,Inter Milan,
+B,Switzerland,DEF,Manuel Akanji,Inter Milan,2
 B,Switzerland,DEF,Aurèle Amenda,Eintracht Frankfurt,
 B,Switzerland,DEF,Eray Cömert,Valencia,
 B,Switzerland,DEF,Nico Elvedi,B. Mönchengladbach,
@@ -198,10 +198,10 @@ B,Switzerland,MID,Ardon Jashari,AC Milan,
 B,Switzerland,MID,Johan Manzambi,SC Freiburg,
 B,Switzerland,MID,Fabian Rieder,Augsburg,
 B,Switzerland,MID,Djibril Sow,Sevilla,
-B,Switzerland,MID,Granit Xhaka,Sunderland,Y
+B,Switzerland,MID,Granit Xhaka,Sunderland,1
 B,Switzerland,MID,Denis Zakaria,Monaco,
 B,Switzerland,FWD,Zeki Amdouni,Burnley,
-B,Switzerland,FWD,Breel Embolo,Rennes,
+B,Switzerland,FWD,Breel Embolo,Rennes,3
 B,Switzerland,FWD,Noah Okafor,Leeds United,
 B,Switzerland,FWD,Dan Ndoye,Nottm Forest,
 B,Switzerland,FWD,Rubén Vargas,Sevilla,
@@ -227,15 +227,15 @@ C,Brazil,FWD,Matheus Cunha,Manchester United,
 C,Brazil,FWD,Endrick,Lyon,
 C,Brazil,FWD,Luiz Henrique,Zenit,
 C,Brazil,FWD,Gabriel Martinelli,Arsenal,
-C,Brazil,FWD,Neymar,Santos,
+C,Brazil,FWD,Neymar,Santos,2
 C,Brazil,FWD,Igor Thiago,Brentford,
-C,Brazil,FWD,Raphinha,Barcelona,
+C,Brazil,FWD,Raphinha,Barcelona,3
 C,Brazil,FWD,Rayan,Bournemouth,
-C,Brazil,FWD,Vinícius Júnior,Real Madrid,Y
+C,Brazil,FWD,Vinícius Júnior,Real Madrid,1
 C,Morocco,GK,Yassine Bounou,Al-Hilal,
 C,Morocco,GK,Munir Mohamedi,RS Berkane,
 C,Morocco,GK,Ahmed Reda Tagnaouti,AS FAR,
-C,Morocco,DEF,Achraf Hakimi,Paris Saint-Germain,Y
+C,Morocco,DEF,Achraf Hakimi,Paris Saint-Germain,1
 C,Morocco,DEF,Nayef Aguerd,Marseille,
 C,Morocco,DEF,Noussair Mazraoui,Manchester United,
 C,Morocco,DEF,Youssef Belammari,Al Ahly,
@@ -245,7 +245,7 @@ C,Morocco,DEF,Issa Diop,Fulham,
 C,Morocco,DEF,Zakaria El Ouahdi,Genk,
 C,Morocco,DEF,Redouane Halhal,Mechelen,
 C,Morocco,MID,Sofyan Amrabat,Real Betis,
-C,Morocco,MID,Azzedine Ounahi,Girona,
+C,Morocco,MID,Azzedine Ounahi,Girona,3
 C,Morocco,MID,Bilal El Khannouss,VfB Stuttgart,
 C,Morocco,MID,Ismael Saibari,PSV Eindhoven,
 C,Morocco,MID,Neil El Aynaoui,Roma,
@@ -254,7 +254,7 @@ C,Morocco,MID,Ayyoub Bouaddi,Lille,
 C,Morocco,FWD,Ayoub El Kaabi,Olympiacos,
 C,Morocco,FWD,Soufiane Rahimi,Al-Ain,
 C,Morocco,FWD,Abde Ezzalzouli,Real Betis,
-C,Morocco,FWD,Brahim Díaz,Real Madrid,
+C,Morocco,FWD,Brahim Díaz,Real Madrid,2
 C,Morocco,FWD,Chemsdine Talbi,Sunderland,
 C,Morocco,FWD,Gessime Yassine,Strasbourg,
 C,Morocco,FWD,Ayoube Amaimouni,Eintracht Frankfurt,
@@ -272,12 +272,12 @@ C,Haiti,DEF,Keeto Thermoncy,Young Boys,
 C,Haiti,MID,Leverton Pierre,Vizela,
 C,Haiti,MID,Danley Jean Jacques,Philadelphia Union,
 C,Haiti,MID,Carl Sainté,El Paso Locomotive,
-C,Haiti,MID,Jean-Ricner Bellegarde,Wolverhampton,Y
+C,Haiti,MID,Jean-Ricner Bellegarde,Wolverhampton,1
 C,Haiti,MID,Woodensky Pierre,Violette,
 C,Haiti,MID,Dominique Simon,Tatran Prešov,
-C,Haiti,FWD,Duckens Nazon,Esteghlal,
+C,Haiti,FWD,Duckens Nazon,Esteghlal,2
 C,Haiti,FWD,Frantzdy Pierrot,Çaykur Rizespor,
-C,Haiti,FWD,Derrick Etienne Jr.,Toronto FC,
+C,Haiti,FWD,Derrick Etienne Jr.,Toronto FC,3
 C,Haiti,FWD,Louicius Deedson,FC Dallas,
 C,Haiti,FWD,Ruben Providence,Almere City,
 C,Haiti,FWD,Josué Casimir,Auxerre,
@@ -287,7 +287,7 @@ C,Haiti,FWD,Lenny Joseph,Ferencváros,
 C,Scotland,GK,Craig Gordon,Heart of Midlothian,
 C,Scotland,GK,Angus Gunn,Nottm Forest,
 C,Scotland,GK,Liam Kelly,Rangers,
-C,Scotland,DEF,Andy Robertson,Liverpool,Y
+C,Scotland,DEF,Andy Robertson,Liverpool,1
 C,Scotland,DEF,Grant Hanley,Hibernian,
 C,Scotland,DEF,Kieran Tierney,Celtic,
 C,Scotland,DEF,Scott McKenna,Dinamo Zagreb,
@@ -297,8 +297,8 @@ C,Scotland,DEF,Anthony Ralston,Celtic,
 C,Scotland,DEF,John Souttar,Rangers,
 C,Scotland,DEF,Aaron Hickey,Brentford,
 C,Scotland,DEF,Dominic Hyam,Wrexham,
-C,Scotland,MID,John McGinn,Aston Villa,
-C,Scotland,MID,Scott McTominay,Napoli,
+C,Scotland,MID,John McGinn,Aston Villa,3
+C,Scotland,MID,Scott McTominay,Napoli,2
 C,Scotland,MID,Ryan Christie,Bournemouth,
 C,Scotland,MID,Kenny McLean,Norwich City,
 C,Scotland,MID,Lewis Ferguson,Bologna,
@@ -323,13 +323,13 @@ D,United States,DEF,Alex Freeman,Villarreal,
 D,United States,DEF,Max Arfsten,Columbus Crew,
 D,United States,DEF,Mark McKenzie,Toulouse,
 D,United States,DEF,Joe Scally,B. Mönchengladbach,
-D,United States,MID,Tyler Adams,Bournemouth,
+D,United States,MID,Tyler Adams,Bournemouth,3
 D,United States,MID,Sebastian Berhalter,Vancouver Whitecaps,
-D,United States,MID,Weston McKennie,Juventus,
+D,United States,MID,Weston McKennie,Juventus,2
 D,United States,MID,Gio Reyna,B. Mönchengladbach,
 D,United States,MID,Cristian Roldan,Seattle Sounders,
 D,United States,MID,Malik Tillman,Bayer Leverkusen,
-D,United States,FWD,Christian Pulisic,AC Milan,Y
+D,United States,FWD,Christian Pulisic,AC Milan,1
 D,United States,FWD,Brenden Aaronson,Leeds United,
 D,United States,FWD,Ricardo Pepi,PSV Eindhoven,
 D,United States,FWD,Timothy Weah,Marseille,
@@ -339,7 +339,7 @@ D,United States,FWD,Alejandro Zendejas,América,
 D,Paraguay,GK,Gatito Fernández,Cerro Porteño,
 D,Paraguay,GK,Orlando Gill,San Lorenzo,
 D,Paraguay,GK,Gastón Olveira,Olimpia,
-D,Paraguay,DEF,Gustavo Gómez,Palmeiras,
+D,Paraguay,DEF,Gustavo Gómez,Palmeiras,2
 D,Paraguay,DEF,Júnior Alonso,Atlético Mineiro,
 D,Paraguay,DEF,Fabián Balbuena,Grêmio,
 D,Paraguay,DEF,Omar Alderete,Sunderland,
@@ -347,7 +347,7 @@ D,Paraguay,DEF,Juan José Cáceres,Dynamo Moscow,
 D,Paraguay,DEF,Gustavo Velázquez,Cerro Porteño,
 D,Paraguay,DEF,José Canale,Lanús,
 D,Paraguay,DEF,Alexandro Maidana,Talleres,
-D,Paraguay,MID,Miguel Almirón,Atlanta United,Y
+D,Paraguay,MID,Miguel Almirón,Atlanta United,1
 D,Paraguay,MID,Kaku,Al-Ain,
 D,Paraguay,MID,Andrés Cubas,Vancouver Whitecaps,
 D,Paraguay,MID,Ramón Sosa,Palmeiras,
@@ -356,13 +356,13 @@ D,Paraguay,MID,Damián Bobadilla,São Paulo,
 D,Paraguay,MID,Braian Ojeda,Orlando City,
 D,Paraguay,MID,Matías Galarza,Atlanta United,
 D,Paraguay,MID,Maurício,Palmeiras,
-D,Paraguay,FWD,Antonio Sanabria,Cremonese,
+D,Paraguay,FWD,Antonio Sanabria,Cremonese,3
 D,Paraguay,FWD,Julio Enciso,Strasbourg,
 D,Paraguay,FWD,Gabriel Ávalos,Independiente,
 D,Paraguay,FWD,Álex Arce,Independiente Rivadavia,
 D,Paraguay,FWD,Isidro Pitta,RB Bragantino,
 D,Paraguay,FWD,Gustavo Caballero,Portsmouth,
-D,Australia,GK,Mathew Ryan,Levante,Y
+D,Australia,GK,Mathew Ryan,Levante,1
 D,Australia,GK,Paul Izzo,Randers,
 D,Australia,GK,Patrick Beach,Melbourne City,
 D,Australia,DEF,Miloš Degenek,APOEL,
@@ -370,7 +370,7 @@ D,Australia,DEF,Alessandro Circati,Parma,
 D,Australia,DEF,Jacob Italiano,GAK,
 D,Australia,DEF,Jordan Bos,Feyenoord,
 D,Australia,DEF,Jason Geria,Albirex Niigata,
-D,Australia,DEF,Harry Souttar,Leicester City,
+D,Australia,DEF,Harry Souttar,Leicester City,2
 D,Australia,DEF,Cameron Burgess,Swansea City,
 D,Australia,DEF,Kai Trewin,New York City FC,
 D,Australia,DEF,Aziz Behich,Melbourne City,
@@ -381,7 +381,7 @@ D,Australia,MID,Aiden O'Neill,New York City FC,
 D,Australia,MID,Cammy Devlin,Heart of Midlothian,
 D,Australia,MID,Jackson Irvine,FC St. Pauli,
 D,Australia,MID,Paul Okon-Engstler,Sydney FC,
-D,Australia,FWD,Mathew Leckie,Melbourne City,
+D,Australia,FWD,Mathew Leckie,Melbourne City,3
 D,Australia,FWD,Mohamed Touré,Norwich City,
 D,Australia,FWD,Awer Mabil,Castellón,
 D,Australia,FWD,Nestory Irankunda,Watford,
@@ -400,7 +400,7 @@ D,Turkey,DEF,Ozan Kabak,Hoffenheim,
 D,Turkey,DEF,Abdülkerim Bardakcı,Galatasaray,
 D,Turkey,DEF,Eren Elmalı,Galatasaray,
 D,Turkey,DEF,Samet Akaydin,Çaykur Rizespor,
-D,Turkey,MID,Hakan Çalhanoğlu,Inter Milan,Y
+D,Turkey,MID,Hakan Çalhanoğlu,Inter Milan,1
 D,Turkey,MID,Kaan Ayhan,Galatasaray,
 D,Turkey,MID,Orkun Kökçü,Beşiktaş,
 D,Turkey,MID,İsmail Yüksek,Fenerbahçe,
@@ -408,8 +408,8 @@ D,Turkey,MID,Salih Özcan,Borussia Dortmund,
 D,Turkey,FWD,Kerem Aktürkoğlu,Fenerbahçe,
 D,Turkey,FWD,İrfan Can Kahveci,Kasımpaşa,
 D,Turkey,FWD,Barış Alper Yılmaz,Galatasaray,
-D,Turkey,FWD,Arda Güler,Real Madrid,
-D,Turkey,FWD,Kenan Yıldız,Juventus,
+D,Turkey,FWD,Arda Güler,Real Madrid,2
+D,Turkey,FWD,Kenan Yıldız,Juventus,3
 D,Turkey,FWD,Yunus Akgün,Galatasaray,
 D,Turkey,FWD,Oğuz Aydın,Fenerbahçe,
 D,Turkey,FWD,Deniz Gül,Porto,
@@ -426,13 +426,13 @@ E,Germany,DEF,Nathaniel Brown,Eintracht Frankfurt,
 E,Germany,DEF,Felix Nmecha,Borussia Dortmund,
 E,Germany,DEF,Malick Thiaw,Newcastle United,
 E,Germany,DEF,Pascal Groß,Brighton,
-E,Germany,DEF,Joshua Kimmich,Bayern Munich,
+E,Germany,DEF,Joshua Kimmich,Bayern Munich,3
 E,Germany,DEF,Aleksandar Pavlović,Bayern Munich,
 E,Germany,DEF,Angelo Stiller,VfB Stuttgart,
 E,Germany,MID,Leon Goretzka,Bayern Munich,
-E,Germany,MID,Jamal Musiala,Bayern Munich,
+E,Germany,MID,Jamal Musiala,Bayern Munich,2
 E,Germany,MID,Leroy Sané,Galatasaray,
-E,Germany,MID,Florian Wirtz,Liverpool,Y
+E,Germany,MID,Florian Wirtz,Liverpool,1
 E,Germany,MID,Nadiem Amiri,Mainz 05,
 E,Germany,MID,Jamie Leweling,VfB Stuttgart,
 E,Germany,MID,Lennart Karl,Bayern Munich,
@@ -440,7 +440,7 @@ E,Germany,FWD,Kai Havertz,Arsenal,
 E,Germany,FWD,Maximilian Beier,Borussia Dortmund,
 E,Germany,FWD,Deniz Undav,VfB Stuttgart,
 E,Germany,FWD,Nick Woltemade,Newcastle United,
-E,Curaçao,GK,Eloy Room,Miami FC,
+E,Curaçao,GK,Eloy Room,Miami FC,3
 E,Curaçao,GK,Tyrick Bodak,Telstar,
 E,Curaçao,GK,Trevor Doornbusch,VVV-Venlo,
 E,Curaçao,DEF,Shurandy Sambo,Sparta Rotterdam,
@@ -454,7 +454,7 @@ E,Curaçao,DEF,Deveron Fonville,NEC,
 E,Curaçao,MID,Godfried Roemeratoe,RKC Waalwijk,
 E,Curaçao,MID,Juninho Bacuna,Volendam,
 E,Curaçao,MID,Livano Comenencia,Zürich,
-E,Curaçao,MID,Leandro Bacuna,Iğdır FK,Y
+E,Curaçao,MID,Leandro Bacuna,Iğdır FK,1
 E,Curaçao,MID,Tyrese Noslin,Telstar,
 E,Curaçao,MID,Kevin Felida,Den Bosch,
 E,Curaçao,MID,Ar'jany Martha,Rotherham,
@@ -465,25 +465,25 @@ E,Curaçao,FWD,Kenji Gorré,Maccabi Haifa,
 E,Curaçao,FWD,Jearl Margaritha,Beveren,
 E,Curaçao,FWD,Brandley Kuwas,Volendam,
 E,Curaçao,FWD,Gervane Kastaneer,Terengganu,
-E,Curaçao,FWD,Tahith Chong,Sheffield United,
+E,Curaçao,FWD,Tahith Chong,Sheffield United,2
 E,Ivory Coast,GK,Yahia Fofana,Çaykur Rizespor,
 E,Ivory Coast,GK,Alban Lafont,Panathinaikos,
 E,Ivory Coast,GK,Mohamed Koné,Charleroi,
 E,Ivory Coast,DEF,Ghislain Konan,Gil Vicente,
 E,Ivory Coast,DEF,Odilon Kossounou,Atalanta,
-E,Ivory Coast,DEF,Wilfried Singo,Galatasaray,
+E,Ivory Coast,DEF,Wilfried Singo,Galatasaray,2
 E,Ivory Coast,DEF,Evan Ndicka,Roma,
 E,Ivory Coast,DEF,Emmanuel Agbadou,Beşiktaş,
 E,Ivory Coast,DEF,Guéla Doué,Strasbourg,
 E,Ivory Coast,DEF,Ousmane Diomande,Sporting CP,
 E,Ivory Coast,DEF,Christopher Opéri,İstanbul Başakşehir,
-E,Ivory Coast,MID,Franck Kessié,Al-Ahli,Y
+E,Ivory Coast,MID,Franck Kessié,Al-Ahli,1
 E,Ivory Coast,MID,Jean Michaël Seri,Maribor,
 E,Ivory Coast,MID,Ibrahim Sangaré,Nottm Forest,
 E,Ivory Coast,MID,Seko Fofana,Porto,
 E,Ivory Coast,MID,Christ Inao Oulaï,Trabzonspor,
 E,Ivory Coast,MID,Parfait Guiagon,Charleroi,
-E,Ivory Coast,FWD,Nicolas Pépé,Villarreal,
+E,Ivory Coast,FWD,Nicolas Pépé,Villarreal,3
 E,Ivory Coast,FWD,Oumar Diakité,Cercle Brugge,
 E,Ivory Coast,FWD,Simon Adingra,Monaco,
 E,Ivory Coast,FWD,Evann Guessand,Crystal Palace,
@@ -496,7 +496,7 @@ E,Ecuador,GK,Hernán Galíndez,Huracán,
 E,Ecuador,GK,Moisés Ramírez,Kifisia,
 E,Ecuador,GK,Gonzalo Valle,LDU Quito,
 E,Ecuador,DEF,Willian Pacho,Paris Saint-Germain,
-E,Ecuador,DEF,Piero Hincapié,Arsenal,
+E,Ecuador,DEF,Piero Hincapié,Arsenal,2
 E,Ecuador,DEF,Joel Ordóñez,Club Brugge,
 E,Ecuador,DEF,Félix Torres,Internacional,
 E,Ecuador,DEF,Pervis Estupiñán,AC Milan,
@@ -504,7 +504,7 @@ E,Ecuador,DEF,Yaimar Medina,Genk,
 E,Ecuador,DEF,Ángelo Preciado,Atlético Mineiro,
 E,Ecuador,DEF,Jackson Porozo,Tijuana,
 E,Ecuador,MID,Jordy Alcívar,Independiente del Valle,
-E,Ecuador,MID,Moisés Caicedo,Chelsea,Y
+E,Ecuador,MID,Moisés Caicedo,Chelsea,1
 E,Ecuador,MID,Denil Castillo,Midtjylland,
 E,Ecuador,MID,John Yeboah,Venezia,
 E,Ecuador,MID,Kendry Páez,River Plate,
@@ -512,7 +512,7 @@ E,Ecuador,MID,Alan Minda,Atlético Mineiro,
 E,Ecuador,MID,Pedro Vite,UNAM,
 E,Ecuador,MID,Alan Franco,Atlético Mineiro,
 E,Ecuador,MID,Gonzalo Plata,Flamengo,
-E,Ecuador,FWD,Enner Valencia,Pachuca,
+E,Ecuador,FWD,Enner Valencia,Pachuca,3
 E,Ecuador,FWD,Kevin Rodríguez,Union SG,
 E,Ecuador,FWD,Anthony Valencia,Antwerp,
 E,Ecuador,FWD,Jordy Caicedo,Huracán,
@@ -526,10 +526,10 @@ F,Netherlands,DEF,Denzel Dumfries,Inter Milan,
 F,Netherlands,DEF,Jorrel Hato,Chelsea,
 F,Netherlands,DEF,Jurriën Timber,Arsenal,
 F,Netherlands,DEF,Micky van de Ven,Tottenham,
-F,Netherlands,DEF,Virgil van Dijk,Liverpool,Y
+F,Netherlands,DEF,Virgil van Dijk,Liverpool,1
 F,Netherlands,DEF,Jan Paul van Hecke,Brighton,
 F,Netherlands,DEF,Mats Wieffer,Brighton,
-F,Netherlands,MID,Frenkie de Jong,Barcelona,
+F,Netherlands,MID,Frenkie de Jong,Barcelona,3
 F,Netherlands,MID,Marten de Roon,Atalanta,
 F,Netherlands,MID,Ryan Gravenberch,Liverpool,
 F,Netherlands,MID,Justin Kluivert,Bournemouth,
@@ -538,7 +538,7 @@ F,Netherlands,MID,Tijjani Reijnders,Manchester City,
 F,Netherlands,MID,Guus Til,PSV Eindhoven,
 F,Netherlands,MID,Quinten Timber,Marseille,
 F,Netherlands,FWD,Brian Brobbey,Sunderland,
-F,Netherlands,FWD,Memphis Depay,Corinthians,
+F,Netherlands,FWD,Memphis Depay,Corinthians,2
 F,Netherlands,FWD,Cody Gakpo,Liverpool,
 F,Netherlands,FWD,Noa Lang,Galatasaray,
 F,Netherlands,FWD,Donyell Malen,Roma,
@@ -552,15 +552,15 @@ F,Japan,DEF,Hiroki Ito,VfB Stuttgart,
 F,Japan,DEF,Yuto Nagatomo,FC Tokyo,
 F,Japan,DEF,Yukinari Sugawara,AZ Alkmaar,
 F,Japan,DEF,Shogo Taniguchi,Kawasaki,
-F,Japan,DEF,Takehiro Tomiyasu,Arsenal,
+F,Japan,DEF,Takehiro Tomiyasu,Arsenal,3
 F,Japan,DEF,Tsuyoshi Watanabe,FC Tokyo,
 F,Japan,DEF,Ayumu Seko,Vissel Kobe,
 F,Japan,DEF,Junnosuke Suzuki,Kawasaki,
 F,Japan,MID,Ritsu Doan,SC Freiburg,
-F,Japan,MID,Wataru Endo,Liverpool,
+F,Japan,MID,Wataru Endo,Liverpool,2
 F,Japan,MID,Junya Ito,Stade de Reims,
 F,Japan,MID,Daichi Kamada,Crystal Palace,
-F,Japan,MID,Takefusa Kubo,Real Sociedad,Y
+F,Japan,MID,Takefusa Kubo,Real Sociedad,1
 F,Japan,MID,Keito Nakamura,Stade de Reims,
 F,Japan,MID,Kaishu Sano,Kashima,
 F,Japan,MID,Ao Tanaka,Borussia Dortmund,
@@ -578,7 +578,7 @@ F,Sweden,DEF,Gabriel Gudmundsson,Nottm Forest,
 F,Sweden,DEF,Isak Hien,Atalanta,
 F,Sweden,DEF,Herman Johansson,AIK,
 F,Sweden,DEF,Gustaf Lagerbielke,Celtic,
-F,Sweden,DEF,Victor Lindelöf,Manchester United,
+F,Sweden,DEF,Victor Lindelöf,Manchester United,3
 F,Sweden,DEF,Eric Smith,Club Brugge,
 F,Sweden,DEF,Carl Starfelt,Celta Vigo,
 F,Sweden,DEF,Elliot Stroud,AIK,
@@ -592,8 +592,8 @@ F,Sweden,MID,Mattias Svanberg,Wolfsburg,
 F,Sweden,MID,Besfort Zeneli,Stade de Reims,
 F,Sweden,FWD,Taha Ali,Djurgårdens IF,
 F,Sweden,FWD,Anthony Elenga,Nottm Forest,
-F,Sweden,FWD,Viktor Gyökeres,Sporting CP,Y
-F,Sweden,FWD,Alexander Isak,Newcastle,
+F,Sweden,FWD,Viktor Gyökeres,Sporting CP,1
+F,Sweden,FWD,Alexander Isak,Newcastle,2
 F,Sweden,FWD,Gustaf Nilsson,Cercle Brugge,
 F,Sweden,FWD,Benjamin Nygren,Heerenveen,
 F,Tunisia,GK,Sabri Ben Hassen,Espérance ST,
@@ -606,15 +606,15 @@ F,Tunisia,DEF,Dylan Bronn,Salernitana,
 F,Tunisia,DEF,Raed Chikhaoui,Espérance ST,
 F,Tunisia,DEF,Moutaz Neffati,Club Africain,
 F,Tunisia,DEF,Omar Rekik,Stade de Reims,
-F,Tunisia,DEF,Montassar Talbi,Lorient,
+F,Tunisia,DEF,Montassar Talbi,Lorient,3
 F,Tunisia,DEF,Yan Valéry,Southampton,
 F,Tunisia,MID,Mortadha Ben Ouanes,Angers,
 F,Tunisia,MID,Anes Ben Slimane,Espérance ST,
-F,Tunisia,MID,Hannibal,Birmingham City,
+F,Tunisia,MID,Hannibal,Birmingham City,2
 F,Tunisia,MID,Ismaël Gharbi,Paris Saint-Germain,
 F,Tunisia,MID,Mohamed Hadj-Mahmoud,Espérance ST,
 F,Tunisia,MID,Rani Khedira,Augsburg,
-F,Tunisia,MID,Ellyes Skhiri,Eintracht Frankfurt,Y
+F,Tunisia,MID,Ellyes Skhiri,Eintracht Frankfurt,1
 F,Tunisia,FWD,Elias Achouri,FC Copenhagen,
 F,Tunisia,FWD,Khalil Ayari,Paris Saint-Germain,
 F,Tunisia,FWD,Firas Chaouat,Club Africain,
@@ -634,16 +634,16 @@ G,Belgium,DEF,Thomas Meunier,Lille,
 G,Belgium,DEF,Nathan Ngoy,Lille,
 G,Belgium,DEF,Joaquin Seys,Club Brugge,
 G,Belgium,DEF,Arthur Theate,Eintracht Frankfurt,
-G,Belgium,MID,Kevin De Bruyne,Napoli,Y
+G,Belgium,MID,Kevin De Bruyne,Napoli,1
 G,Belgium,MID,Amadou Onana,Aston Villa,
 G,Belgium,MID,Nicolas Raskin,Rangers,
 G,Belgium,MID,Youri Tielemans,Aston Villa,
 G,Belgium,MID,Hans Vanaken,Club Brugge,
 G,Belgium,MID,Axel Witsel,Girona,
 G,Belgium,FWD,Charles De Ketelaere,Atalanta,
-G,Belgium,FWD,Jeremy Doku,Manchester City,
+G,Belgium,FWD,Jeremy Doku,Manchester City,2
 G,Belgium,FWD,Matias Fernandez-Pardo,Lille,
-G,Belgium,FWD,Romelu Lukaku,Napoli,
+G,Belgium,FWD,Romelu Lukaku,Napoli,3
 G,Belgium,FWD,Dodi Lukebakio,Benfica,
 G,Belgium,FWD,Diego Moreira,Strasbourg,
 G,Belgium,FWD,Alexis Saelemaekers,AC Milan,
@@ -669,9 +669,9 @@ G,Egypt,MID,Mostafa Ziko,Zamalek,
 G,Egypt,FWD,Hamza Abdelkarim,Zamalek,
 G,Egypt,FWD,Ibrahim Adel,Fiorentina,
 G,Egypt,FWD,Haissem Hassan,Lausanne-Sport,
-G,Egypt,FWD,Omar Marmoush,Manchester City,
-G,Egypt,FWD,Mohamed Salah,Liverpool,Y
-G,Egypt,FWD,Trézéguet,Trabzonspor,
+G,Egypt,FWD,Omar Marmoush,Manchester City,2
+G,Egypt,FWD,Mohamed Salah,Liverpool,1
+G,Egypt,FWD,Trézéguet,Trabzonspor,3
 G,Egypt,FWD,Zizo,Zamalek,
 G,Iran,GK,Alireza Beiranvand,Antwerp,
 G,Iran,GK,Seyed Hossein Hosseini,Sepahan,
@@ -687,9 +687,9 @@ G,Iran,DEF,Ramin Rezaeian,Kortrijk,
 G,Iran,MID,Rouzbeh Cheshmi,Esteghlal,
 G,Iran,MID,Saeid Ezatolahi,Celta Vigo,
 G,Iran,MID,Mehdi Ghayedi,Hannover 96,
-G,Iran,MID,Saman Ghoddos,Stade de Reims,
+G,Iran,MID,Saman Ghoddos,Stade de Reims,3
 G,Iran,MID,Mohammad Ghorbani,Persepolis,
-G,Iran,MID,Alireza Jahanbakhsh,Feyenoord,
+G,Iran,MID,Alireza Jahanbakhsh,Feyenoord,2
 G,Iran,MID,Mohammad Mohebbi,Sepahan,
 G,Iran,MID,Amir Razagh Niya,Persepolis,
 G,Iran,MID,Mehdi Torabi,Persepolis,
@@ -698,13 +698,13 @@ G,Iran,FWD,Ali Alipour,Marítimo,
 G,Iran,FWD,Dennis Dargahi,IFK Norrköping,
 G,Iran,FWD,Amirhossein Hosseinzadeh,Persepolis,
 G,Iran,FWD,Shahriyar Moghanloo,Esteghlal,
-G,Iran,FWD,Mehdi Taremi,Inter Milan,Y
+G,Iran,FWD,Mehdi Taremi,Inter Milan,1
 G,New Zealand,GK,Max Crocombe,HNK Gorica,
 G,New Zealand,GK,Alex Paulsen,IK Start,
 G,New Zealand,GK,Michael Woud,NEC Nijmegen,
 G,New Zealand,DEF,Tyler Bindon,LA Galaxy,
 G,New Zealand,DEF,Michael Boxall,Minnesota United,
-G,New Zealand,DEF,Liberato Cacace,Empoli,
+G,New Zealand,DEF,Liberato Cacace,Empoli,2
 G,New Zealand,DEF,Francis de Vries,PEC Zwolle,
 G,New Zealand,DEF,Callan Elliott,Wellington Phoenix,
 G,New Zealand,DEF,Tim Payne,Wellington Phoenix,
@@ -712,7 +712,7 @@ G,New Zealand,DEF,Nando Pijnaker,Brisbane Roar,
 G,New Zealand,DEF,Tommy Smith,Colorado Rapids,
 G,New Zealand,DEF,Finn Surman,Wellington Phoenix,
 G,New Zealand,MID,Lachlan Bayliss,Auckland City,
-G,New Zealand,MID,Joe Bell,Norwich City,
+G,New Zealand,MID,Joe Bell,Norwich City,3
 G,New Zealand,MID,Alex Rufer,Wisla Kraków,
 G,New Zealand,MID,Marko Stamenić,Columbus Crew,
 G,New Zealand,MID,Ryan Thomas,PEC Zwolle,
@@ -724,7 +724,7 @@ G,New Zealand,FWD,Ben Old,Nordsjaelland,
 G,New Zealand,FWD,Jesse Randall,Wellington Phoenix,
 G,New Zealand,FWD,Sarpreet Singh,Jahn Regensburg,
 G,New Zealand,FWD,Ben Waine,Livingston,
-G,New Zealand,FWD,Chris Wood,Nottm Forest,Y
+G,New Zealand,FWD,Chris Wood,Nottm Forest,1
 H,Spain,GK,Unai Simón,Athletic Club,
 H,Spain,GK,David Raya,Arsenal,
 H,Spain,GK,Joan García,Espanyol,
@@ -739,8 +739,8 @@ H,Spain,DEF,Marc Pubill,Almería,
 H,Spain,MID,Álex Baena,Villarreal,
 H,Spain,MID,Gavi,Barcelona,
 H,Spain,MID,Mikel Merino,Arsenal,
-H,Spain,MID,Pedri,Barcelona,
-H,Spain,MID,Rodri,Manchester City,
+H,Spain,MID,Pedri,Barcelona,2
+H,Spain,MID,Rodri,Manchester City,3
 H,Spain,MID,Fabián Ruiz,Paris Saint-Germain,
 H,Spain,MID,Martín Zubimendi,Arsenal,
 H,Spain,FWD,Borja Iglesias,Real Betis,
@@ -750,7 +750,7 @@ H,Spain,FWD,Mikel Oyarzabal,Real Sociedad,
 H,Spain,FWD,Yéremy Pino,Villarreal,
 H,Spain,FWD,Ferran Torres,Barcelona,
 H,Spain,FWD,Nico Williams,Athletic Club,
-H,Spain,FWD,Lamine Yamal,Barcelona,Y
+H,Spain,FWD,Lamine Yamal,Barcelona,1
 H,Cape Verde,GK,Márcio da Rosa,Académica,
 H,Cape Verde,GK,CJ Dos Santos,Gil Vicente,
 H,Cape Verde,GK,Vozinha,Estoril Praia,
@@ -769,12 +769,12 @@ H,Cape Verde,MID,Deroy Duarte,FC Famalicão,
 H,Cape Verde,MID,Jamiro Monteiro,Philadelphia Union,
 H,Cape Verde,MID,Kevin Pina,FC Famalicão,
 H,Cape Verde,MID,Jair Semedo,Roda JC,
-H,Cape Verde,FWD,Jovane Cabral,Sporting CP,
+H,Cape Verde,FWD,Jovane Cabral,Sporting CP,3
 H,Cape Verde,FWD,Gilson Benchimol,Académica,
 H,Cape Verde,FWD,Nuno da Costa,Strasbourg,
 H,Cape Verde,FWD,Dailon Livramento,Marítimo,
-H,Cape Verde,FWD,Ryan Mendes,Lille,
-H,Cape Verde,FWD,Garry Rodrigues,Galatasaray,Y
+H,Cape Verde,FWD,Ryan Mendes,Lille,2
+H,Cape Verde,FWD,Garry Rodrigues,Galatasaray,1
 H,Cape Verde,FWD,Willy Semedo,Boavista,
 H,Cape Verde,FWD,Hélio Varela,Vitória,
 H,Saudi Arabia,GK,Nawaf Al-Aqidi,Al-Shabab,
@@ -796,13 +796,13 @@ H,Saudi Arabia,MID,Khalid Al Ghannam,Al-Nassr,
 H,Saudi Arabia,MID,Alaa Al Hejji,Al-Ahli,
 H,Saudi Arabia,MID,Ziyad Al Johani,Al-Ittihad,
 H,Saudi Arabia,MID,Musab Al Juwayr,Al-Hilal,
-H,Saudi Arabia,MID,Mohamed Kanno,Al-Hilal,
+H,Saudi Arabia,MID,Mohamed Kanno,Al-Hilal,2
 H,Saudi Arabia,MID,Sultan Mandash,Al-Ittihad,
 H,Saudi Arabia,MID,Ayman Yahya,Al-Ahli,
 H,Saudi Arabia,FWD,Feras Al Brikan,Al-Ittihad,
-H,Saudi Arabia,FWD,Salem Al Dawsari,Al-Hilal,Y
+H,Saudi Arabia,FWD,Salem Al Dawsari,Al-Hilal,1
 H,Saudi Arabia,FWD,Abdullah Al Hamdan,Al-Hilal,
-H,Saudi Arabia,FWD,Saleh Al Shehri,Al-Hilal,
+H,Saudi Arabia,FWD,Saleh Al Shehri,Al-Hilal,3
 H,Uruguay,GK,Santiago Mele,Junior,
 H,Uruguay,GK,Fernando Muslera,Galatasaray,
 H,Uruguay,GK,Sergio Rochet,Nacional,
@@ -815,7 +815,7 @@ H,Uruguay,DEF,Joaquín Piquerez,Palmeiras,
 H,Uruguay,DEF,Guillermo Varela,Flamengo,
 H,Uruguay,DEF,Matías Viña,Roma,
 H,Uruguay,MID,Maximiliano Araújo,Sporting CP,
-H,Uruguay,MID,Rodrigo Bentancur,Tottenham,
+H,Uruguay,MID,Rodrigo Bentancur,Tottenham,3
 H,Uruguay,MID,Agustín Canobbio,Athletico PR,
 H,Uruguay,MID,Giorgian de Arrascaeta,Flamengo,
 H,Uruguay,MID,Nicolás de la Cruz,Flamengo,
@@ -824,10 +824,10 @@ H,Uruguay,MID,Juan Manuel Sanabria,Toulouse,
 H,Uruguay,MID,Facundo Pellistri,Manchester United,
 H,Uruguay,MID,Brian Rodríguez,América,
 H,Uruguay,MID,Manuel Ugarte,Manchester United,
-H,Uruguay,MID,Federico Valverde,Real Madrid,Y
+H,Uruguay,MID,Federico Valverde,Real Madrid,1
 H,Uruguay,MID,Rodrigo Zalazar,Schalke 04,
 H,Uruguay,FWD,Rodrigo Aguirre,Monterrey,
-H,Uruguay,FWD,Darwin Núñez,Liverpool,
+H,Uruguay,FWD,Darwin Núñez,Liverpool,2
 H,Uruguay,FWD,Federico Viñas,América,
 I,France,GK,Mike Maignan,AC Milan,
 I,France,GK,Robin Risser,Lens,
@@ -844,15 +844,15 @@ I,France,DEF,Dayot Upamecano,Bayern Munich,
 I,France,MID,N'Golo Kanté,Al-Ittihad,
 I,France,MID,Manu Koné,Roma,
 I,France,MID,Adrien Rabiot,Marseille,
-I,France,MID,Aurélien Tchouameni,Real Madrid,
+I,France,MID,Aurélien Tchouameni,Real Madrid,3
 I,France,MID,Warren Zaïre-Emery,Paris Saint-Germain,
 I,France,FWD,Maghnes Akliouche,Monaco,
 I,France,FWD,Bradley Barcola,Paris Saint-Germain,
 I,France,FWD,Rayan Cherki,Borussia Dortmund,
-I,France,FWD,Ousmane Dembélé,Paris Saint-Germain,
+I,France,FWD,Ousmane Dembélé,Paris Saint-Germain,2
 I,France,FWD,Désiré Doué,Paris Saint-Germain,
 I,France,FWD,Jean-Philippe Mateta,Crystal Palace,
-I,France,FWD,Kylian Mbappé,Real Madrid,Y
+I,France,FWD,Kylian Mbappé,Real Madrid,1
 I,France,FWD,Michael Olise,Bayern Munich,
 I,France,FWD,Marcus Thurman,Strasbourg,
 I,Senegal,GK,Mory Diaw,Clermont Foot,
@@ -861,7 +861,7 @@ I,Senegal,GK,Edouard Mendy,Al-Ahli,
 I,Senegal,DEF,Krepin Diatta,Monaco,
 I,Senegal,DEF,El Hadji Malick Diouf,Stade de Reims,
 I,Senegal,DEF,Ismaïl Jakobs,Monaco,
-I,Senegal,DEF,Kalidou Koulibaly,Al-Hilal,
+I,Senegal,DEF,Kalidou Koulibaly,Al-Hilal,2
 I,Senegal,DEF,Antoine Mendy,Lorient,
 I,Senegal,DEF,Moussa Niakhate,Nottm Forest,
 I,Senegal,DEF,Mamadou Sarr,Chelsea,
@@ -875,8 +875,8 @@ I,Senegal,MID,Bara Sapoko Ndiaye,Galatasaray,
 I,Senegal,MID,Pape Matar Sarr,Tottenham,
 I,Senegal,FWD,Assane Diao,Burnley,
 I,Senegal,FWD,Bamba Dieng,Lorient,
-I,Senegal,FWD,Nicolas Jackson,Chelsea,
-I,Senegal,FWD,Sadio Mané,Al-Nassr,Y
+I,Senegal,FWD,Nicolas Jackson,Chelsea,3
+I,Senegal,FWD,Sadio Mané,Al-Nassr,1
 I,Senegal,FWD,Ibrahim Mbaye,Nantes,
 I,Senegal,FWD,Cherif Ndiaye,Montpellier,
 I,Senegal,FWD,Iliman Ndiaye,Everton,
@@ -898,13 +898,13 @@ I,Iraq,MID,Amir Al-Ammari,Al-Shorta,
 I,Iraq,MID,Youssef Amyn,Al-Quwa Al-Jawiya,
 I,Iraq,MID,Ibrahim Bayesh,Al-Zawraa,
 I,Iraq,MID,Marko Farji,Al-Zawraa,
-I,Iraq,MID,Zidane Iqbal,FC Utrecht,
+I,Iraq,MID,Zidane Iqbal,FC Utrecht,2
 I,Iraq,MID,Ahmed Qasem,Al-Shorta,
 I,Iraq,MID,Aimar Sher,Erbil SC,
 I,Iraq,MID,Kevin Yakob,Erbil SC,
-I,Iraq,FWD,Ali Al-Hamadi,Luton Town,Y
+I,Iraq,FWD,Ali Al-Hamadi,Luton Town,1
 I,Iraq,FWD,Mohanad Ali,Al-Zawraa,
-I,Iraq,FWD,Aymen Hussein,Al-Zawraa,
+I,Iraq,FWD,Aymen Hussein,Al-Zawraa,3
 I,Iraq,FWD,Ali Jassim,Al-Quwa Al-Jawiya,
 I,Iraq,FWD,Ali Youssef,Al-Shorta,
 I,Norway,GK,Ørjan Nyland,Atalanta,
@@ -926,12 +926,12 @@ I,Norway,MID,Sander Berge,Burnley,
 I,Norway,MID,Oscar Bobb,Manchester City,
 I,Norway,MID,Jens Petter Hauge,Genoa,
 I,Norway,MID,Antonio Nusa,RB Leipzig,
-I,Norway,MID,Martin Ødegaard,Arsenal,
+I,Norway,MID,Martin Ødegaard,Arsenal,2
 I,Norway,MID,Andreas Schjelderup,Benfica,
 I,Norway,MID,Morten Thorsby,Union SG,
 I,Norway,MID,Kristian Thorstvedt,Sassuolo,
-I,Norway,FWD,Erling Haaland,Manchester City,Y
-I,Norway,FWD,Alexander Sørloth,Atlético Madrid,
+I,Norway,FWD,Erling Haaland,Manchester City,1
+I,Norway,FWD,Alexander Sørloth,Atlético Madrid,3
 I,Norway,FWD,Jørgen Strand Larsen,Celta Vigo,
 J,Argentina,GK,Emiliano Martínez,Aston Villa,
 J,Argentina,GK,Juan Musso,Atalanta,
@@ -952,22 +952,22 @@ J,Argentina,MID,Alexis Mac Allister,Liverpool,
 J,Argentina,MID,Exequiel Palacios,Bayer Leverkusen,
 J,Argentina,MID,Leandro Paredes,Roma,
 J,Argentina,FWD,Thiago Almada,Lyon,
-J,Argentina,FWD,Julián Álvarez,Atlético Madrid,
+J,Argentina,FWD,Julián Álvarez,Atlético Madrid,2
 J,Argentina,FWD,Nicolás González,Fiorentina,
 J,Argentina,FWD,José Manuel López,Club San Luis,
-J,Argentina,FWD,Lautaro Martínez,Inter Milan,
-J,Argentina,FWD,Lionel Messi,Inter Miami,Y
+J,Argentina,FWD,Lautaro Martínez,Inter Milan,3
+J,Argentina,FWD,Lionel Messi,Inter Miami,1
 J,Argentina,FWD,Nicolás Paz,Como,
 J,Argentina,FWD,Giuliano Simeone,Atlético Madrid,
 J,Algeria,GK,Oussama Benbot,MC Oran,
 J,Algeria,GK,Melvin Mastil,AJ Auxerre,
 J,Algeria,GK,Luca Zidane,UD Logroñés,
 J,Algeria,DEF,Achref Abada,Kortrijk,
-J,Algeria,DEF,Rayan Ait-Nouri,Wolverhampton,
+J,Algeria,DEF,Rayan Ait-Nouri,Wolverhampton,3
 J,Algeria,DEF,Mohamed Amine Tougai,MC Alger,
 J,Algeria,DEF,Zineddine Belaid,ES Sétif,
 J,Algeria,DEF,Rafik Belghali,CR Belouizdad,
-J,Algeria,DEF,Ramy Bensebaini,Borussia Dortmund,
+J,Algeria,DEF,Ramy Bensebaini,Borussia Dortmund,2
 J,Algeria,DEF,Samir Chergui,MC Alger,
 J,Algeria,DEF,Jaouen Hadjam,Valencia,
 J,Algeria,DEF,Aissa Mandi,Villarreal,
@@ -981,7 +981,7 @@ J,Algeria,MID,Ramiz Zerrouki,Twente,
 J,Algeria,FWD,Mohamed Amoura,Stuttgart,
 J,Algeria,FWD,Nadhir Benbouali,Clermont Foot,
 J,Algeria,FWD,Adil Boulbina,USM Alger,
-J,Algeria,FWD,Riyad Mahrez,Al-Ahli,Y
+J,Algeria,FWD,Riyad Mahrez,Al-Ahli,1
 J,Algeria,FWD,Fares Ghedjemis,Angers SCO,
 J,Algeria,FWD,Amine Gouiri,Stade Rennais,
 J,Algeria,FWD,Anis Hadj Moussa,Montpellier,
@@ -989,7 +989,7 @@ J,Austria,GK,Patrick Pentz,Bayer Leverkusen,
 J,Austria,GK,Alexander Schlager,RB Leipzig,
 J,Austria,GK,Florian Wiegele,Wolfsberger AC,
 J,Austria,DEF,David Affengruber,Sturm Graz,
-J,Austria,DEF,David Alaba,Real Madrid,
+J,Austria,DEF,David Alaba,Real Madrid,2
 J,Austria,DEF,Kevin Danso,Lens,
 J,Austria,DEF,Marco Freidl,Werder Bremen,
 J,Austria,DEF,Philipp Lienhart,SC Freiburg,
@@ -998,11 +998,11 @@ J,Austria,DEF,Alexander Prass,RB Leipzig,
 J,Austria,DEF,Michael Svoboda,Venezia,
 J,Austria,MID,Xaver Schlager,RB Leipzig,
 J,Austria,MID,Nicolas Seiwald,RB Leipzig,
-J,Austria,MID,Marcel Sabitzer,Borussia Dortmund,Y
+J,Austria,MID,Marcel Sabitzer,Borussia Dortmund,1
 J,Austria,MID,Florian Grillitsch,Hoffenheim,
 J,Austria,MID,Carney Chukwuemeka,Chelsea,
 J,Austria,MID,Romano Schmid,Werder Bremen,
-J,Austria,MID,Christoph Baumgartner,RB Leipzig,
+J,Austria,MID,Christoph Baumgartner,RB Leipzig,3
 J,Austria,MID,Konrad Laimer,Bayern Munich,
 J,Austria,MID,Patrick Wimmer,Wolfsburg,
 J,Austria,MID,Paul Wanner,Eintracht Frankfurt,
@@ -1016,7 +1016,7 @@ J,Jordan,GK,Nour Bani Attiah,Al-Ramtha,
 J,Jordan,DEF,Mo Abualnadi,Al-Wehdat,
 J,Jordan,DEF,Husam Abu Dahab,Al-Ahli,
 J,Jordan,DEF,Mohammad Abu Hashish,Al-Ramtha,
-J,Jordan,DEF,Yazan Al-Arab,Al-Faisaly,
+J,Jordan,DEF,Yazan Al-Arab,Al-Faisaly,2
 J,Jordan,DEF,Saed Al-Rosan,Almería,
 J,Jordan,DEF,Anas Badawi,Al-Wehdat,
 J,Jordan,DEF,Ihsan Haddad,Al-Faisaly,
@@ -1029,10 +1029,10 @@ J,Jordan,MID,Noor Al-Rawabdeh,Al-Ahli,
 J,Jordan,MID,Rajaei Ayed,Sabah FA,
 J,Jordan,MID,Amer Jamous,Al-Faisaly,
 J,Jordan,MID,Ibrahim Sadeh,Al-Ramtha,
-J,Jordan,FWD,Mohammad Abu Zrayq,Al-Wehdat,
+J,Jordan,FWD,Mohammad Abu Zrayq,Al-Wehdat,3
 J,Jordan,FWD,Odeh Al-Fakhouri,Al-Faisaly,
 J,Jordan,FWD,Mahmoud Al-Mardi,Al-Wehdat,
-J,Jordan,FWD,Musa Al-Taamari,Montpellier,Y
+J,Jordan,FWD,Musa Al-Taamari,Montpellier,1
 J,Jordan,FWD,Ali Azaizeh,Al-Ramtha,
 J,Jordan,FWD,Ali Olwan,Al-Ahli,
 J,Jordan,FWD,Ibrahim Sabra,Al-Jaish,
@@ -1049,10 +1049,10 @@ K,Portugal,DEF,Matheus Nunes,Manchester City,
 K,Portugal,DEF,Nélson Semedo,Wolverhampton,
 K,Portugal,DEF,Renato Veiga,Juventus,
 K,Portugal,MID,Samuel Costa,Sporting CP,
-K,Portugal,MID,Bruno Fernandes,Manchester United,
+K,Portugal,MID,Bruno Fernandes,Manchester United,2
 K,Portugal,MID,João Neves,Paris Saint-Germain,
 K,Portugal,MID,Rúben Neves,Al-Hilal,
-K,Portugal,MID,Bernardo Silva,Manchester City,
+K,Portugal,MID,Bernardo Silva,Manchester City,3
 K,Portugal,MID,Vitinha,Paris Saint-Germain,
 K,Portugal,FWD,Francisco Conceição,Juventus,
 K,Portugal,FWD,João Félix,Chelsea,
@@ -1060,7 +1060,7 @@ K,Portugal,FWD,Gonçalo Guedes,Wolverhampton,
 K,Portugal,FWD,Rafael Leão,AC Milan,
 K,Portugal,FWD,Pedro Neto,Chelsea,
 K,Portugal,FWD,Gonçalo Ramos,Paris Saint-Germain,
-K,Portugal,FWD,Cristiano Ronaldo,Al-Nassr,Y
+K,Portugal,FWD,Cristiano Ronaldo,Al-Nassr,1
 K,Portugal,FWD,Trincão,Sporting CP,
 K,DR Congo,GK,Mattieu Epolo,NEC Nijmegen,
 K,DR Congo,GK,Timothy Fayulu,Genk,
@@ -1070,10 +1070,10 @@ K,DR Congo,DEF,Gédéon Kalulu,Juventus,
 K,DR Congo,DEF,Steve Kapuadi,Nantes,
 K,DR Congo,DEF,Joris Kayembe,Anderlecht,
 K,DR Congo,DEF,Arthur Masuaku,Besiktas,
-K,DR Congo,DEF,Chancel Mbemba,Marseille,
+K,DR Congo,DEF,Chancel Mbemba,Marseille,2
 K,DR Congo,DEF,Aaron Tshibola,Nottm Forest,
 K,DR Congo,DEF,Axel Tuanzebe,Napoli,
-K,DR Congo,DEF,Aaron Wan-Bissaka,Manchester United,
+K,DR Congo,DEF,Aaron Wan-Bissaka,Manchester United,3
 K,DR Congo,MID,Gaël Kakuta,Lens,
 K,DR Congo,MID,Edo Kayembe,Watford,
 K,DR Congo,MID,Samuel Moutoussamy,Celta Vigo,
@@ -1087,7 +1087,7 @@ K,DR Congo,FWD,Brian Cipenga,Anderlecht,
 K,DR Congo,FWD,Meschack Elia,Young Boys,
 K,DR Congo,FWD,Fiston Mayele,Panathinaikos,
 K,DR Congo,FWD,Nathaniël Mbuku,Lens,
-K,DR Congo,FWD,Yoane Wissa,Brentford,Y
+K,DR Congo,FWD,Yoane Wissa,Brentford,1
 K,Uzbekistan,GK,Botirali Ergashev,Pakhtakor,
 K,Uzbekistan,GK,Abduvohid Nematov,Nasaf,
 K,Uzbekistan,GK,Utkir Yusupov,Lokomotiv Tashkent,
@@ -1096,13 +1096,13 @@ K,Uzbekistan,DEF,Khojiakbar Alijonov,Pakhtakor,
 K,Uzbekistan,DEF,Rustam Ashurmatov,Pakhtakor,
 K,Uzbekistan,DEF,Umar Eshmurodov,Nasaf,
 K,Uzbekistan,DEF,Bekhruz Karimov,Pakhtakor,
-K,Uzbekistan,DEF,Abdukodir Khusanov,Manchester City,
+K,Uzbekistan,DEF,Abdukodir Khusanov,Manchester City,2
 K,Uzbekistan,DEF,Sherzod Nasrullaev,Pakhtakor,
 K,Uzbekistan,DEF,Farrukh Sayfiev,Pakhtakor,
 K,Uzbekistan,DEF,Avazbek Ulmasaliev,Nasaf,
 K,Uzbekistan,DEF,Jakhongir Urozov,Pakhtakor,
 K,Uzbekistan,MID,Sherzod Esanov,Pakhtakor,
-K,Uzbekistan,MID,Abbosbek Fayzullaev,New York City FC,
+K,Uzbekistan,MID,Abbosbek Fayzullaev,New York City FC,3
 K,Uzbekistan,MID,Azizjon Ganiev,Lokomotiv Tashkent,
 K,Uzbekistan,MID,Odiljon Hamrobekov,Pakhtakor,
 K,Uzbekistan,MID,Jamshid Iskanderov,Pakhtakor,
@@ -1113,7 +1113,7 @@ K,Uzbekistan,MID,Otabek Shukurov,Pakhtakor,
 K,Uzbekistan,MID,Oston Urunov,Pakhtakor,
 K,Uzbekistan,FWD,Azizbek Amonov,Pakhtakor,
 K,Uzbekistan,FWD,Igor Sergeev,Pakhtakor,
-K,Uzbekistan,FWD,Eldor Shomurodov,Roma,Y
+K,Uzbekistan,FWD,Eldor Shomurodov,Roma,1
 K,Colombia,GK,Álvaro Montero,Millonarios,
 K,Colombia,GK,David Ospina,Al-Qadsiah,
 K,Colombia,GK,Camilo Vargas,Atlas,
@@ -1123,7 +1123,7 @@ K,Colombia,DEF,Jhon Lucumí,Bologna,
 K,Colombia,DEF,Deiver Machado,Nantes,
 K,Colombia,DEF,Yerry Mina,Cagliari,
 K,Colombia,DEF,Johan Mojica,RCD Mallorca,
-K,Colombia,DEF,Daniel Muñoz,Crystal Palace,
+K,Colombia,DEF,Daniel Muñoz,Crystal Palace,3
 K,Colombia,DEF,Davinson Sánchez,Galatasaray,
 K,Colombia,MID,Jhon Arias,Wolverhampton,
 K,Colombia,MID,Jaminton Campaz,Rosario Central,
@@ -1132,9 +1132,9 @@ K,Colombia,MID,Kevin Castaño,Krasnodar,
 K,Colombia,MID,Jefferson Lerma,Crystal Palace,
 K,Colombia,MID,Juan Fernando Quintero,Racing Club,
 K,Colombia,MID,Richard Ríos,Palmeiras,
-K,Colombia,MID,James Rodríguez,Minnesota United,Y
+K,Colombia,MID,James Rodríguez,Minnesota United,1
 K,Colombia,FWD,Jhon Córdoba,Krasnodar,
-K,Colombia,FWD,Luis Díaz,Bayern Munich,
+K,Colombia,FWD,Luis Díaz,Bayern Munich,2
 K,Colombia,FWD,Carlos Andrés Gómez,Vasco da Gama,
 K,Colombia,FWD,Cucho Hernández,Columbus Crew,
 L,England,GK,Dean Henderson,Crystal Palace,
@@ -1150,17 +1150,17 @@ L,England,DEF,Jarell Quansah,Bayer Leverkusen,
 L,England,DEF,Djed Spence,Genoa,
 L,England,DEF,John Stones,Manchester City,
 L,England,MID,Elliot Anderson,Nottm Forest,
-L,England,MID,Jude Bellingham,Real Madrid,Y
+L,England,MID,Jude Bellingham,Real Madrid,1
 L,England,MID,Eberechi Eze,Crystal Palace,
 L,England,MID,Jordan Henderson,Ajax,
 L,England,MID,Kobbie Mainoo,Manchester United,
 L,England,MID,Declan Rice,Arsenal,
 L,England,MID,Morgan Rogers,Aston Villa,
 L,England,FWD,Anthony Gordon,Newcastle,
-L,England,FWD,Harry Kane,Bayern Munich,
+L,England,FWD,Harry Kane,Bayern Munich,2
 L,England,FWD,Noni Madueke,Chelsea,
 L,England,FWD,Marcus Rashford,Aston Villa,
-L,England,FWD,Bukayo Saka,Arsenal,
+L,England,FWD,Bukayo Saka,Arsenal,3
 L,England,FWD,Ivan Toney,Al-Ahli,
 L,England,FWD,Ollie Watkins,Aston Villa,
 L,Croatia,GK,Dominik Livaković,Fenerbahçe,
@@ -1168,7 +1168,7 @@ L,Croatia,GK,Dominik Kotarski,Rijeka,
 L,Croatia,GK,Ivor Pandur,Lecce,
 L,Croatia,DEF,Duje Ćaleta-Car,Lyon,
 L,Croatia,DEF,Martin Erlić,RB Leipzig,
-L,Croatia,DEF,Joško Gvardiol,Manchester City,
+L,Croatia,DEF,Joško Gvardiol,Manchester City,2
 L,Croatia,DEF,Kristijan Jakić,Eintracht Frankfurt,
 L,Croatia,DEF,Marin Pongračić,Fiorentina,
 L,Croatia,DEF,Josip Stanišić,Bayer Leverkusen,
@@ -1176,8 +1176,8 @@ L,Croatia,DEF,Josip Šutalo,Ajax,
 L,Croatia,DEF,Luka Vušković,Tottenham,
 L,Croatia,MID,Martin Baturina,Chelsea,
 L,Croatia,MID,Toni Fruk,Hajduk Split,
-L,Croatia,MID,Mateo Kovačić,Manchester City,
-L,Croatia,MID,Luka Modrić,Real Madrid,Y
+L,Croatia,MID,Mateo Kovačić,Manchester City,3
+L,Croatia,MID,Luka Modrić,Real Madrid,1
 L,Croatia,MID,Nikola Moro,Bologna,
 L,Croatia,MID,Mario Pašalić,Atalanta,
 L,Croatia,MID,Luka Sučić,RB Leipzig,
@@ -1204,17 +1204,17 @@ L,Ghana,DEF,Alidu Seidu,Clermont Foot,
 L,Ghana,DEF,Marvin Senaya,Hearts of Oak,
 L,Ghana,MID,Augustine Boakye,Nordsjaelland,
 L,Ghana,MID,Abdul Fatawu,Leicester City,
-L,Ghana,MID,Thomas Partey,Arsenal,Y
+L,Ghana,MID,Thomas Partey,Arsenal,1
 L,Ghana,MID,Kwasi Sibo,Asante Kotoko,
 L,Ghana,MID,Caleb Yirenkyi,Nordsjaelland,
-L,Ghana,FWD,Jordan Ayew,Leicester City,
+L,Ghana,FWD,Jordan Ayew,Leicester City,3
 L,Ghana,FWD,Christopher Bonsu Baah,Nordsjaelland,
 L,Ghana,FWD,Prince Kwabena Adu,Basel,
 L,Ghana,FWD,Ernest Nuamah,Lyon,
 L,Ghana,FWD,Kamaldeen Sulemana,Southampton,
 L,Ghana,FWD,Antoine Semenyo,Bournemouth,
 L,Ghana,FWD,Brandon Thomas-Asante,West Brom,
-L,Ghana,FWD,Iñaki Williams,Athletic Club,
+L,Ghana,FWD,Iñaki Williams,Athletic Club,2
 L,Panama,GK,Luis Mejía,Club Montréal,
 L,Panama,GK,Orlando Mosquera,Deportivo Cali,
 L,Panama,GK,César Samudio,Tauro FC,
@@ -1229,7 +1229,7 @@ L,Panama,DEF,Roderick Miller,Club Montréal,
 L,Panama,DEF,Amir Murillo,Anderlecht,
 L,Panama,DEF,Jiovany Ramos,Tauro FC,
 L,Panama,MID,Yoel Bárcenas,New York Red Bulls,
-L,Panama,MID,Adalberto Carrasquilla,Hertha BSC,Y
+L,Panama,MID,Adalberto Carrasquilla,Hertha BSC,1
 L,Panama,MID,Aníbal Godoy,Nashville SC,
 L,Panama,MID,Carlos Harvey,San Jose Earthquakes,
 L,Panama,MID,Azarías Londoño,Tauro FC,
@@ -1237,7 +1237,7 @@ L,Panama,MID,Cristian Martínez,Guadalajara,
 L,Panama,MID,Alberto Quintero,Tauro FC,
 L,Panama,MID,José Luis Rodríguez,Real Estelí,
 L,Panama,MID,César Yanis,Real Valladolid,
-L,Panama,FWD,Ismael Díaz,Porto,
-L,Panama,FWD,José Fajardo,Portland Timbers,
+L,Panama,FWD,Ismael Díaz,Porto,2
+L,Panama,FWD,José Fajardo,Portland Timbers,3
 L,Panama,FWD,Tomás Rodríguez,Tauro FC,
 L,Panama,FWD,Cecilio Waterman,Club Montréal,

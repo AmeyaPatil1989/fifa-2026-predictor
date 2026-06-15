@@ -207,7 +207,11 @@ def load_standings():
 @st.cache_data(ttl=3600)
 def load_squads():
     try:
-        return pd.read_csv(BASE_DIR / "international_results" / "squads_clubs.csv")
+        return pd.read_csv(
+            BASE_DIR / "international_results" / "squads_clubs.csv",
+            dtype={"star_rank": str},
+            keep_default_na=False,
+        )
     except FileNotFoundError:
         return None
 
@@ -855,9 +859,16 @@ elif page == "👥 Squads":
     team_df = squads_df[squads_df["team"] == sel_team]
     tc = gc(sel_team)
     group = team_df["group"].iloc[0]
-    featured_row = team_df[team_df["featured"] == "Y"]
-    featured_name = featured_row["player"].iloc[0] if len(featured_row) else None
-    featured_club = featured_row["club"].iloc[0] if len(featured_row) else None
+    star_rows = team_df[team_df["star_rank"] != ""].sort_values("star_rank")
+
+    star_chips = ""
+    for _, sr in star_rows.iterrows():
+        star_chips += (
+            f"<div style='margin-top:8px'>"
+            f"<span style='font-size:17px;font-weight:900;color:white'>{sr['player']}</span> "
+            f"<span style='font-size:13px;color:rgba(255,255,255,0.6)'>· {sr['club']}</span>"
+            f"</div>"
+        )
 
     # ── Header banner ────────────────────────────────────────────────────────
     st.markdown(
@@ -873,11 +884,10 @@ elif page == "👥 Squads":
         f"</div>"
         + (
             f"<div style='margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.15)'>"
-            f"<span style='font-size:11px;color:#FFD700;letter-spacing:2px;font-weight:bold'>★ FEATURED PLAYER</span><br>"
-            f"<span style='font-size:18px;font-weight:900;color:white'>{featured_name}</span> "
-            f"<span style='font-size:13px;color:rgba(255,255,255,0.6)'>· {featured_club}</span>"
+            f"<span style='font-size:11px;color:#FFD700;letter-spacing:2px;font-weight:bold'>★ PLAYERS TO WATCH</span>"
+            f"{star_chips}"
             f"</div>"
-            if featured_name else ""
+            if len(star_rows) else ""
         )
         + "</div>",
         unsafe_allow_html=True
@@ -899,11 +909,12 @@ elif page == "👥 Squads":
         with cols[i % 2]:
             rows_html = ""
             for _, r in pos_df.iterrows():
-                star = " ★" if r["featured"] == "Y" else ""
-                name_color = "#FFD700" if r["featured"] == "Y" else "#FFFFFF"
+                is_star = r["star_rank"] != ""
+                star = " ★" if is_star else ""
+                name_color = "#FFD700" if is_star else "#FFFFFF"
                 rows_html += (
                     f"<tr>"
-                    f"<td style='padding:6px 10px;color:{name_color};font-weight:{'900' if r['featured']=='Y' else '500'}'>"
+                    f"<td style='padding:6px 10px;color:{name_color};font-weight:{'900' if is_star else '500'}'>"
                     f"{r['player']}{star}</td>"
                     f"<td style='padding:6px 10px;text-align:right;color:rgba(255,255,255,0.6);font-size:13px'>{r['club']}</td>"
                     f"</tr>"
