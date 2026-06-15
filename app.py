@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from pathlib import Path
+from urllib.parse import quote
 import datetime
 
 st.set_page_config(
@@ -10,6 +11,21 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# ── Click-to-navigate routing ───────────────────────────────────────────────
+# Clicking a team name anywhere (HTML link with ?team=... or a chart point)
+# routes here, sets the selected team, and switches to the Squads page with that team selected.
+if "nav_page" not in st.session_state:
+    st.session_state.nav_page = "📅 Today's Matches"
+if "selected_team" not in st.session_state:
+    st.session_state.selected_team = None
+
+_qp = st.query_params
+if "team" in _qp:
+    st.session_state.selected_team = _qp["team"]
+    st.session_state.nav_page = "👥 Squads"
+    st.query_params.clear()
+    st.rerun()
 
 # ── Team Colors ────────────────────────────────────────────────────────────────
 TEAM_COLORS = {
@@ -115,6 +131,128 @@ def team_display(team, size=14):
     return f"{flag_img(team)}{team}" if team else "TBD"
 
 
+def team_link(team, label=None, color="#FFFFFF", underline=True, weight="inherit"):
+    """Returns an <a> tag that navigates to this team's Squads page on click."""
+    if not team:
+        return label or "TBD"
+    label = label if label is not None else team
+    style = f"color:{color};text-decoration:none;cursor:pointer;font-weight:{weight};"
+    if underline:
+        style += f"border-bottom:1px dotted {color};"
+    return f"<a href='?team={quote(team)}' target='_self' style='{style}'>{label}</a>"
+
+
+POSITION_LABELS = {
+    "GK": "🧤 Goalkeepers",
+    "DEF": "🛡️ Defenders",
+    "MID": "⚙️ Midfielders",
+    "FWD": "⚡ Forwards",
+}
+
+
+def render_team_squad(team_df, sel_team, show_header=True):
+    """Renders the team header banner (optional), star players, squad by position,
+    and club breakdown. Used by the Squads page."""
+    tc = gc(sel_team)
+    group = team_df["group"].iloc[0]
+    star_rows = team_df[team_df["star_rank"] != ""].sort_values("star_rank")
+
+    star_chips = ""
+    for _, sr in star_rows.iterrows():
+        star_chips += (
+            f"<div style='margin-top:8px'>"
+            f"<span style='font-size:17px;font-weight:900;color:white'>{sr['player']}</span> "
+            f"<span style='font-size:13px;color:rgba(255,255,255,0.6)'>· {sr['club']}</span>"
+            f"</div>"
+        )
+
+    if show_header:
+        st.markdown(
+            f"<div style='background:linear-gradient(135deg,{tc['primary']}dd,{tc['primary']}33);"
+            f"border-radius:14px;padding:24px 28px;margin-bottom:16px;"
+            f"border:1px solid {tc['primary']}'>"
+            f"<div style='display:flex;align-items:center;gap:14px'>"
+            f"{flag_img(sel_team, height=36)}"
+            f"<div>"
+            f"<div style='font-size:26px;font-weight:900;color:{tc['text']}'>{sel_team}</div>"
+            f"<div style='font-size:13px;color:rgba(255,255,255,0.65)'>Group {group} · 2026 FIFA World Cup</div>"
+            f"</div>"
+            f"</div>"
+            + (
+                f"<div style='margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.15)'>"
+                f"<span style='font-size:11px;color:#FFD700;letter-spacing:2px;font-weight:bold'>★ PLAYERS TO WATCH</span>"
+                f"{star_chips}"
+                f"</div>"
+                if len(star_rows) else ""
+            )
+            + "</div>",
+            unsafe_allow_html=True
+        )
+    elif len(star_rows):
+        st.markdown(
+            f"<div style='margin-bottom:16px'>"
+            f"<span style='font-size:11px;color:#FFD700;letter-spacing:2px;font-weight:bold'>★ PLAYERS TO WATCH</span>"
+            f"{star_chips}"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+
+    # ── Squad by position ────────────────────────────────────────────────────
+    cols = st.columns(2)
+    for i, pos in enumerate(["GK", "DEF", "MID", "FWD"]):
+        pos_df = team_df[team_df["position"] == pos]
+        if len(pos_df) == 0:
+            continue
+        with cols[i % 2]:
+            rows_html = ""
+            for _, r in pos_df.iterrows():
+                is_star = r["star_rank"] != ""
+                star = " ★" if is_star else ""
+                name_color = "#FFD700" if is_star else "#FFFFFF"
+                rows_html += (
+                    f"<tr>"
+                    f"<td style='padding:6px 10px;color:{name_color};font-weight:{'900' if is_star else '500'}'>"
+                    f"{r['player']}{star}</td>"
+                    f"<td style='padding:6px 10px;text-align:right;color:rgba(255,255,255,0.6);font-size:13px'>{r['club']}</td>"
+                    f"</tr>"
+                )
+            st.markdown(
+                f"<div style='margin-bottom:18px'>"
+                f"<div style='font-size:14px;font-weight:bold;color:#FFD700;letter-spacing:1px;"
+                f"margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,215,0,0.3)'>"
+                f"{POSITION_LABELS[pos]} ({len(pos_df)})</div>"
+                f"<table style='width:100%;border-collapse:collapse;font-size:14px'>"
+                f"{rows_html}"
+                f"</table>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+
+    # ── Club distribution ────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 🌍 Club Breakdown")
+    club_counts = team_df["club"].value_counts()
+    multi_club = club_counts[club_counts > 1]
+    if len(multi_club) > 0:
+        chips = "".join(
+            f"<span style='display:inline-block;background:rgba(255,215,0,0.12);"
+            f"border:1px solid rgba(255,215,0,0.3);border-radius:20px;padding:5px 14px;"
+            f"margin:3px;font-size:13px;color:white'>{club} <b style='color:#FFD700'>×{n}</b></span>"
+            for club, n in multi_club.items()
+        )
+        st.markdown(
+            f"<p style='color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:8px'>"
+            f"Clubs with multiple players in this squad:</p>{chips}",
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            "<p style='color:rgba(255,255,255,0.5);font-size:13px'>"
+            "Every player in this squad plays for a different club.</p>",
+            unsafe_allow_html=True
+        )
+
+
 # ── CSS ────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
@@ -205,6 +343,13 @@ def load_standings():
         return None
 
 @st.cache_data(ttl=3600)
+def load_scorers():
+    try:
+        return pd.read_csv(OUTPUT_DIR / "wc2026_scorers.csv")
+    except FileNotFoundError:
+        return None
+
+@st.cache_data(ttl=3600)
 def load_squads():
     try:
         return pd.read_csv(
@@ -269,7 +414,8 @@ def render_match_card(row):
             f"<div style='background:linear-gradient(135deg,{hc['primary']}dd,{hc['primary']}77);"
             f"border-radius:12px;padding:20px 16px;text-align:center;min-height:110px;"
             f"display:flex;flex-direction:column;justify-content:center'>"
-            f"<div style='font-size:22px;font-weight:900;color:{hc['text']}'>{flag_img(home)}{home}</div>"
+            f"<div style='font-size:22px;font-weight:900;color:{hc['text']}'>{flag_img(home)}"
+            f"{team_link(home, color=hc['text'], underline=False, weight='900')}</div>"
             f"</div>",
             unsafe_allow_html=True
         )
@@ -299,7 +445,8 @@ def render_match_card(row):
             f"<div style='background:linear-gradient(225deg,{ac['primary']}dd,{ac['primary']}77);"
             f"border-radius:12px;padding:20px 16px;text-align:center;min-height:110px;"
             f"display:flex;flex-direction:column;justify-content:center'>"
-            f"<div style='font-size:22px;font-weight:900;color:{ac['text']}'>{flag_img(away)}{away}</div>"
+            f"<div style='font-size:22px;font-weight:900;color:{ac['text']}'>{flag_img(away)}"
+            f"{team_link(away, color=ac['text'], underline=False, weight='900')}</div>"
             f"</div>",
             unsafe_allow_html=True
         )
@@ -345,7 +492,7 @@ with st.sidebar:
         "🔲 Bracket",
         "👥 Squads",
         "🔍 Head to Head",
-    ])
+    ], key="nav_page")
     st.markdown("---")
     st.markdown(
         f"<p style='color:white!important;font-size:13px;line-height:2'>"
@@ -365,6 +512,7 @@ try:
     elo_df = load_elo()
     standings_df = load_standings()
     squads_df = load_squads()
+    scorers_df = load_scorers()
 except FileNotFoundError:
     st.error("⚠️ Run `python main.py` first to generate output files.")
     st.stop()
@@ -478,7 +626,17 @@ elif page == "🏆 Tournament Odds":
                    font=dict(color="#FFD700", size=16)),
         margin=dict(l=10, r=80, t=50, b=40),
     )
-    st.plotly_chart(fig, use_container_width=True)
+    event = st.plotly_chart(
+        fig, use_container_width=True,
+        on_select="rerun", key="tournament_odds_chart"
+    )
+    if event and event.get("selection", {}).get("points"):
+        clicked_team = event["selection"]["points"][0].get("y")
+        if clicked_team:
+            st.session_state.selected_team = clicked_team
+            st.session_state.nav_page = "👥 Squads"
+            st.rerun()
+    st.caption("💡 Click any bar to view that team's squad and outlook")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -500,7 +658,7 @@ elif page == "🏆 Tournament Odds":
                 f"<div style='border-left:4px solid {color};padding:7px 14px;"
                 f"margin:5px 0;border-radius:4px;background:rgba(255,255,255,0.03)'>"
                 f"<b style='color:#FFD700'>Group {grp}:</b> "
-                f"<span style='color:white'>{flag_img(top['team'])}{top['team']}</span> "
+                f"<span style='color:white'>{flag_img(top['team'])}{team_link(top['team'], color='white', weight='bold')}</span> "
                 f"<span style='color:rgba(255,255,255,0.5)'>{top['win_pct']:.1f}%</span>"
                 f"</div>",
                 unsafe_allow_html=True
@@ -562,7 +720,7 @@ elif page == "🗂️ Group Standings":
                     <tr style='background:{row_bg}'>
                         <td style='padding:8px 6px'>
                             {flag_img(team, height=14)}
-                            <b style='color:white'>{team}</b>
+                            <b style='color:white'>{team_link(team, color='white')}</b>
                         </td>
                         <td style='text-align:center;color:white'>{int(tr['played'])}</td>
                         <td style='text-align:center;color:#2ecc71;font-weight:bold'>{int(tr['won'])}</td>
@@ -676,13 +834,14 @@ elif page == "🔲 Bracket":
 
     def team_label(x, y, team, size=11):
         color = gc(team)["primary"]
-        return (
+        text_el = (
             f"<text x='{x + BOX_W/2}' y='{y:.1f}' text-anchor='middle' "
             f"font-size='{size}' font-family='Arial' font-weight='bold'>"
             f"<tspan fill='{color}'>\u25A0 </tspan>"
-            f"<tspan fill='#ffffff'>{team}</tspan>"
+            f"<tspan fill='#ffffff' style='text-decoration:underline;text-decoration-style:dotted'>{team}</tspan>"
             f"</text>"
         )
+        return f"<a href='?team={quote(team)}' target='_self' style='cursor:pointer'>{text_el}</a>"
 
     def hline(x1, y1, x2, y2):
         return f"<line x1='{x1:.1f}' y1='{y1:.1f}' x2='{x2:.1f}' y2='{y2:.1f}' stroke='rgba(255,215,0,0.4)' stroke-width='1.5'/>"
@@ -756,9 +915,11 @@ elif page == "🔲 Bracket":
     parts.append(team_label(col_x[3], final_center + BOX_H/2 + 16, final_match[0], size=12))
     parts.append(team_label(col_x[3], final_center + BOX_H/2 + 32, final_match[1], size=12))
     parts.append(
+        f"<a href='?team={quote(champion)}' target='_self' style='cursor:pointer'>"
         f"<text x='{col_x[3]+BOX_W/2}' y='{final_center + BOX_H/2 + 50}' text-anchor='middle' "
-        f"font-size='11' fill='#00ff88' font-weight='900' font-family='Arial'>"
-        f"\u2605 {champion}</text>"
+        f"font-size='11' fill='#00ff88' font-weight='900' font-family='Arial' "
+        f"style='text-decoration:underline;text-decoration-style:dotted'>"
+        f"\u2605 {champion}</text></a>"
     )
 
     # ── Connectors: LEFT side R16 -> QF -> SF -> Final ──────────────────────────
@@ -831,7 +992,7 @@ elif page == "🔲 Bracket":
                 f"border-radius:12px;padding:20px;text-align:center;border:1px solid {tc['primary']}'>"
                 f"<div style='font-size:28px'>{medals[i]}</div>"
                 f"<div style='margin:4px 0'>{flag_img(row['team'], height=20)}</div>"
-                f"<div style='font-size:18px;font-weight:900;color:{tc['text']};margin:6px 0'>{row['team']}</div>"
+                f"<div style='font-size:18px;font-weight:900;color:{tc['text']};margin:6px 0'>{team_link(row['team'], color=tc['text'])}</div>"
                 f"<div style='font-size:22px;font-weight:bold;color:#FFD700'>{row['win_pct']:.1f}%</div>"
                 f"<div style='font-size:11px;color:rgba(255,255,255,0.5)'>win probability</div>"
                 f"</div>",
@@ -840,9 +1001,10 @@ elif page == "🔲 Bracket":
 
 
 # ══ PAGE 6: SQUADS ════════════════════════════════════════════════════════════
+# ══ PAGE 6: SQUADS ════════════════════════════════════════════════════════════
 elif page == "👥 Squads":
     st.title("👥 2026 FIFA World Cup — Squads")
-    st.caption("Full 26-player rosters with current club affiliations for every team")
+    st.caption("Squad, fixtures, and tournament outlook for every team")
 
     if squads_df is None:
         st.error("squads_clubs.csv not found. Run `python generate_squads_csv.py` and place "
@@ -850,113 +1012,142 @@ elif page == "👥 Squads":
         st.stop()
 
     all_teams = sorted(squads_df["team"].unique())
+    default_idx = 0
+    if st.session_state.selected_team in all_teams:
+        default_idx = all_teams.index(st.session_state.selected_team)
+
     sel_team = st.selectbox(
         "Select a team",
         all_teams,
+        index=default_idx,
         format_func=lambda t: f"{t} (Group {squads_df[squads_df['team']==t]['group'].iloc[0]})",
+        key="squads_page_select",
     )
+    st.session_state.selected_team = sel_team
 
     team_df = squads_df[squads_df["team"] == sel_team]
-    tc = gc(sel_team)
-    group = team_df["group"].iloc[0]
-    star_rows = team_df[team_df["star_rank"] != ""].sort_values("star_rank")
+    render_team_squad(team_df, sel_team)
 
-    star_chips = ""
-    for _, sr in star_rows.iterrows():
-        star_chips += (
-            f"<div style='margin-top:8px'>"
-            f"<span style='font-size:17px;font-weight:900;color:white'>{sr['player']}</span> "
-            f"<span style='font-size:13px;color:rgba(255,255,255,0.6)'>· {sr['club']}</span>"
-            f"</div>"
-        )
+    # ── 2026 World Cup Matches ──────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### ⚽ 2026 World Cup Matches")
 
-    # ── Header banner ────────────────────────────────────────────────────────
-    st.markdown(
-        f"<div style='background:linear-gradient(135deg,{tc['primary']}dd,{tc['primary']}33);"
-        f"border-radius:14px;padding:24px 28px;margin-bottom:16px;"
-        f"border:1px solid {tc['primary']}'>"
-        f"<div style='display:flex;align-items:center;gap:14px'>"
-        f"{flag_img(sel_team, height=36)}"
-        f"<div>"
-        f"<div style='font-size:26px;font-weight:900;color:{tc['text']}'>{sel_team}</div>"
-        f"<div style='font-size:13px;color:rgba(255,255,255,0.65)'>Group {group} · 2026 FIFA World Cup</div>"
-        f"</div>"
-        f"</div>"
-        + (
-            f"<div style='margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.15)'>"
-            f"<span style='font-size:11px;color:#FFD700;letter-spacing:2px;font-weight:bold'>★ PLAYERS TO WATCH</span>"
-            f"{star_chips}"
-            f"</div>"
-            if len(star_rows) else ""
-        )
-        + "</div>",
-        unsafe_allow_html=True
-    )
+    team_matches = predictions[
+        (predictions["home_team"] == sel_team) | (predictions["away_team"] == sel_team)
+    ].sort_values("date")
 
-    # ── Squad by position ────────────────────────────────────────────────────
-    POSITION_LABELS = {
-        "GK": "🧤 Goalkeepers",
-        "DEF": "🛡️ Defenders",
-        "MID": "⚙️ Midfielders",
-        "FWD": "⚡ Forwards",
-    }
+    if len(team_matches) == 0:
+        st.info("No fixtures found for this team.")
+    else:
+        for _, m in team_matches.iterrows():
+            is_home = m["home_team"] == sel_team
+            opponent = m["away_team"] if is_home else m["home_team"]
+            oc = gc(opponent)
+            date_str = str(m["date"])[:10]
 
-    cols = st.columns(2)
-    for i, pos in enumerate(["GK", "DEF", "MID", "FWD"]):
-        pos_df = team_df[team_df["position"] == pos]
-        if len(pos_df) == 0:
-            continue
-        with cols[i % 2]:
-            rows_html = ""
-            for _, r in pos_df.iterrows():
-                is_star = r["star_rank"] != ""
-                star = " ★" if is_star else ""
-                name_color = "#FFD700" if is_star else "#FFFFFF"
-                rows_html += (
-                    f"<tr>"
-                    f"<td style='padding:6px 10px;color:{name_color};font-weight:{'900' if is_star else '500'}'>"
-                    f"{r['player']}{star}</td>"
-                    f"<td style='padding:6px 10px;text-align:right;color:rgba(255,255,255,0.6);font-size:13px'>{r['club']}</td>"
-                    f"</tr>"
+            if m["completed"]:
+                hs, as_ = int(m["actual_home_score"]), int(m["actual_away_score"])
+                my_score, opp_score = (hs, as_) if is_home else (as_, hs)
+                score_str = f"{my_score} – {opp_score}"
+                if my_score > opp_score:
+                    badge, badge_color = "W", "#2ecc71"
+                elif my_score < opp_score:
+                    badge, badge_color = "L", "#e74c3c"
+                else:
+                    badge, badge_color = "D", "#f39c12"
+                right_html = (
+                    f"<span style='font-size:18px;font-weight:900;color:#00ff88'>{score_str}</span> "
+                    f"<span style='background:{badge_color};color:#000;padding:2px 10px;"
+                    f"border-radius:4px;font-weight:900;margin-left:8px;font-size:13px'>{badge}</span>"
                 )
+            else:
+                pred = m["predicted_result"]
+                right_html = f"<span style='color:#FFD700;font-size:13px'>📊 Predicted: {pred}</span>"
+
             st.markdown(
-                f"<div style='margin-bottom:18px'>"
-                f"<div style='font-size:14px;font-weight:bold;color:#FFD700;letter-spacing:1px;"
-                f"margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid rgba(255,215,0,0.3)'>"
-                f"{POSITION_LABELS[pos]} ({len(pos_df)})</div>"
-                f"<table style='width:100%;border-collapse:collapse;font-size:14px'>"
-                f"{rows_html}"
-                f"</table>"
+                f"<div style='display:flex;justify-content:space-between;align-items:center;"
+                f"background:rgba(255,255,255,0.03);border-radius:8px;padding:10px 16px;margin-bottom:6px'>"
+                f"<div>"
+                f"<span style='color:rgba(255,255,255,0.45);font-size:12px'>{date_str} · {m['city']}</span><br>"
+                f"<span style='color:white;font-size:14px'>vs {flag_img(opponent, height=14)}"
+                f"{team_link(opponent, color=oc['primary'], weight='bold')}</span>"
+                f"</div>"
+                f"<div>{right_html}</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
 
-    # ── Club distribution ────────────────────────────────────────────────────
+    # ── Goals in the Tournament ──────────────────────────────────────────────
     st.markdown("---")
-    st.markdown("### 🌍 Club Breakdown")
-    club_counts = team_df["club"].value_counts()
-    multi_club = club_counts[club_counts > 1]
-    if len(multi_club) > 0:
-        chips = "".join(
-            f"<span style='display:inline-block;background:rgba(255,215,0,0.12);"
-            f"border:1px solid rgba(255,215,0,0.3);border-radius:20px;padding:5px 14px;"
-            f"margin:3px;font-size:13px;color:white'>{club} <b style='color:#FFD700'>×{n}</b></span>"
-            for club, n in multi_club.items()
-        )
+    st.markdown("### ⚡ Goals in the Tournament")
+
+    if scorers_df is None or len(scorers_df) == 0:
+        st.info("No goals recorded yet — check back once matches are completed.")
+    else:
+        team_scorers = scorers_df[scorers_df["team"] == sel_team].sort_values("goals", ascending=False)
+        if len(team_scorers) == 0:
+            st.info(f"{sel_team} haven't scored yet in this tournament.")
+        else:
+            chips = ""
+            for _, sc in team_scorers.iterrows():
+                pen_note = f" <span style='color:rgba(255,255,255,0.5);font-size:11px'>({int(sc['penalties'])} pen)</span>" if sc["penalties"] > 0 else ""
+                chips += (
+                    f"<div style='display:inline-block;background:rgba(255,255,255,0.04);"
+                    f"border:1px solid rgba(255,215,0,0.25);border-radius:10px;"
+                    f"padding:10px 16px;margin:4px;text-align:center'>"
+                    f"<div style='color:white;font-size:14px;font-weight:700'>{sc['scorer']}</div>"
+                    f"<div style='color:#FFD700;font-size:22px;font-weight:900'>{int(sc['goals'])}</div>"
+                    f"<div style='color:rgba(255,255,255,0.4);font-size:10px;letter-spacing:1px'>GOAL{'S' if sc['goals'] != 1 else ''}{pen_note}</div>"
+                    f"</div>"
+                )
+            st.markdown(chips, unsafe_allow_html=True)
+
+    # ── Tournament Outlook ───────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 🏆 Tournament Outlook")
+
+    mc_row = mc[mc["team"] == sel_team]
+    standings_row = standings_df[standings_df["team"] == sel_team] if standings_df is not None else None
+
+    out_cols = st.columns(3)
+    if len(mc_row):
+        r = mc_row.iloc[0]
+        out_cols[0].metric("Win Probability", f"{r['win_pct']:.2f}%")
+        out_cols[1].metric("Predicted Rank", f"#{int(r['rank'])} of 48")
+    else:
+        out_cols[0].metric("Win Probability", "—")
+        out_cols[1].metric("Predicted Rank", "—")
+
+    if standings_row is not None and len(standings_row):
+        s = standings_row.iloc[0]
+        q = s["qualified"]
+        q_label = {"Q": "🟢 Qualified", "M": "🟡 In contention", "E": "🔴 Eliminated"}.get(q, "⚪ In progress")
+        out_cols[2].metric("Group Stage Status", q_label)
+
         st.markdown(
-            f"<p style='color:rgba(255,255,255,0.6);font-size:12px;margin-bottom:8px'>"
-            f"Clubs with multiple players in this squad:</p>{chips}",
+            f"<div style='display:flex;gap:10px;margin-top:10px;flex-wrap:wrap'>"
+            f"<div style='background:rgba(255,255,255,0.04);border-radius:8px;padding:10px 16px'>"
+            f"<span style='color:rgba(255,255,255,0.5);font-size:11px'>PLAYED</span><br>"
+            f"<span style='color:white;font-size:18px;font-weight:900'>{int(s['played'])}</span></div>"
+            f"<div style='background:rgba(46,204,113,0.1);border-radius:8px;padding:10px 16px'>"
+            f"<span style='color:rgba(255,255,255,0.5);font-size:11px'>WON</span><br>"
+            f"<span style='color:#2ecc71;font-size:18px;font-weight:900'>{int(s['won'])}</span></div>"
+            f"<div style='background:rgba(243,156,18,0.1);border-radius:8px;padding:10px 16px'>"
+            f"<span style='color:rgba(255,255,255,0.5);font-size:11px'>DRAWN</span><br>"
+            f"<span style='color:#f39c12;font-size:18px;font-weight:900'>{int(s['drawn'])}</span></div>"
+            f"<div style='background:rgba(231,76,60,0.1);border-radius:8px;padding:10px 16px'>"
+            f"<span style='color:rgba(255,255,255,0.5);font-size:11px'>LOST</span><br>"
+            f"<span style='color:#e74c3c;font-size:18px;font-weight:900'>{int(s['lost'])}</span></div>"
+            f"<div style='background:rgba(255,215,0,0.08);border-radius:8px;padding:10px 16px'>"
+            f"<span style='color:rgba(255,255,255,0.5);font-size:11px'>POINTS</span><br>"
+            f"<span style='color:#FFD700;font-size:18px;font-weight:900'>{int(s['pts'])}</span></div>"
+            f"</div>",
             unsafe_allow_html=True
         )
     else:
-        st.markdown(
-            "<p style='color:rgba(255,255,255,0.5);font-size:13px'>"
-            "Every player in this squad plays for a different club.</p>",
-            unsafe_allow_html=True
-        )
+        out_cols[2].metric("Group Stage Status", "—")
 
 
-# ══ PAGE 7: HEAD TO HEAD ══════════════════════════════════════════════════════
 elif page == "🔍 Head to Head":
     st.title("🔍 Head-to-Head Predictor")
     st.caption("Select any two teams for a predicted match outcome")
@@ -1017,7 +1208,8 @@ elif page == "🔍 Head to Head":
                 f"<div style='background:linear-gradient(135deg,{hc['primary']}cc,{hc['primary']}55);"
                 f"border-radius:12px;padding:20px 16px;text-align:center;min-height:110px;"
                 f"display:flex;flex-direction:column;justify-content:center'>"
-                f"<div style='font-size:22px;font-weight:900;color:{hc['text']}'>{flag_img(team_a)}{team_a}</div>"
+                f"<div style='font-size:22px;font-weight:900;color:{hc['text']}'>{flag_img(team_a)}"
+                f"{team_link(team_a, color=hc['text'], underline=False, weight='900')}</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
@@ -1032,7 +1224,8 @@ elif page == "🔍 Head to Head":
                 f"<div style='background:linear-gradient(225deg,{ac['primary']}cc,{ac['primary']}55);"
                 f"border-radius:12px;padding:20px 16px;text-align:center;min-height:110px;"
                 f"display:flex;flex-direction:column;justify-content:center'>"
-                f"<div style='font-size:22px;font-weight:900;color:{ac['text']}'>{flag_img(team_b)}{team_b}</div>"
+                f"<div style='font-size:22px;font-weight:900;color:{ac['text']}'>{flag_img(team_b)}"
+                f"{team_link(team_b, color=ac['text'], underline=False, weight='900')}</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
@@ -1054,4 +1247,13 @@ elif page == "🔍 Head to Head":
 
         probs = {team_a: p_home, "Draw": p_draw, team_b: p_away}
         winner = max(probs, key=probs.get)
-        st.success(f"📊 Model predicts: **{winner}**")
+        if winner == "Draw":
+            st.success("📊 Model predicts: **Draw**")
+        else:
+            st.markdown(
+                f"<div style='background:rgba(46,204,113,0.15);border:1px solid rgba(46,204,113,0.4);"
+                f"border-radius:8px;padding:12px 16px;color:#2ecc71;font-size:15px'>"
+                f"📊 Model predicts: <b>{team_link(winner, color='#2ecc71', weight='900')}</b>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
