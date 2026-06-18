@@ -94,3 +94,5 @@ fifa-2026-predictor/
 ---
 
 Built by Ameya Patil — [LinkedIn](https://www.linkedin.com/in/ameya-patil-10102a181/) · [Live Demo](https://fifa-2026-predictor-cettrbrndfachzrhogw3ue.streamlit.app/)
+
+Background image via Vecteezy
