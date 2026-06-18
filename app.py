@@ -5,6 +5,7 @@ from pathlib import Path
 from urllib.parse import quote
 import datetime
 from background_image import BG_IMAGE_B64
+from live_scores import fetch_live_scores
 
 st.set_page_config(
     page_title="2026 FIFA World Cup Predictor",
@@ -110,6 +111,34 @@ def flag_url(team):
     if code.startswith("gb-"):
         return f"https://flagcdn.com/16x12/{code}.png"
     return f"https://flagcdn.com/16x12/{code}.png"
+
+
+def soccer_ball(size=24, inline_style="vertical-align:-4px;margin-right:6px"):
+    """Original SVG soccer ball (classic pentagon/hexagon pattern) — generic,
+    not a depiction of any official/licensed match ball. Safe to use anywhere
+    emoji was used for a more polished look."""
+    return (
+        f"<svg width='{size}' height='{size}' viewBox='0 0 100 100' "
+        f"style='{inline_style}' xmlns='http://www.w3.org/2000/svg'>"
+        f"<circle cx='50' cy='50' r='48' fill='#FFFFFF' stroke='#1a1a1a' stroke-width='3'/>"
+        f"<polygon points='50,30 62,38 58,52 42,52 38,38' fill='#1a1a1a'/>"
+        f"<path d='M 50,30 L 62,38 M 50,30 L 38,38 M 62,38 L 58,52 M 38,38 L 42,52 M 58,52 L 42,52' "
+        f"stroke='#1a1a1a' stroke-width='2.5' fill='none'/>"
+        f"<path d='M 50,30 L 50,8' stroke='#1a1a1a' stroke-width='2.5'/>"
+        f"<path d='M 62,38 L 80,30' stroke='#1a1a1a' stroke-width='2.5'/>"
+        f"<path d='M 38,38 L 20,30' stroke='#1a1a1a' stroke-width='2.5'/>"
+        f"<path d='M 58,52 L 68,68' stroke='#1a1a1a' stroke-width='2.5'/>"
+        f"<path d='M 42,52 L 32,68' stroke='#1a1a1a' stroke-width='2.5'/>"
+        f"<path d='M 50,8 A 42,42 0 0 1 80,30' fill='none' stroke='#1a1a1a' stroke-width='2'/>"
+        f"<path d='M 50,8 A 42,42 0 0 0 20,30' fill='none' stroke='#1a1a1a' stroke-width='2'/>"
+        f"<path d='M 92,50 A 42,42 0 0 1 68,68' fill='none' stroke='#1a1a1a' stroke-width='2'/>"
+        f"<path d='M 8,50 A 42,42 0 0 0 32,68' fill='none' stroke='#1a1a1a' stroke-width='2'/>"
+        f"<path d='M 80,30 A 42,42 0 0 1 92,50' fill='none' stroke='#1a1a1a' stroke-width='2'/>"
+        f"<path d='M 20,30 A 42,42 0 0 0 8,50' fill='none' stroke='#1a1a1a' stroke-width='2'/>"
+        f"<path d='M 68,68 A 42,42 0 0 1 50,92' fill='none' stroke='#1a1a1a' stroke-width='2'/>"
+        f"<path d='M 32,68 A 42,42 0 0 0 50,92' fill='none' stroke='#1a1a1a' stroke-width='2'/>"
+        f"</svg>"
+    )
 
 
 def flag_img(team, height=16):
@@ -366,6 +395,11 @@ def load_scorers():
     except FileNotFoundError:
         return None
 
+@st.cache_data(ttl=60)
+def load_live_scores():
+    """Cached for 60s so we don't hit ESPN on every rerun, but stay close to live."""
+    return fetch_live_scores()
+
 @st.cache_data(ttl=3600)
 def load_squads():
     try:
@@ -414,13 +448,17 @@ def prob_bar(p_home, p_draw, p_away, home, away, key):
     return fig
 
 
-def render_match_card(row):
+def render_match_card(row, live_data=None):
     home, away = row["home_team"], row["away_team"]
     hc, ac = gc(home), gc(away)
     done = row["completed"]
+    live = live_data.get((home, away)) if live_data else None
+    is_live_now = live is not None and live["status"] == "in"
 
     st.markdown(
-        f"<div class='match-label'>⚽ FIFA WORLD CUP 2026 &nbsp;·&nbsp; {str(row['date'])[:10]}</div>",
+        f"<div class='match-label'>{soccer_ball(14, 'vertical-align:-2px;margin-right:4px')} FIFA WORLD CUP 2026 &nbsp;·&nbsp; {str(row['date'])[:10]}"
+        + ("&nbsp;·&nbsp;<span style='color:#ff4d4d;font-weight:900'>🔴 LIVE</span>" if is_live_now else "")
+        + "</div>",
         unsafe_allow_html=True
     )
 
@@ -438,7 +476,16 @@ def render_match_card(row):
         )
 
     with col2:
-        if done:
+        if is_live_now:
+            st.markdown(
+                f"<div class='center-box' style='border:1px solid rgba(255,77,77,0.5)'>"
+                f"<div class='score-label' style='color:#ff4d4d'>{live['home_score']} — {live['away_score']}</div>"
+                f"<div style='color:#ff4d4d;font-size:10px;letter-spacing:1px;font-weight:900'>⏱ {live['status_detail']}</div>"
+                f"<div class='venue-label'>📍 {row['city']}</div>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+        elif done:
             st.markdown(
                 f"<div class='center-box'>"
                 f"<div class='score-label'>{int(row['actual_home_score'])} — {int(row['actual_away_score'])}</div>"
@@ -482,7 +529,10 @@ def render_match_card(row):
 
     bc1, bc2 = st.columns(2)
     with bc1:
-        st.info(f"📊 Model Prediction: **{row['predicted_result']}**")
+        if is_live_now:
+            st.warning(f"🔴 Live now — model prediction shown pre-match: **{row['predicted_result']}**")
+        else:
+            st.info(f"📊 Model Prediction: **{row['predicted_result']}**")
     if done:
         with bc2:
             ok = row["predicted_result"] == row["actual_result"]
@@ -497,7 +547,7 @@ def render_match_card(row):
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown(
-        "<h2 style='color:#FFD700!important;font-family:Arial Black;letter-spacing:1px'>⚽ 2026 WC PREDICTOR</h2>",
+        f"<h2 style='color:#FFD700!important;font-family:Arial Black;letter-spacing:1px'>{soccer_ball(22)} 2026 WC PREDICTOR</h2>",
         unsafe_allow_html=True
     )
     st.markdown("---")
@@ -537,7 +587,11 @@ except FileNotFoundError:
 
 # ══ PAGE 1: TODAY'S MATCHES ═══════════════════════════════════════════════════
 if page == "📅 Today's Matches":
-    st.title("⚽ 2026 FIFA World Cup Predictions")
+    st.markdown(
+        f"<h1 style='display:flex;align-items:center;gap:10px'>{soccer_ball(36)} "
+        f"2026 FIFA World Cup Predictions</h1>",
+        unsafe_allow_html=True
+    )
 
     all_dates = sorted(predictions["date"].dt.date.unique())
     selected_date = st.date_input(
@@ -553,8 +607,9 @@ if page == "📅 Today's Matches":
     else:
         st.markdown(f"**{selected_date.strftime('%A, %B %d, %Y')} · {len(day_matches)} match(es)**")
         st.markdown("---")
+        live_data = load_live_scores() if selected_date == datetime.date.today() else {}
         for _, row in day_matches.iterrows():
-            render_match_card(row)
+            render_match_card(row, live_data=live_data)
 
 
 # ══ PAGE 2: ALL PREDICTIONS ═══════════════════════════════════════════════════
@@ -1047,7 +1102,7 @@ elif page == "👥 Squads":
 
     # ── 2026 World Cup Matches ──────────────────────────────────────────────────
     st.markdown("---")
-    st.markdown("### ⚽ 2026 World Cup Matches")
+    st.markdown(f"### {soccer_ball(22)} 2026 World Cup Matches", unsafe_allow_html=True)
 
     team_matches = predictions[
         (predictions["home_team"] == sel_team) | (predictions["away_team"] == sel_team)
