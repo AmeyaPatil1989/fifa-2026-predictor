@@ -95,6 +95,7 @@ def fetch_live_scores(timeout=5) -> dict:
                 "home_score": int(home_score) if home_score not in (None, "") else None,
                 "away_score": int(away_score) if away_score not in (None, "") else None,
                 "clock": status.get("displayClock"),
+                "kickoff_time": event.get("date"),  # ISO timestamp, e.g. "2026-06-18T16:00Z"
             }
     except Exception:
         return {}

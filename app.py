@@ -454,6 +454,13 @@ def render_match_card(row, live_data=None):
     done = row["completed"]
     live = live_data.get((home, away)) if live_data else None
     is_live_now = live is not None and live["status"] == "in"
+    # ESPN says finished but our own pipeline hasn't picked up the result yet
+    # (daily_update.bat hasn't run since kickoff) — show ESPN's final score
+    # rather than falling through to the pre-match "VS / xG" view.
+    espn_finished_not_yet_synced = (
+        not done and live is not None and live["status"] == "post"
+        and live["home_score"] is not None
+    )
 
     st.markdown(
         f"<div class='match-label'>{soccer_ball(14, 'vertical-align:-2px;margin-right:4px')} FIFA WORLD CUP 2026 &nbsp;·&nbsp; {str(row['date'])[:10]}"
@@ -481,6 +488,15 @@ def render_match_card(row, live_data=None):
                 f"<div class='center-box' style='border:1px solid rgba(255,77,77,0.5)'>"
                 f"<div class='score-label' style='color:#ff4d4d'>{live['home_score']} — {live['away_score']}</div>"
                 f"<div style='color:#ff4d4d;font-size:10px;letter-spacing:1px;font-weight:900'>⏱ {live['status_detail']}</div>"
+                f"<div class='venue-label'>📍 {row['city']}</div>"
+                f"</div>",
+                unsafe_allow_html=True
+            )
+        elif espn_finished_not_yet_synced:
+            st.markdown(
+                f"<div class='center-box'>"
+                f"<div class='score-label'>{live['home_score']} — {live['away_score']}</div>"
+                f"<div style='color:rgba(255,255,255,0.4);font-size:10px;letter-spacing:1px'>FULL TIME</div>"
                 f"<div class='venue-label'>📍 {row['city']}</div>"
                 f"</div>",
                 unsafe_allow_html=True
@@ -540,6 +556,16 @@ def render_match_card(row, live_data=None):
                 st.success(f"✅ Actual: **{row['actual_result']}**")
             else:
                 st.error(f"❌ Actual: **{row['actual_result']}**")
+    elif espn_finished_not_yet_synced:
+        with bc2:
+            hs, as_ = live["home_score"], live["away_score"]
+            actual = "Home Win" if hs > as_ else ("Away Win" if as_ > hs else "Draw")
+            ok = row["predicted_result"] == actual
+            label = f"{'✅' if ok else '❌'} Actual: **{actual}** (via live feed, syncing soon)"
+            if ok:
+                st.success(label)
+            else:
+                st.error(label)
 
     st.markdown("<hr class='divider'>", unsafe_allow_html=True)
 
@@ -600,14 +626,26 @@ if page == "📅 Today's Matches":
         min_value=min(all_dates),
         max_value=max(all_dates),
     )
-    day_matches = predictions[predictions["date"].dt.date == selected_date]
+    day_matches = predictions[predictions["date"].dt.date == selected_date].copy()
 
     if len(day_matches) == 0:
         st.info("No matches on this date. Use the date picker to find match days.")
     else:
+        live_data = load_live_scores() if selected_date == datetime.date.today() else {}
+
+        # Sort by ESPN kickoff time when we have it for this date (more reliable
+        # than our own data, which only stores date not time-of-day); matches
+        # without ESPN data keep their original relative order at the end.
+        if live_data:
+            def kickoff_sort_key(row):
+                info = live_data.get((row["home_team"], row["away_team"]))
+                return info["kickoff_time"] if info and info.get("kickoff_time") else "9999"
+            day_matches = day_matches.assign(
+                _sort_key=day_matches.apply(kickoff_sort_key, axis=1)
+            ).sort_values("_sort_key").drop(columns="_sort_key")
+
         st.markdown(f"**{selected_date.strftime('%A, %B %d, %Y')} · {len(day_matches)} match(es)**")
         st.markdown("---")
-        live_data = load_live_scores() if selected_date == datetime.date.today() else {}
         for _, row in day_matches.iterrows():
             render_match_card(row, live_data=live_data)
 
