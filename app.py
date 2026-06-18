@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 from pathlib import Path
 from urllib.parse import quote
 import datetime
+from background_image import BG_IMAGE_B64
 
 st.set_page_config(
     page_title="2026 FIFA World Cup Predictor",
@@ -253,10 +254,26 @@ def render_team_squad(team_df, sel_team, show_header=True):
         )
 
 
+# ── Background image (stadium photo, dark overlay for text readability) ────────
+st.markdown(
+    f"""
+    <style>
+    .stApp {{
+        background-image: linear-gradient(rgba(6,11,24,0.82), rgba(6,11,24,0.82)),
+                           url("data:image/jpeg;base64,{BG_IMAGE_B64}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+    }}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # ── CSS ────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-    .stApp { background-color: #060b18; }
     header[data-testid="stHeader"] {
         background-color: #060b18 !important;
     }
