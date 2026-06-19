@@ -502,16 +502,17 @@ def render_scorer_list(event_id, home, away, hc, ac):
     if not scorers:
         return
 
-    def scorer_line(s):
+    def scorer_line(s, align="left"):
         og_tag = " <span style='opacity:0.6'>(OG)</span>" if s["own_goal"] else ""
         pen_tag = " <span style='opacity:0.6'>(pen)</span>" if s["penalty"] and not s["own_goal"] else ""
         minute = s["minute"] or ""
-        return (
-            f"<div style='font-size:13px;color:white;padding:3px 0'>"
-            f"⚽ {s['scorer']}{og_tag}{pen_tag} "
-            f"<span style='color:rgba(255,255,255,0.45);font-size:11px'>{minute}</span>"
-            f"</div>"
-        )
+        minute_html = f"<span style='color:rgba(255,255,255,0.45);font-size:11px'>{minute}</span>"
+        if align == "right":
+            # Minute first, name last, so it reads naturally right-to-left
+            content = f"{minute_html} {s['scorer']}{og_tag}{pen_tag} ⚽"
+        else:
+            content = f"⚽ {s['scorer']}{og_tag}{pen_tag} {minute_html}"
+        return f"<div style='font-size:13px;color:white;padding:3px 0;text-align:{align}'>{content}</div>"
 
     home_scorers = [s for s in scorers if s["team"] == home]
     away_scorers = [s for s in scorers if s["team"] == away]
@@ -520,19 +521,19 @@ def render_scorer_list(event_id, home, away, hc, ac):
     with col1:
         st.markdown(
             f"<div style='color:{hc['primary']};font-size:11px;font-weight:bold;"
-            f"letter-spacing:1px;margin-bottom:2px'>{home.upper()}</div>",
+            f"letter-spacing:1px;margin-bottom:2px;text-align:left'>{home.upper()}</div>",
             unsafe_allow_html=True
         )
         if home_scorers:
-            st.markdown("".join(scorer_line(s) for s in home_scorers), unsafe_allow_html=True)
+            st.markdown("".join(scorer_line(s, align="left") for s in home_scorers), unsafe_allow_html=True)
     with col2:
         st.markdown(
             f"<div style='color:{ac['primary']};font-size:11px;font-weight:bold;"
-            f"letter-spacing:1px;margin-bottom:2px'>{away.upper()}</div>",
+            f"letter-spacing:1px;margin-bottom:2px;text-align:right'>{away.upper()}</div>",
             unsafe_allow_html=True
         )
         if away_scorers:
-            st.markdown("".join(scorer_line(s) for s in away_scorers), unsafe_allow_html=True)
+            st.markdown("".join(scorer_line(s, align="right") for s in away_scorers), unsafe_allow_html=True)
 
 
 def render_live_feed(event_id, home, away):
