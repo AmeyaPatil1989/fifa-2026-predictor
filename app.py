@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import quote
 import datetime
 from background_image import BG_IMAGE_B64
-from live_scores import fetch_live_scores, fetch_match_events
+from live_scores import fetch_live_scores, fetch_match_events, fetch_tournament_scores
 from live_predictions import live_win_probability, parse_minutes_elapsed
 from live_standings import compute_live_group_standings
 
@@ -398,9 +398,25 @@ def load_scorers():
         return None
 
 @st.cache_data(ttl=60)
-def load_live_scores():
-    """Cached for 60s so we don't hit ESPN on every rerun, but stay close to live."""
-    return fetch_live_scores()
+def load_live_scores(dates=None):
+    """
+    Cached for 60s so we don't hit ESPN on every rerun, but stay close to live.
+    `dates`: optional ESPN-format date string (e.g. "20260618") to fetch a
+    specific past day instead of today's default scoreboard. Cached separately
+    per `dates` value since Streamlit's cache keys on all arguments.
+    """
+    return fetch_live_scores(dates=dates)
+
+@st.cache_data(ttl=600)
+def load_tournament_scores():
+    """
+    Cached for 10 minutes. Covers the WHOLE tournament date range, not just
+    today — used as a bridge for any date being viewed (including past dates)
+    when our own match_predictions.csv hasn't been synced yet by the daily
+    pipeline. Longer cache than the today-only loader since this is mostly
+    used to backfill already-finished matches, not track a live in-progress one.
+    """
+    return fetch_tournament_scores()
 
 @st.cache_data(ttl=60)
 def load_match_events(event_id):
@@ -719,7 +735,25 @@ if page == "📅 Today's Matches":
     if len(day_matches) == 0:
         st.info("No matches on this date. Use the date picker to find match days.")
     else:
-        live_data = load_live_scores() if selected_date == datetime.date.today() else {}
+        # Today gets the fast (60s-cached) today-only feed so in-progress
+        # matches update quickly. Any other date (including past matches our
+        # own pipeline hasn't synced yet) falls back to the slower-cached
+        # tournament-wide feed, which still has historical results.
+        if selected_date == datetime.date.today():
+            live_data = load_live_scores()
+        else:
+            tournament_data = load_tournament_scores()
+            # Match by team pair, not by comparing kickoff_time's UTC calendar
+            # date against selected_date — ESPN's kickoff_time is in UTC, but
+            # an evening match in the Americas can cross into the next UTC
+            # day (e.g. a 7pm Mexico kickoff is 1am UTC the following day),
+            # which would silently fail a plain date-string comparison even
+            # though it's unambiguously the correct match.
+            day_team_pairs = set(zip(day_matches["home_team"], day_matches["away_team"]))
+            live_data = {
+                teams: info for teams, info in tournament_data.items()
+                if teams in day_team_pairs
+            }
 
         # Sort by ESPN kickoff time when we have it for this date (more reliable
         # than our own data, which only stores date not time-of-day); matches
@@ -875,10 +909,12 @@ elif page == "🗂️ Group Standings":
     st.title("🗂️ 2026 FIFA World Cup — Group Standings")
 
     # Use live-recalculated standings (ESPN scores overlaid on predictions)
-    # when there's any live/today data available; otherwise fall back to the
-    # static daily-batch CSV. This means standings reflect in-progress and
-    # just-finished matches immediately, without waiting for daily_update.bat.
-    live_data_for_standings = load_live_scores()
+    # whenever there's any tournament data available; otherwise fall back to
+    # the static daily-batch CSV. Uses the tournament-wide feed (not just
+    # today) since standings are cumulative across the whole group stage —
+    # a match from yesterday that our own pipeline hasn't synced yet should
+    # still count here.
+    live_data_for_standings = load_tournament_scores()
     if live_data_for_standings:
         try:
             standings_df_live = compute_live_group_standings(predictions, live_data_for_standings)
