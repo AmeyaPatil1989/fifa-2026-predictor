@@ -42,6 +42,95 @@ def normalise_espn_team(name: str) -> str:
     return ESPN_TEAM_ALIASES.get(name, name)
 
 
+def fetch_match_events(event_id: str, timeout=8) -> list:
+    """
+    Fetches the full play-by-play commentary feed for a match (kickoff, goals,
+    cards, substitutions, delays, halftime, etc.) using ESPN's summary endpoint.
+    Returns a list of dicts in chronological order (oldest first):
+        [{"minute": str, "type": str, "team": str, "text": str, "is_goal": bool}, ...]
+
+    Returns an empty list on any failure.
+    """
+    url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event={event_id}"
+    try:
+        resp = requests.get(url, timeout=timeout)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception:
+        return []
+
+    events = []
+    try:
+        for ev in data.get("keyEvents", []):
+            team_name = ev.get("team", {}).get("displayName", "")
+            events.append({
+                "minute": ev.get("clock", {}).get("displayValue", ""),
+                "type": ev.get("type", {}).get("text", ""),
+                "team": normalise_espn_team(team_name) if team_name else "",
+                "text": ev.get("text") or ev.get("shortText", ""),
+                "is_goal": ev.get("scoringPlay", False),
+            })
+    except Exception:
+        return []
+
+    return events
+
+
+def fetch_match_scorers(event_id: str, timeout=8) -> list:
+    """
+    Fetches goal-scorer details for a specific match using ESPN's summary
+    endpoint. Returns a list of dicts:
+        [{"team": str, "scorer": str, "minute": str, "own_goal": bool, "penalty": bool}, ...]
+
+    Returns an empty list on any failure or if the expected fields aren't
+    present (ESPN's summary response shape is not fully verified yet —
+    this function's parsing logic should be checked against a real response
+    via test_match_scorers.py before being trusted in production).
+    """
+    url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event={event_id}"
+    try:
+        resp = requests.get(url, timeout=timeout)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception:
+        return []
+
+    scorers = []
+    try:
+        key_events = data.get("keyEvents", [])
+        for ev in key_events:
+            # scoringPlay is the reliable flag for "this event put the ball in
+            # the net" — covers regular goals, penalties ("Penalty - Scored"),
+            # and own goals alike. Matching on type.text alone is fragile since
+            # ESPN uses different labels (e.g. "Penalty - Scored" has no "goal"
+            # substring) for different goal types.
+            if not ev.get("scoringPlay", False):
+                continue
+            ev_type = ev.get("type", {}).get("text", "")
+
+            participants = ev.get("participants", [])
+            scorer_name = None
+            if participants:
+                scorer_name = participants[0].get("athlete", {}).get("displayName")
+            if not scorer_name:
+                scorer_name = ev.get("shortText", ev.get("text", "Unknown"))
+
+            team_name = ev.get("team", {}).get("displayName", "")
+            full_text = (ev.get("text", "") + " " + ev.get("shortText", "")).lower()
+
+            scorers.append({
+                "team": normalise_espn_team(team_name),
+                "scorer": scorer_name,
+                "minute": ev.get("clock", {}).get("displayValue", ""),
+                "own_goal": "own goal" in full_text,
+                "penalty": "penalty" in ev_type.lower() or "penalty" in full_text or "(pen" in full_text,
+            })
+    except Exception:
+        return []
+
+    return scorers
+
+
 def fetch_live_scores(timeout=5) -> dict:
     """
     Returns a dict keyed by (home_team, away_team) normalized tuple, with values:
@@ -96,6 +185,7 @@ def fetch_live_scores(timeout=5) -> dict:
                 "away_score": int(away_score) if away_score not in (None, "") else None,
                 "clock": status.get("displayClock"),
                 "kickoff_time": event.get("date"),  # ISO timestamp, e.g. "2026-06-18T16:00Z"
+                "event_id": event.get("id"),
             }
     except Exception:
         return {}

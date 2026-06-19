@@ -5,7 +5,9 @@ from pathlib import Path
 from urllib.parse import quote
 import datetime
 from background_image import BG_IMAGE_B64
-from live_scores import fetch_live_scores
+from live_scores import fetch_live_scores, fetch_match_events
+from live_predictions import live_win_probability, parse_minutes_elapsed
+from live_standings import compute_live_group_standings
 
 st.set_page_config(
     page_title="2026 FIFA World Cup Predictor",
@@ -400,6 +402,11 @@ def load_live_scores():
     """Cached for 60s so we don't hit ESPN on every rerun, but stay close to live."""
     return fetch_live_scores()
 
+@st.cache_data(ttl=60)
+def load_match_events(event_id):
+    """Cached for 60s, keyed by event_id so each live match gets its own cache entry."""
+    return fetch_match_events(event_id)
+
 @st.cache_data(ttl=3600)
 def load_squads():
     try:
@@ -448,12 +455,76 @@ def prob_bar(p_home, p_draw, p_away, home, away, key):
     return fig
 
 
+EVENT_TYPE_STYLE = {
+    "goal": ("⚽", "#00ff88"),
+    "penalty - scored": ("⚽", "#00ff88"),
+    "penalty - missed": ("❌", "#ff4d4d"),
+    "yellow card": ("🟨", "#FFD700"),
+    "red card": ("🟥", "#ff4d4d"),
+    "substitution": ("🔄", "rgba(255,255,255,0.6)"),
+    "kickoff": ("▶️", "rgba(255,255,255,0.5)"),
+    "halftime": ("⏸️", "#FFD700"),
+    "start 2nd half": ("▶️", "rgba(255,255,255,0.5)"),
+    "end regular time": ("⏹️", "#FFD700"),
+    "start delay": ("⏱️", "rgba(255,255,255,0.4)"),
+    "end delay": ("⏱️", "rgba(255,255,255,0.4)"),
+}
+
+
+def render_live_feed(event_id, home, away):
+    events = load_match_events(event_id)
+    if not events:
+        return
+
+    rows_html = ""
+    # Newest first: reverse chronological order
+    for ev in reversed(events):
+        icon, color = EVENT_TYPE_STYLE.get(ev["type"].lower(), ("•", "rgba(255,255,255,0.5)"))
+        minute = ev["minute"] or ""
+        text = ev["text"]
+        rows_html += (
+            f"<div style='display:flex;gap:10px;padding:7px 4px;"
+            f"border-bottom:1px solid rgba(255,255,255,0.06)'>"
+            f"<div style='min-width:38px;color:rgba(255,255,255,0.4);font-size:12px;font-weight:700'>{minute}</div>"
+            f"<div style='min-width:20px'>{icon}</div>"
+            f"<div style='color:{color};font-size:13px;flex:1'>{text}</div>"
+            f"</div>"
+        )
+
+    st.markdown(
+        f"<div style='margin-top:10px;margin-bottom:6px;color:#FFD700;font-size:12px;"
+        f"font-weight:bold;letter-spacing:1px'>📋 LIVE COMMENTARY — {home} vs {away}</div>"
+        f"<div style='max-height:280px;overflow-y:auto;background:rgba(255,255,255,0.02);"
+        f"border-radius:8px;padding:6px 12px;border:1px solid rgba(255,255,255,0.08)'>"
+        f"{rows_html}"
+        f"</div>",
+        unsafe_allow_html=True
+    )
+
+
 def render_match_card(row, live_data=None):
     home, away = row["home_team"], row["away_team"]
     hc, ac = gc(home), gc(away)
     done = row["completed"]
     live = live_data.get((home, away)) if live_data else None
     is_live_now = live is not None and live["status"] == "in"
+
+    live_probs = None
+    if is_live_now:
+        minutes_elapsed = parse_minutes_elapsed(live.get("clock"))
+        if minutes_elapsed is not None and live["home_score"] is not None:
+            live_probs = live_win_probability(
+                exp_home_goals_full=row["exp_home_goals"],
+                exp_away_goals_full=row["exp_away_goals"],
+                current_home_score=live["home_score"],
+                current_away_score=live["away_score"],
+                minutes_elapsed=minutes_elapsed,
+            )
+    # Fall back to pre-match probabilities if live recalculation wasn't
+    # possible (e.g. halftime, where ESPN's clock isn't a parseable minute)
+    display_p_home = live_probs["p_home_win"] if live_probs else row["p_home_win"]
+    display_p_draw = live_probs["p_draw"] if live_probs else row["p_draw"]
+    display_p_away = live_probs["p_away_win"] if live_probs else row["p_away_win"]
     # ESPN says finished but our own pipeline hasn't picked up the result yet
     # (daily_update.bat hasn't run since kickoff) — show ESPN's final score
     # rather than falling through to the pre-match "VS / xG" view.
@@ -532,20 +603,33 @@ def render_match_card(row, live_data=None):
         )
 
     st.plotly_chart(
-        prob_bar(row["p_home_win"], row["p_draw"], row["p_away_win"],
+        prob_bar(display_p_home, display_p_draw, display_p_away,
                  home, away, key=f"pb_{home}_{away}_{row['date']}"),
         use_container_width=True,
         key=f"pb_{home}_{away}_{row['date']}",
     )
 
+    if live_probs:
+        st.caption(
+            f"🔴 Live win probability — recalculated from current score and time remaining "
+            f"(expected additional goals: {live_probs['exp_additional_home_goals']:.2f} — "
+            f"{live_probs['exp_additional_away_goals']:.2f})"
+        )
+
     c1, c2, c3 = st.columns(3)
-    c1.metric(f"🟢 {home}", f"{row['p_home_win']:.1%}")
-    c2.metric("⚪ Draw", f"{row['p_draw']:.1%}")
-    c3.metric(f"🔴 {away}", f"{row['p_away_win']:.1%}")
+    c1.metric(f"🟢 {home}", f"{display_p_home:.1%}")
+    c2.metric("⚪ Draw", f"{display_p_draw:.1%}")
+    c3.metric(f"🔴 {away}", f"{display_p_away:.1%}")
 
     bc1, bc2 = st.columns(2)
     with bc1:
-        if is_live_now:
+        if live_probs:
+            live_predicted = max(
+                {"Home Win": display_p_home, "Draw": display_p_draw, "Away Win": display_p_away},
+                key=lambda k: {"Home Win": display_p_home, "Draw": display_p_draw, "Away Win": display_p_away}[k]
+            )
+            st.warning(f"🔴 Live Prediction (updated from current score): **{live_predicted}**")
+        elif is_live_now:
             st.warning(f"🔴 Live now — model prediction shown pre-match: **{row['predicted_result']}**")
         else:
             st.info(f"📊 Model Prediction: **{row['predicted_result']}**")
@@ -566,6 +650,9 @@ def render_match_card(row, live_data=None):
                 st.success(label)
             else:
                 st.error(label)
+
+    if is_live_now and live.get("event_id"):
+        render_live_feed(live["event_id"], home, away)
 
     st.markdown("<hr class='divider'>", unsafe_allow_html=True)
 
@@ -778,7 +865,21 @@ elif page == "🏆 Tournament Odds":
 # ══ PAGE 4: GROUP STANDINGS ════════════════════════════════════════════════════
 elif page == "🗂️ Group Standings":
     st.title("🗂️ 2026 FIFA World Cup — Group Standings")
-    st.caption("Updated after each completed match · Top 2 qualify · Best 8 third-place teams also advance")
+
+    # Use live-recalculated standings (ESPN scores overlaid on predictions)
+    # when there's any live/today data available; otherwise fall back to the
+    # static daily-batch CSV. This means standings reflect in-progress and
+    # just-finished matches immediately, without waiting for daily_update.bat.
+    live_data_for_standings = load_live_scores()
+    if live_data_for_standings:
+        try:
+            standings_df_live = compute_live_group_standings(predictions, live_data_for_standings)
+            standings_df = standings_df_live
+            st.caption("🔴 Live — includes in-progress and just-finished matches via live feed")
+        except Exception:
+            st.caption("Updated after each completed match · Top 2 qualify · Best 8 third-place teams also advance")
+    else:
+        st.caption("Updated after each completed match · Top 2 qualify · Best 8 third-place teams also advance")
 
     if standings_df is None:
         st.error("Run `python main.py` first.")

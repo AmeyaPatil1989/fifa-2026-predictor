@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
-BASE_DIR = Path("C:/Users/User/Desktop/Fifa Worldcup")
+BASE_DIR = Path(__file__).resolve().parent
 DATA_DIR = BASE_DIR / "international_results"
 
 MANUAL_ALIASES = {
@@ -29,6 +29,21 @@ MANUAL_ALIASES = {
 def load_former_names() -> dict:
     df = pd.read_csv(DATA_DIR / "former_names.csv")
     return {row["former"]: row["current"] for _, row in df.iterrows()}
+
+
+def fix_mojibake(value):
+    """
+    Repairs UTF-8 text that was misread as Windows-1252 then re-saved as UTF-8
+    (e.g. 'CuraÃ§ao' -> 'Curaçao', 'Ã©' -> 'é'). Safe no-op on already-correct
+    strings: the round-trip raises an error for those, which we catch and
+    return the original value unchanged.
+    """
+    if not isinstance(value, str):
+        return value
+    try:
+        return value.encode("cp1252").decode("utf-8")
+    except (UnicodeDecodeError, UnicodeEncodeError):
+        return value
 
 
 def normalise_team(name: str, alias_map: dict) -> str:
@@ -76,6 +91,8 @@ def load_shootouts(alias_map: dict) -> pd.DataFrame:
 
 def load_goalscorers(alias_map: dict) -> pd.DataFrame:
     df = pd.read_csv(DATA_DIR / "goalscorers.csv", parse_dates=["date"])
+    df["team"] = df["team"].apply(fix_mojibake)
+    df["scorer"] = df["scorer"].apply(fix_mojibake)
     df["home_team"] = df["home_team"].apply(lambda x: normalise_team(x, alias_map))
     df["away_team"] = df["away_team"].apply(lambda x: normalise_team(x, alias_map))
     df["team"] = df["team"].apply(lambda x: normalise_team(x, alias_map))
