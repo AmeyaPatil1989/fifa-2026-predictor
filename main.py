@@ -94,12 +94,14 @@ def compute_group_standings(fixtures_2026: pd.DataFrame) -> pd.DataFrame:
     # Mark qualified / eliminated (simplified: top 2 qualify automatically)
     # Full qualification (best 8 third place) determined after all group games
     total_group_matches = 6  # each group plays 6 matches (4 teams, C(4,2)=6)
+    matches_per_team = 3      # round-robin among 4 teams
 
     for group in WC_GROUPS:
         group_df = df[df["group"] == group]
         total_played = group_df["played"].sum() // 2  # each match counted twice
+
         if total_played == total_group_matches:
-            # Group complete — mark qualified/eliminated
+            # Group complete — mark qualified/eliminated definitively
             for pos in group_df["position"].values:
                 team = group_df[group_df["position"] == pos]["team"].values[0]
                 if pos <= 2:
@@ -108,6 +110,49 @@ def compute_group_standings(fixtures_2026: pd.DataFrame) -> pd.DataFrame:
                     df.loc[df["team"] == team, "qualified"] = "M"  # maybe
                 else:
                     df.loc[df["team"] == team, "qualified"] = "E"  # eliminated
+        else:
+            # Group still in progress — check if any team's group-stage
+            # position (top 2 vs not) is ALREADY mathematically locked in,
+            # using a worst-case-for-them / best-case-for-rivals check.
+            # This only marks "Q" (safely through to knockouts) or "E"
+            # (mathematically cannot finish top 2); does NOT attempt to
+            # call "M" (best-third-place) mid-group, since that depends on
+            # cross-group comparisons that don't make sense until every
+            # group has played the same number of matches.
+            team_rows = group_df.to_dict("records")
+            for t in team_rows:
+                team = t["team"]
+                pts = t["pts"]
+                remaining = matches_per_team - t["played"]
+                max_possible_pts = pts + (remaining * 3)
+
+                # Count how many OTHER teams in the group could still finish
+                # with more points than this team's current points, even in
+                # this team's best case (i.e. could overtake them for a
+                # top-2 spot). A rival "could still beat" this team if their
+                # own max_possible_pts exceeds this team's current pts —
+                # conservative (assumes this team gets no more points).
+                rivals_who_could_overtake = 0
+                for other in team_rows:
+                    if other["team"] == team:
+                        continue
+                    other_remaining = matches_per_team - other["played"]
+                    other_max = other["pts"] + (other_remaining * 3)
+                    if other_max > pts:
+                        rivals_who_could_overtake += 1
+
+                if rivals_who_could_overtake < 2:
+                    # Fewer than 2 rivals can possibly catch up — this team
+                    # cannot be pushed below 2nd place no matter what happens.
+                    df.loc[df["team"] == team, "qualified"] = "Q"
+                elif max_possible_pts < group_df[group_df["team"] != team]["pts"].nlargest(2).min():
+                    # Even winning every remaining match, this team can't
+                    # reach the points of whoever currently holds 2nd place
+                    # (using the lower of the top-2 current point totals as
+                    # a conservative bar) — mathematically eliminated from
+                    # automatic qualification already.
+                    df.loc[df["team"] == team, "qualified"] = "E"
+                # else: stays None ("in progress") — genuinely undecided
 
     return df
 
