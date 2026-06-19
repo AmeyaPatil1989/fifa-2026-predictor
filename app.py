@@ -607,6 +607,7 @@ def render_match_card(row, live_data=None):
                  home, away, key=f"pb_{home}_{away}_{row['date']}"),
         use_container_width=True,
         key=f"pb_{home}_{away}_{row['date']}",
+        config={"displayModeBar": False},
     )
 
     if live_probs:
@@ -732,6 +733,12 @@ if page == "📅 Today's Matches":
             ).sort_values("_sort_key").drop(columns="_sort_key")
 
         st.markdown(f"**{selected_date.strftime('%A, %B %d, %Y')} · {len(day_matches)} match(es)**")
+        if selected_date == datetime.date.today():
+            n_live = sum(1 for info in live_data.values() if info["status"] == "in") if live_data else 0
+            if n_live > 0:
+                st.caption(f"🔴 {n_live} match(es) live now")
+            else:
+                st.caption("⚪ No matches live right now")
         st.markdown("---")
         for _, row in day_matches.iterrows():
             render_match_card(row, live_data=live_data)
@@ -825,7 +832,8 @@ elif page == "🏆 Tournament Odds":
     )
     event = st.plotly_chart(
         fig, use_container_width=True,
-        on_select="rerun", key="tournament_odds_chart"
+        on_select="rerun", key="tournament_odds_chart",
+        config={"displayModeBar": False},
     )
     if event and event.get("selection", {}).get("points"):
         clicked_team = event["selection"]["points"][0].get("y")
@@ -1443,7 +1451,8 @@ elif page == "🔍 Head to Head":
 
         st.plotly_chart(
             prob_bar(p_home, p_draw, p_away, team_a, team_b, key="h2h"),
-            use_container_width=True, key="h2h_bar"
+            use_container_width=True, key="h2h_bar",
+            config={"displayModeBar": False},
         )
 
         c1, c2, c3 = st.columns(3)
