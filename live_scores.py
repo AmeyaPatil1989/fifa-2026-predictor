@@ -76,16 +76,22 @@ def fetch_match_events(event_id: str, timeout=8) -> list:
     return events
 
 
-def fetch_match_scorers(event_id: str, timeout=8) -> list:
+def fetch_match_scorers(event_id: str, home_team: str = None, away_team: str = None, timeout=8) -> list:
     """
     Fetches goal-scorer details for a specific match using ESPN's summary
     endpoint. Returns a list of dicts:
         [{"team": str, "scorer": str, "minute": str, "own_goal": bool, "penalty": bool}, ...]
 
-    Returns an empty list on any failure or if the expected fields aren't
-    present (ESPN's summary response shape is not fully verified yet —
-    this function's parsing logic should be checked against a real response
-    via test_match_scorers.py before being trusted in production).
+    Returns an empty list on any failure.
+
+    Own goal attribution: standard football convention credits an own goal to
+    the team that BENEFITS (i.e. the team whose score increments), with the
+    own-goal scorer's name tagged "(OG)". We assume ESPN's `ev["team"]` field
+    follows this same convention, consistent with how it behaved for regular
+    goals and penalties in testing — but this has NOT been verified against
+    an actual own-goal event yet (none has occurred in matches checked so
+    far). If an own goal appears credited to the wrong team once live, this
+    assumption is the first place to check.
     """
     url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event={event_id}"
     try:
@@ -94,6 +100,8 @@ def fetch_match_scorers(event_id: str, timeout=8) -> list:
         data = resp.json()
     except Exception:
         return []
+
+    known_teams = {t for t in (home_team, away_team) if t}
 
     scorers = []
     try:
@@ -115,14 +123,21 @@ def fetch_match_scorers(event_id: str, timeout=8) -> list:
             if not scorer_name:
                 scorer_name = ev.get("shortText", ev.get("text", "Unknown"))
 
-            team_name = ev.get("team", {}).get("displayName", "")
+            team_name = normalise_espn_team(ev.get("team", {}).get("displayName", ""))
             full_text = (ev.get("text", "") + " " + ev.get("shortText", "")).lower()
+            is_own_goal = "own goal" in full_text
+
+            # Sanity check: if we know the two real team names and ESPN's
+            # reported team isn't either of them, something's off (renamed
+            # team, alias gap) — keep the raw name rather than silently drop it.
+            if known_teams and team_name not in known_teams:
+                pass  # leave team_name as-is; caller can decide how to handle an unmatched team
 
             scorers.append({
-                "team": normalise_espn_team(team_name),
+                "team": team_name,
                 "scorer": scorer_name,
                 "minute": ev.get("clock", {}).get("displayValue", ""),
-                "own_goal": "own goal" in full_text,
+                "own_goal": is_own_goal,
                 "penalty": "penalty" in ev_type.lower() or "penalty" in full_text or "(pen" in full_text,
             })
     except Exception:

@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.parse import quote
 import datetime
 from background_image import BG_IMAGE_B64
-from live_scores import fetch_live_scores, fetch_match_events, fetch_tournament_scores
+from live_scores import fetch_live_scores, fetch_match_events, fetch_tournament_scores, fetch_match_scorers
 from live_predictions import live_win_probability, parse_minutes_elapsed
 from live_standings import compute_live_group_standings
 
@@ -423,6 +423,16 @@ def load_match_events(event_id):
     """Cached for 60s, keyed by event_id so each live match gets its own cache entry."""
     return fetch_match_events(event_id)
 
+@st.cache_data(ttl=300)
+def load_match_scorers(event_id, home_team, away_team):
+    """
+    Cached for 5 minutes (longer than the 60s live-data cache, since scorer
+    history only grows — re-fetching constantly adds no value once a goal
+    has been confirmed, and this stays useful after full-time too, unlike
+    the 'in-progress' specific live score/feed caches).
+    """
+    return fetch_match_scorers(event_id, home_team=home_team, away_team=away_team)
+
 @st.cache_data(ttl=3600)
 def load_squads():
     try:
@@ -485,6 +495,44 @@ EVENT_TYPE_STYLE = {
     "start delay": ("⏱️", "rgba(255,255,255,0.4)"),
     "end delay": ("⏱️", "rgba(255,255,255,0.4)"),
 }
+
+
+def render_scorer_list(event_id, home, away, hc, ac):
+    scorers = load_match_scorers(event_id, home, away)
+    if not scorers:
+        return
+
+    def scorer_line(s):
+        og_tag = " <span style='opacity:0.6'>(OG)</span>" if s["own_goal"] else ""
+        pen_tag = " <span style='opacity:0.6'>(pen)</span>" if s["penalty"] and not s["own_goal"] else ""
+        minute = s["minute"] or ""
+        return (
+            f"<div style='font-size:13px;color:white;padding:3px 0'>"
+            f"⚽ {s['scorer']}{og_tag}{pen_tag} "
+            f"<span style='color:rgba(255,255,255,0.45);font-size:11px'>{minute}</span>"
+            f"</div>"
+        )
+
+    home_scorers = [s for s in scorers if s["team"] == home]
+    away_scorers = [s for s in scorers if s["team"] == away]
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(
+            f"<div style='color:{hc['primary']};font-size:11px;font-weight:bold;"
+            f"letter-spacing:1px;margin-bottom:2px'>{home.upper()}</div>",
+            unsafe_allow_html=True
+        )
+        if home_scorers:
+            st.markdown("".join(scorer_line(s) for s in home_scorers), unsafe_allow_html=True)
+    with col2:
+        st.markdown(
+            f"<div style='color:{ac['primary']};font-size:11px;font-weight:bold;"
+            f"letter-spacing:1px;margin-bottom:2px'>{away.upper()}</div>",
+            unsafe_allow_html=True
+        )
+        if away_scorers:
+            st.markdown("".join(scorer_line(s) for s in away_scorers), unsafe_allow_html=True)
 
 
 def render_live_feed(event_id, home, away):
@@ -625,6 +673,13 @@ def render_match_card(row, live_data=None):
         key=f"pb_{home}_{away}_{row['date']}",
         config={"displayModeBar": False},
     )
+
+    # Goal scorers — shown whenever ESPN has data for this match (live,
+    # finished-but-not-yet-synced, or already-synced but still within ESPN's
+    # tournament feed window), not just while strictly in-progress, so this
+    # persists alongside the final score after full-time too.
+    if live and live.get("event_id"):
+        render_scorer_list(live["event_id"], home, away, hc, ac)
 
     if live_probs:
         st.caption(
