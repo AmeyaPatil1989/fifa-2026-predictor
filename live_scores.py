@@ -131,7 +131,7 @@ def fetch_match_scorers(event_id: str, timeout=8) -> list:
     return scorers
 
 
-def fetch_live_scores(timeout=5) -> dict:
+def fetch_live_scores(timeout=8, dates=None) -> dict:
     """
     Returns a dict keyed by (home_team, away_team) normalized tuple, with values:
         {
@@ -143,9 +143,20 @@ def fetch_live_scores(timeout=5) -> dict:
         }
     Returns an empty dict on any failure (network error, unexpected shape) so
     the caller can fall back to predictions-only display without crashing.
+
+    `dates`: optional string to query a specific date or range, in ESPN's
+    format. Examples:
+        "20260618"            -> just that one day
+        "20260611-20260719"   -> the full tournament window
+    If omitted, ESPN returns only today's matches (default scoreboard behavior).
     """
+    url = ESPN_SCOREBOARD_URL
+    params = {"limit": 200}
+    if dates:
+        params["dates"] = dates
+
     try:
-        resp = requests.get(ESPN_SCOREBOARD_URL, timeout=timeout)
+        resp = requests.get(url, params=params, timeout=timeout)
         resp.raise_for_status()
         data = resp.json()
     except Exception:
@@ -191,3 +202,16 @@ def fetch_live_scores(timeout=5) -> dict:
         return {}
 
     return out
+
+
+# Full 2026 World Cup date range (group stage through final). Used to fetch
+# ALL tournament results in one call — covers cases where our own
+# match_predictions.csv is stale for a match that's no longer "today" but
+# also hasn't been synced by the daily pipeline yet (e.g. checking yesterday's
+# results before today's daily_update.bat run has happened).
+WC_2026_DATE_RANGE = "20260611-20260719"
+
+
+def fetch_tournament_scores(timeout=10) -> dict:
+    """Fetches results for the entire 2026 World Cup window in one call."""
+    return fetch_live_scores(timeout=timeout, dates=WC_2026_DATE_RANGE)
