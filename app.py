@@ -600,43 +600,19 @@ def render_match_card(row, live_data=None):
     )
 
     kickoff_utc = live.get("kickoff_time") if live else None
-    kickoff_time_str = ""
+    kickoff_label = ""
     if kickoff_utc and not is_live_now and not done and not espn_finished_not_yet_synced:
-        # Render kickoff time via components.html so JS executes reliably
-        # (st.markdown strips <script> tags in most Streamlit versions)
-        uid = f"kt_{abs(hash(home+away))}"
-        components.html(
-            f"""<div style='font-family:sans-serif;font-size:12px;
-                color:rgba(255,255,255,0.7);padding:0;margin:0;background:transparent'>
-                <span id='{uid}'></span>
-            </div>
-            <script>
-            (function(){{
-                var d=new Date('{kickoff_utc}');
-                var s;
-                try{{
-                    s=d.toLocaleTimeString([],{{hour:'2-digit',minute:'2-digit'}});
-                    if(!s||s==='Invalid Date')throw new Error();
-                }}catch(e){{
-                    try{{
-                        s=d.toLocaleTimeString('en-US',{{hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'}});
-                        s=s+' ET';
-                    }}catch(e2){{
-                        var et=new Date(d.getTime()-5*3600000);
-                        var h=et.getUTCHours(),m=et.getUTCMinutes();
-                        var ampm=h>=12?'PM':'AM';h=h%12||12;
-                        s=h+':'+(m<10?'0':'')+m+' '+ampm+' ET';
-                    }}
-                }}
-                var el=document.getElementById('{uid}');
-                if(el)el.textContent='🕐 '+s;
-            }})();
-            </script>""",
-            height=20,
-        )
+        try:
+            from zoneinfo import ZoneInfo
+            dt = datetime.datetime.fromisoformat(kickoff_utc.replace("Z", "+00:00"))
+            dt_et = dt.astimezone(ZoneInfo("America/New_York"))
+            kickoff_label = f"&nbsp;·&nbsp;{dt_et.strftime('%-I:%M %p')} ET"
+        except Exception:
+            pass
 
     st.markdown(
         f"<div class='match-label'>{soccer_ball(14, 'vertical-align:-2px;margin-right:4px')} FIFA WORLD CUP 2026 &nbsp;·&nbsp; {str(row['date'])[:10]}"
+        + kickoff_label
         + ("&nbsp;·&nbsp;<span style='color:#ff4d4d;font-weight:900'>🔴 LIVE</span>" if is_live_now else "")
         + "</div>",
         unsafe_allow_html=True
@@ -816,6 +792,47 @@ if page == "📅 Today's Matches":
         unsafe_allow_html=True
     )
 
+    # Top countdown — shown when no match is currently live.
+    # Uses the tournament-wide feed so it works even between match days.
+    _top_live = load_live_scores()
+    _any_live = any(info["status"] == "in" for info in _top_live.values()) if _top_live else False
+    if not _any_live:
+        _all_tourney = load_tournament_scores()
+        _upcoming = sorted([
+            info["kickoff_time"] for info in _all_tourney.values()
+            if info["status"] == "pre" and info.get("kickoff_time")
+        ]) if _all_tourney else []
+        if _upcoming:
+            _next = _upcoming[0]
+            components.html(
+                f"""<div style='font-family:sans-serif;font-size:15px;
+                    color:rgba(255,255,255,0.85);background:transparent;
+                    padding:4px 0 8px 0'>
+                    ⏱️ Next match in:&nbsp;
+                    <span id='top_countdown'
+                        style='color:#FFD700;font-weight:bold;font-size:17px'></span>
+                </div>
+                <script>
+                (function(){{
+                    var target=new Date('{_next}');
+                    function tick(){{
+                        var now=new Date();
+                        var diff=target-now;
+                        var el=document.getElementById('top_countdown');
+                        if(!el)return;
+                        if(diff<=0){{el.textContent='Starting now!';return;}}
+                        var h=Math.floor(diff/3600000);
+                        var m=Math.floor((diff%3600000)/60000);
+                        var s=Math.floor((diff%60000)/1000);
+                        el.textContent=(h>0?h+'h ':'')+m+'m '+s+'s';
+                        setTimeout(tick,1000);
+                    }}
+                    tick();
+                }})();
+                </script>""",
+                height=40,
+            )
+
     all_dates = sorted(predictions["date"].dt.date.unique())
     today = datetime.date.today()
     # Default to today if matches exist today, otherwise the next upcoming
@@ -874,42 +891,7 @@ if page == "📅 Today's Matches":
             if n_live > 0:
                 st.caption(f"🔴 {n_live} match(es) live now")
             else:
-                # Find the next upcoming match kickoff time from live_data
-                upcoming_kickoffs = [
-                    info["kickoff_time"] for info in live_data.values()
-                    if info["status"] == "pre" and info.get("kickoff_time")
-                ] if live_data else []
-                if upcoming_kickoffs:
-                    next_kickoff = min(upcoming_kickoffs)
-                    components.html(
-                        f"""<div style='font-family:sans-serif;font-size:13px;
-                            color:rgba(255,255,255,0.7);background:transparent;padding:0'>
-                            ⏱️ Next match in:
-                            <span id='countdown'
-                                style='color:#FFD700;font-weight:bold'></span>
-                        </div>
-                        <script>
-                        (function(){{
-                            var target=new Date('{next_kickoff}');
-                            function tick(){{
-                                var now=new Date();
-                                var diff=target-now;
-                                var el=document.getElementById('countdown');
-                                if(!el)return;
-                                if(diff<=0){{el.textContent='Starting now!';return;}}
-                                var h=Math.floor(diff/3600000);
-                                var m=Math.floor((diff%3600000)/60000);
-                                var s=Math.floor((diff%60000)/1000);
-                                el.textContent=(h>0?h+'h ':'')+m+'m '+s+'s';
-                                setTimeout(tick,1000);
-                            }}
-                            tick();
-                        }})();
-                        </script>""",
-                        height=30,
-                    )
-                else:
-                    st.caption("⚪ No matches live right now")
+                st.caption("⚪ No matches live right now")
         st.markdown("---")
         for _, row in day_matches.iterrows():
             render_match_card(row, live_data=live_data)
