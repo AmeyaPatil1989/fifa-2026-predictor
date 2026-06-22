@@ -927,22 +927,62 @@ elif page == "📊 All Predictions":
     st.title("📊 All 2026 WC Match Predictions")
     tab1, tab2 = st.tabs(["📅 Upcoming", "✅ Completed"])
 
+    def pred_table(rows, cols, col_labels, col_align=None):
+        """Renders a styled dark HTML table matching the dashboard theme."""
+        if col_align is None:
+            col_align = ["left"] * len(cols)
+        header = "".join(
+            f"<th style='text-align:{col_align[i]};color:#FFD700;font-size:12px;"
+            f"font-weight:700;letter-spacing:1px;padding:8px 12px;"
+            f"border-bottom:1px solid rgba(255,255,255,0.15);white-space:nowrap'>"
+            f"{col_labels[i]}</th>"
+            for i in range(len(cols))
+        )
+        body = ""
+        for idx, row in rows.iterrows():
+            cells = ""
+            for i, col in enumerate(cols):
+                val = row[col]
+                align = col_align[i]
+                # Color-code prediction/result columns
+                color = "white"
+                if col == "predicted_result" or col == "Predicted":
+                    color = "#FFD700"
+                elif col == "actual_result" or col == "Actual":
+                    color = "#aaffaa" if row.get("✓", "") == "✅" else "#ffaaaa"
+                elif col == "✓":
+                    pass
+                cells += (
+                    f"<td style='text-align:{align};color:{color};font-size:13px;"
+                    f"padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.06)'>"
+                    f"{val}</td>"
+                )
+            body += f"<tr style='background:rgba(255,255,255,0.02)'>{cells}</tr>"
+        st.markdown(
+            f"<div style='overflow-x:auto'>"
+            f"<table style='width:100%;border-collapse:collapse;"
+            f"background:rgba(255,255,255,0.03);border-radius:8px;overflow:hidden'>"
+            f"<thead><tr>{header}</tr></thead>"
+            f"<tbody>{body}</tbody>"
+            f"</table></div>",
+            unsafe_allow_html=True
+        )
+
     with tab1:
         up = predictions[~predictions["completed"]].copy()
         up["date"] = up["date"].dt.strftime("%Y-%m-%d")
-        up["Home"] = up["home_team"]
-        up["Away"] = up["away_team"]
         up["Home Win %"] = up["p_home_win"].apply(lambda x: f"{x:.1%}")
         up["Draw %"] = up["p_draw"].apply(lambda x: f"{x:.1%}")
         up["Away Win %"] = up["p_away_win"].apply(lambda x: f"{x:.1%}")
-        st.dataframe(
-            up[["date", "Home", "Away", "city",
-                "Home Win %", "Draw %", "Away Win %",
-                "exp_home_goals", "exp_away_goals", "predicted_result"]].rename(columns={
-                "exp_home_goals": "xG Home", "exp_away_goals": "xG Away",
-                "predicted_result": "Prediction",
-            }),
-            use_container_width=True, height=600,
+        up["xG Home"] = up["exp_home_goals"].apply(lambda x: f"{x:.2f}")
+        up["xG Away"] = up["exp_away_goals"].apply(lambda x: f"{x:.2f}")
+        up["home_team"] = up["home_team"].apply(lambda t: team_link(t, size=13))
+        up["away_team"] = up["away_team"].apply(lambda t: team_link(t, size=13))
+        pred_table(
+            up,
+            cols=["date","home_team","away_team","city","Home Win %","Draw %","Away Win %","xG Home","xG Away","predicted_result"],
+            col_labels=["Date","Home","Away","City","Home Win %","Draw %","Away Win %","xG Home","xG Away","Prediction"],
+            col_align=["left","left","left","left","center","center","center","center","center","center"],
         )
 
     with tab2:
@@ -956,18 +996,17 @@ elif page == "📊 All Predictions":
             c2.metric("Correct Predictions", correct)
             c3.metric("Model Accuracy", f"{correct / len(done) * 100:.1f}%")
             done["Score"] = done.apply(
-                lambda r: f"{int(r['actual_home_score'])} - {int(r['actual_away_score'])}", axis=1)
+                lambda r: f"{int(r['actual_home_score'])} — {int(r['actual_away_score'])}", axis=1)
             done["✓"] = (done["predicted_result"] == done["actual_result"]).map(
                 {True: "✅", False: "❌"})
             done["date"] = done["date"].dt.strftime("%Y-%m-%d")
-            done["Home"] = done["home_team"]
-            done["Away"] = done["away_team"]
-            st.dataframe(
-                done[["date", "Home", "Away", "Score",
-                       "predicted_result", "actual_result", "✓"]].rename(columns={
-                    "predicted_result": "Predicted", "actual_result": "Actual",
-                }),
-                use_container_width=True,
+            done["home_team"] = done["home_team"].apply(lambda t: team_link(t, size=13))
+            done["away_team"] = done["away_team"].apply(lambda t: team_link(t, size=13))
+            pred_table(
+                done,
+                cols=["date","home_team","away_team","Score","predicted_result","actual_result","✓"],
+                col_labels=["Date","Home","Away","Score","Predicted","Actual",""],
+                col_align=["left","left","left","center","center","center","center"],
             )
 
 
