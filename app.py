@@ -4,6 +4,7 @@ import plotly.graph_objects as go
 from pathlib import Path
 from urllib.parse import quote
 import datetime
+import streamlit.components.v1 as components
 from background_image import BG_IMAGE_B64
 from live_scores import fetch_live_scores, fetch_match_events, fetch_tournament_scores, fetch_match_scorers
 from live_predictions import live_win_probability, parse_minutes_elapsed
@@ -599,45 +600,43 @@ def render_match_card(row, live_data=None):
     )
 
     kickoff_utc = live.get("kickoff_time") if live else None
-    kickoff_html = ""
+    kickoff_time_str = ""
     if kickoff_utc and not is_live_now and not done and not espn_finished_not_yet_synced:
-        # Show kickoff time in viewer's local timezone via JS conversion.
-        # Falls back to US Eastern Time (primary 2026 WC broadcast timezone,
-        # FOX/Telemundo) if local timezone detection is unavailable or blocked.
-        uid = f"kt_{home[:3]}_{away[:3]}".replace(" ", "")
-        kickoff_html = (
-            f"&nbsp;·&nbsp;<span id='{uid}' style='color:rgba(255,255,255,0.7)'></span>"
-            f"<script>"
-            f"(function(){{"
-            f"var d=new Date('{kickoff_utc}');"
-            f"var s;"
-            f"try{{"
-            # Try local timezone first
-            f"s=d.toLocaleTimeString([],{{hour:'2-digit',minute:'2-digit'}});"
-            # Verify result is a sensible time string (not NaN, not empty)
-            f"if(!s||s==='Invalid Date')throw new Error();"
-            f"}}catch(e){{"
-            # Fallback: Eastern Time (America/New_York covers ET/EDT automatically)
-            f"try{{"
-            f"s=d.toLocaleTimeString('en-US',{{hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'}});"
-            f"s=s+' ET';"
-            f"}}catch(e2){{"
-            # Last resort: manual UTC-5 offset if Intl API is also unavailable
-            f"var et=new Date(d.getTime()-5*3600000);"
-            f"var h=et.getUTCHours(),m=et.getUTCMinutes();"
-            f"var ampm=h>=12?'PM':'AM';h=h%12||12;"
-            f"s=h+':'+(m<10?'0':'')+m+' '+ampm+' ET';"
-            f"}}"
-            f"}}"
-            f"var el=document.getElementById('{uid}');"
-            f"if(el)el.textContent=s;"
-            f"}})();"
-            f"</script>"
+        # Render kickoff time via components.html so JS executes reliably
+        # (st.markdown strips <script> tags in most Streamlit versions)
+        uid = f"kt_{abs(hash(home+away))}"
+        components.html(
+            f"""<div style='font-family:sans-serif;font-size:12px;
+                color:rgba(255,255,255,0.7);padding:0;margin:0;background:transparent'>
+                <span id='{uid}'></span>
+            </div>
+            <script>
+            (function(){{
+                var d=new Date('{kickoff_utc}');
+                var s;
+                try{{
+                    s=d.toLocaleTimeString([],{{hour:'2-digit',minute:'2-digit'}});
+                    if(!s||s==='Invalid Date')throw new Error();
+                }}catch(e){{
+                    try{{
+                        s=d.toLocaleTimeString('en-US',{{hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'}});
+                        s=s+' ET';
+                    }}catch(e2){{
+                        var et=new Date(d.getTime()-5*3600000);
+                        var h=et.getUTCHours(),m=et.getUTCMinutes();
+                        var ampm=h>=12?'PM':'AM';h=h%12||12;
+                        s=h+':'+(m<10?'0':'')+m+' '+ampm+' ET';
+                    }}
+                }}
+                var el=document.getElementById('{uid}');
+                if(el)el.textContent='🕐 '+s;
+            }})();
+            </script>""",
+            height=20,
         )
 
     st.markdown(
         f"<div class='match-label'>{soccer_ball(14, 'vertical-align:-2px;margin-right:4px')} FIFA WORLD CUP 2026 &nbsp;·&nbsp; {str(row['date'])[:10]}"
-        + kickoff_html
         + ("&nbsp;·&nbsp;<span style='color:#ff4d4d;font-weight:900'>🔴 LIVE</span>" if is_live_now else "")
         + "</div>",
         unsafe_allow_html=True
@@ -882,30 +881,32 @@ if page == "📅 Today's Matches":
                 ] if live_data else []
                 if upcoming_kickoffs:
                     next_kickoff = min(upcoming_kickoffs)
-                    st.markdown(
-                        f"<div style='font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:4px'>"
-                        f"⏱️ Next match in: "
-                        f"<span id='countdown' style='color:#FFD700;font-weight:bold'></span>"
-                        f"</div>"
-                        f"<script>"
-                        f"(function(){{"
-                        f"var target=new Date('{next_kickoff}');"
-                        f"function tick(){{"
-                        f"var now=new Date();"
-                        f"var diff=target-now;"
-                        f"var el=document.getElementById('countdown');"
-                        f"if(!el)return;"
-                        f"if(diff<=0){{el.textContent='Starting now!';return;}}"
-                        f"var h=Math.floor(diff/3600000);"
-                        f"var m=Math.floor((diff%3600000)/60000);"
-                        f"var s=Math.floor((diff%60000)/1000);"
-                        f"el.textContent=(h>0?h+'h ':'')+m+'m '+s+'s';"
-                        f"setTimeout(tick,1000);"
-                        f"}}"
-                        f"tick();"
-                        f"}})();"
-                        f"</script>",
-                        unsafe_allow_html=True
+                    components.html(
+                        f"""<div style='font-family:sans-serif;font-size:13px;
+                            color:rgba(255,255,255,0.7);background:transparent;padding:0'>
+                            ⏱️ Next match in:
+                            <span id='countdown'
+                                style='color:#FFD700;font-weight:bold'></span>
+                        </div>
+                        <script>
+                        (function(){{
+                            var target=new Date('{next_kickoff}');
+                            function tick(){{
+                                var now=new Date();
+                                var diff=target-now;
+                                var el=document.getElementById('countdown');
+                                if(!el)return;
+                                if(diff<=0){{el.textContent='Starting now!';return;}}
+                                var h=Math.floor(diff/3600000);
+                                var m=Math.floor((diff%3600000)/60000);
+                                var s=Math.floor((diff%60000)/1000);
+                                el.textContent=(h>0?h+'h ':'')+m+'m '+s+'s';
+                                setTimeout(tick,1000);
+                            }}
+                            tick();
+                        }})();
+                        </script>""",
+                        height=30,
                     )
                 else:
                     st.caption("⚪ No matches live right now")
