@@ -601,12 +601,18 @@ def render_match_card(row, live_data=None):
 
     kickoff_utc = live.get("kickoff_time") if live else None
     kickoff_label = ""
+    kickoff_js = None
     if kickoff_utc and not is_live_now and not done and not espn_finished_not_yet_synced:
         try:
             from zoneinfo import ZoneInfo
             dt = datetime.datetime.fromisoformat(kickoff_utc.replace("Z", "+00:00"))
             dt_et = dt.astimezone(ZoneInfo("America/New_York"))
-            kickoff_label = f"&nbsp;·&nbsp;{dt_et.strftime('%-I:%M %p')} ET"
+            et_str = dt_et.strftime("%-I:%M %p ET")
+            uid = f"kt{abs(hash(home+away)) % 99999}"
+            # Show ET immediately (server-side, no blank span, no layout gap)
+            kickoff_label = f"&nbsp;·&nbsp;<span id='{uid}'>{et_str}</span>"
+            # Then replace with local time via JS if available
+            kickoff_js = (uid, kickoff_utc)
         except Exception:
             pass
 
@@ -617,6 +623,25 @@ def render_match_card(row, live_data=None):
         + "</div>",
         unsafe_allow_html=True
     )
+
+    if kickoff_js:
+        uid, kut = kickoff_js
+        components.html(
+            f"""<script>
+            (function(){{
+                var d=new Date('{kut}');
+                var s;
+                try{{
+                    s=d.toLocaleTimeString([],{{hour:'2-digit',minute:'2-digit'}});
+                    if(!s||s.indexOf('NaN')>=0)throw new Error();
+                    // Find the ET span in the parent document and replace it
+                    var el=window.parent.document.getElementById('{uid}');
+                    if(el)el.textContent=s;
+                }}catch(e){{}}
+            }})();
+            </script>""",
+            height=0,
+        )
 
     col1, col2, col3 = st.columns([2, 1.5, 2])
 
