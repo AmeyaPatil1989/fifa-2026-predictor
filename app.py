@@ -780,9 +780,18 @@ if page == "📅 Today's Matches":
     )
 
     all_dates = sorted(predictions["date"].dt.date.unique())
+    today = datetime.date.today()
+    # Default to today if matches exist today, otherwise the next upcoming
+    # match day, otherwise the most recent past match day.
+    if today in all_dates:
+        default_date = today
+    else:
+        future = [d for d in all_dates if d > today]
+        default_date = future[0] if future else all_dates[-1]
+
     selected_date = st.date_input(
         "Select match date",
-        value=datetime.date.today(),
+        value=default_date,
         min_value=min(all_dates),
         max_value=max(all_dates),
     )
