@@ -976,8 +976,8 @@ elif page == "📊 All Predictions":
         up["Away Win %"] = up["p_away_win"].apply(lambda x: f"{x:.1%}")
         up["xG Home"] = up["exp_home_goals"].apply(lambda x: f"{x:.2f}")
         up["xG Away"] = up["exp_away_goals"].apply(lambda x: f"{x:.2f}")
-        up["home_team"] = up["home_team"].apply(lambda t: team_link(t, size=13))
-        up["away_team"] = up["away_team"].apply(lambda t: team_link(t, size=13))
+        up["home_team"] = up["home_team"].apply(lambda t: team_link(t))
+        up["away_team"] = up["away_team"].apply(lambda t: team_link(t))
         pred_table(
             up,
             cols=["date","home_team","away_team","city","Home Win %","Draw %","Away Win %","xG Home","xG Away","predicted_result"],
@@ -1000,8 +1000,8 @@ elif page == "📊 All Predictions":
             done["✓"] = (done["predicted_result"] == done["actual_result"]).map(
                 {True: "✅", False: "❌"})
             done["date"] = done["date"].dt.strftime("%Y-%m-%d")
-            done["home_team"] = done["home_team"].apply(lambda t: team_link(t, size=13))
-            done["away_team"] = done["away_team"].apply(lambda t: team_link(t, size=13))
+            done["home_team"] = done["home_team"].apply(lambda t: team_link(t))
+            done["away_team"] = done["away_team"].apply(lambda t: team_link(t))
             pred_table(
                 done,
                 cols=["date","home_team","away_team","Score","predicted_result","actual_result","✓"],
