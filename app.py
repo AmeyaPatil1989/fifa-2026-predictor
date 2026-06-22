@@ -598,8 +598,46 @@ def render_match_card(row, live_data=None):
         and live["home_score"] is not None
     )
 
+    kickoff_utc = live.get("kickoff_time") if live else None
+    kickoff_html = ""
+    if kickoff_utc and not is_live_now and not done and not espn_finished_not_yet_synced:
+        # Show kickoff time in viewer's local timezone via JS conversion.
+        # Falls back to US Eastern Time (primary 2026 WC broadcast timezone,
+        # FOX/Telemundo) if local timezone detection is unavailable or blocked.
+        uid = f"kt_{home[:3]}_{away[:3]}".replace(" ", "")
+        kickoff_html = (
+            f"&nbsp;·&nbsp;<span id='{uid}' style='color:rgba(255,255,255,0.7)'></span>"
+            f"<script>"
+            f"(function(){{"
+            f"var d=new Date('{kickoff_utc}');"
+            f"var s;"
+            f"try{{"
+            # Try local timezone first
+            f"s=d.toLocaleTimeString([],{{hour:'2-digit',minute:'2-digit'}});"
+            # Verify result is a sensible time string (not NaN, not empty)
+            f"if(!s||s==='Invalid Date')throw new Error();"
+            f"}}catch(e){{"
+            # Fallback: Eastern Time (America/New_York covers ET/EDT automatically)
+            f"try{{"
+            f"s=d.toLocaleTimeString('en-US',{{hour:'2-digit',minute:'2-digit',timeZone:'America/New_York'}});"
+            f"s=s+' ET';"
+            f"}}catch(e2){{"
+            # Last resort: manual UTC-5 offset if Intl API is also unavailable
+            f"var et=new Date(d.getTime()-5*3600000);"
+            f"var h=et.getUTCHours(),m=et.getUTCMinutes();"
+            f"var ampm=h>=12?'PM':'AM';h=h%12||12;"
+            f"s=h+':'+(m<10?'0':'')+m+' '+ampm+' ET';"
+            f"}}"
+            f"}}"
+            f"var el=document.getElementById('{uid}');"
+            f"if(el)el.textContent=s;"
+            f"}})();"
+            f"</script>"
+        )
+
     st.markdown(
         f"<div class='match-label'>{soccer_ball(14, 'vertical-align:-2px;margin-right:4px')} FIFA WORLD CUP 2026 &nbsp;·&nbsp; {str(row['date'])[:10]}"
+        + kickoff_html
         + ("&nbsp;·&nbsp;<span style='color:#ff4d4d;font-weight:900'>🔴 LIVE</span>" if is_live_now else "")
         + "</div>",
         unsafe_allow_html=True
@@ -837,7 +875,40 @@ if page == "📅 Today's Matches":
             if n_live > 0:
                 st.caption(f"🔴 {n_live} match(es) live now")
             else:
-                st.caption("⚪ No matches live right now")
+                # Find the next upcoming match kickoff time from live_data
+                upcoming_kickoffs = [
+                    info["kickoff_time"] for info in live_data.values()
+                    if info["status"] == "pre" and info.get("kickoff_time")
+                ] if live_data else []
+                if upcoming_kickoffs:
+                    next_kickoff = min(upcoming_kickoffs)
+                    st.markdown(
+                        f"<div style='font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:4px'>"
+                        f"⏱️ Next match in: "
+                        f"<span id='countdown' style='color:#FFD700;font-weight:bold'></span>"
+                        f"</div>"
+                        f"<script>"
+                        f"(function(){{"
+                        f"var target=new Date('{next_kickoff}');"
+                        f"function tick(){{"
+                        f"var now=new Date();"
+                        f"var diff=target-now;"
+                        f"var el=document.getElementById('countdown');"
+                        f"if(!el)return;"
+                        f"if(diff<=0){{el.textContent='Starting now!';return;}}"
+                        f"var h=Math.floor(diff/3600000);"
+                        f"var m=Math.floor((diff%3600000)/60000);"
+                        f"var s=Math.floor((diff%60000)/1000);"
+                        f"el.textContent=(h>0?h+'h ':'')+m+'m '+s+'s';"
+                        f"setTimeout(tick,1000);"
+                        f"}}"
+                        f"tick();"
+                        f"}})();"
+                        f"</script>",
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.caption("⚪ No matches live right now")
         st.markdown("---")
         for _, row in day_matches.iterrows():
             render_match_card(row, live_data=live_data)
