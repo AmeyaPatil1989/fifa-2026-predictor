@@ -859,14 +859,36 @@ if page == "📅 Today's Matches":
             )
 
     all_dates = sorted(predictions["date"].dt.date.unique())
-    today = datetime.date.today()
-    # Default to today if matches exist today, otherwise the next upcoming
-    # match day, otherwise the most recent past match day.
-    if today in all_dates:
-        default_date = today
+
+    # Don't rely on datetime.date.today() — Streamlit Cloud runs on UTC, so
+    # after ~8pm ET the server thinks it's already "tomorrow" even though it's
+    # still today for US-based visitors. Instead, infer the right default date
+    # from ESPN's live feed: if ESPN reports any match as live or pre (upcoming
+    # today), use that match's date from our own predictions data. This is
+    # timezone-agnostic and reflects the actual current match schedule.
+    _live_now = load_live_scores()
+    _active_teams = set()
+    for (home, away), info in (_live_now or {}).items():
+        if info["status"] in ("in", "pre"):
+            _active_teams.add(home)
+            _active_teams.add(away)
+
+    if _active_teams:
+        # Find which date in predictions corresponds to these active teams
+        _mask = (
+            predictions["home_team"].isin(_active_teams) |
+            predictions["away_team"].isin(_active_teams)
+        )
+        _dates = predictions[_mask]["date"].dt.date.unique()
+        default_date = sorted(_dates)[0] if len(_dates) > 0 else all_dates[0]
     else:
-        future = [d for d in all_dates if d > today]
-        default_date = future[0] if future else all_dates[-1]
+        # No live/upcoming matches in ESPN feed — fall back to server date
+        today = datetime.date.today()
+        if today in all_dates:
+            default_date = today
+        else:
+            future = [d for d in all_dates if d > today]
+            default_date = future[0] if future else all_dates[-1]
 
     selected_date = st.date_input(
         "Select match date",
