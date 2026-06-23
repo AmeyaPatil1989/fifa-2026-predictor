@@ -146,7 +146,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-BASE_DIR = Path("C:/Users/User/Desktop/Fifa Worldcup")
+BASE_DIR = Path(__file__).resolve().parent
 OUTPUT_DIR = BASE_DIR / "output"
 
 
