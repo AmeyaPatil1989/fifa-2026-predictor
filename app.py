@@ -895,6 +895,7 @@ if page == "📅 Today's Matches":
         value=default_date,
         min_value=min(all_dates),
         max_value=max(all_dates),
+        key=f"date_picker_{default_date}",
     )
     day_matches = predictions[predictions["date"].dt.date == selected_date].copy()
 
