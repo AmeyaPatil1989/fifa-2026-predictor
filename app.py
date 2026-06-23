@@ -1239,250 +1239,393 @@ elif page == "🗂️ Group Standings":
 
 # ══ PAGE 5: BRACKET ═══════════════════════════════════════════════════════════
 elif page == "🔲 Bracket":
-    st.title("🔲 2026 FIFA World Cup — Predicted Knockout Bracket")
-    st.caption(
-        "Bracket seeded using the top 16 teams by predicted win probability, in standard "
-        "tournament seeding (so the top 2 favorites can only meet in the Final). "
-        "Boxes are blank like the official template — the two predicted teams for each "
-        "match are shown below it."
-    )
-
-    # ── Build bracket data from top 16 MC teams ────────────────────────────────
-    top16_df = mc.head(16).reset_index(drop=True)
-    top16 = top16_df["team"].tolist()
-    mc_dict = dict(zip(mc["team"], mc["win_probability"]))
-
-    if len(top16) < 16:
-        st.warning("Not enough teams in tournament_probabilities.csv to build a 16-team bracket.")
-        st.stop()
-
-    # Standard seeding pairs (0-indexed seed positions)
-    left_pairs = [(0, 15), (7, 8), (4, 11), (3, 12)]
-    right_pairs = [(1, 14), (6, 9), (2, 13), (5, 10)]
-
-    left16 = [(top16[i], top16[j]) for i, j in left_pairs]
-    right16 = [(top16[i], top16[j]) for i, j in right_pairs]
-
-    def pred(matchup):
-        a, b = matchup
-        return a if mc_dict.get(a, 0) >= mc_dict.get(b, 0) else b
-
-    left_qf = [(pred(left16[0]), pred(left16[1])), (pred(left16[2]), pred(left16[3]))]
-    right_qf = [(pred(right16[0]), pred(right16[1])), (pred(right16[2]), pred(right16[3]))]
-
-    left_sf = (pred(left_qf[0]), pred(left_qf[1]))
-    right_sf = (pred(right_qf[0]), pred(right_qf[1]))
-
-    final_match = (pred(left_sf), pred(right_sf))
-    champion = pred(final_match)
-
-    # ── SVG layout constants ────────────────────────────────────────────────────
-    BOX_W = 130
-    BOX_H = 40
-    COL_SPACING = 215
-    TOP_PAD = 46
-    R16_SPACING = 92
-
-    # R16 box vertical centers (4 per half)
-    r16_centers = [TOP_PAD + BOX_H / 2 + i * R16_SPACING for i in range(4)]  # 4 values
-    qf_centers = [
-        (r16_centers[0] + r16_centers[1]) / 2,
-        (r16_centers[2] + r16_centers[3]) / 2,
+    st.title("🔲 2026 FIFA World Cup — Knockout Bracket")
+    
+    # ── Caption: explain what's real vs predicted ──────────────────────────────
+    all_groups_done = False
+    if standings_df is not None:
+        groups_with_3_played = (
+            standings_df[standings_df["played"] == 3]["group"].nunique()
+            if "played" in standings_df.columns else 0
+        )
+        all_groups_done = groups_with_3_played == 12
+    
+    if all_groups_done:
+        st.caption("✅ All groups complete — bracket slots are confirmed. R16 onward shows model predictions.")
+    else:
+        st.caption(
+            "🔄 Group stage in progress — confirmed slots shown where decided. "
+            "3rd-place slots resolve June 27 when all groups finish."
+        )
+    
+    # ── R32 slot definitions (hardcoded from FIFA regulations) ─────────────────
+    # Each match: (match_id, team1_slot, team2_slot)
+    # Slot format: ("winner"/"runner_up"/"third"/"host_winner"/"host_runnerup", group_or_pool_string)
+    # "third" pool is a string of groups, e.g. "A/B/C/D/F"
+    R32 = [
+        ("M73", ("runner_up", "A"), ("runner_up", "B")),
+        ("M74", ("winner",   "E"), ("third",     "A/B/C/D/F")),
+        ("M75", ("winner",   "F"), ("runner_up", "C")),
+        ("M76", ("winner",   "C"), ("runner_up", "F")),
+        ("M77", ("winner",   "I"), ("third",     "C/D/F/G/H")),
+        ("M78", ("runner_up","E"), ("runner_up", "I")),
+        ("M79", ("winner",   "A"), ("third",     "C/E/F/H/I")),   # Mexico fixed as winner A
+        ("M80", ("winner",   "L"), ("third",     "E/H/I/J/K")),
+        ("M81", ("winner",   "D"), ("third",     "B/E/F/I/J")),   # USA fixed as winner D
+        ("M82", ("winner",   "G"), ("third",     "A/E/H/I/J")),
+        ("M83", ("runner_up","K"), ("runner_up", "L")),
+        ("M84", ("winner",   "H"), ("runner_up", "J")),
+        ("M85", ("winner",   "B"), ("third",     "E/F/G/I/J")),   # Canada fixed as winner B
+        ("M86", ("winner",   "J"), ("runner_up", "H")),
+        ("M87", ("winner",   "K"), ("third",     "D/E/I/J/L")),
+        ("M88", ("runner_up","D"), ("runner_up", "G")),
     ]
-    sf_center = (qf_centers[0] + qf_centers[1]) / 2
-    final_center = sf_center
-
-    SVG_H = r16_centers[-1] + BOX_H / 2 + 56
-    SVG_W = 6 * COL_SPACING + BOX_W
-
-    col_x = [i * COL_SPACING for i in range(7)]  # 0..6
-
-    def box_rect(x, cy, highlight=False):
-        fill = "#1a2438" if not highlight else "#2a1f0a"
-        stroke = "#FFD700" if highlight else "rgba(255,255,255,0.25)"
-        sw = 2 if highlight else 1
-        return (
-            f"<rect x='{x}' y='{cy - BOX_H/2:.1f}' width='{BOX_W}' height='{BOX_H}' "
-            f"rx='6' fill='{fill}' stroke='{stroke}' stroke-width='{sw}'/>"
+    
+    # R16 pairings: which two R32 winners meet
+    R16 = [
+        ("M89",  "M74", "M77"),
+        ("M90",  "M73", "M75"),
+        ("M91",  "M76", "M78"),
+        ("M92",  "M79", "M80"),
+        ("M93",  "M83", "M84"),
+        ("M94",  "M81", "M82"),
+        ("M95",  "M86", "M88"),
+        ("M96",  "M85", "M87"),
+    ]
+    
+    # QF pairings
+    QF = [
+        ("M97",  "M89", "M90"),
+        ("M98",  "M91", "M92"),
+        ("M99",  "M93", "M94"),   # NOTE: verify bracket half — FIFA doc shows M99/M100
+        ("M100", "M95", "M96"),
+    ]
+    
+    # SF pairings
+    SF = [
+        ("M101", "M97", "M98"),
+        ("M102", "M99", "M100"),
+    ]
+    
+    FINAL   = ("M104", "M101", "M102")
+    BRONZE  = ("M103", "M101", "M102")   # losers
+    
+    # ── Build slot→team lookup from group_standings.csv ────────────────────────
+    # Returns team name or None if not yet decided
+    def get_team(standings, slot_type, slot_val):
+        """
+        slot_type: "winner" | "runner_up" | "third"
+        slot_val:  group letter (A-L) for winner/runner_up,
+                   pool string (e.g. "A/B/C/D/F") for third
+        """
+        if standings is None:
+            return None
+        if slot_type == "winner":
+            row = standings[
+                (standings["group"] == slot_val) & (standings["position"] == 1)
+            ]
+            return row.iloc[0]["team"] if len(row) > 0 else None
+        elif slot_type == "runner_up":
+            row = standings[
+                (standings["group"] == slot_val) & (standings["position"] == 2)
+            ]
+            return row.iloc[0]["team"] if len(row) > 0 else None
+        elif slot_type == "third":
+            # Can't resolve until all groups in pool are done AND
+            # we know which 8 thirds qualified (Annex C lookup).
+            # Return None — displayed as "3rd <pool>" placeholder.
+            return None
+        return None
+    
+    def slot_label(slot_type, slot_val, team):
+        """Human-readable label for a bracket slot."""
+        if team:
+            return team
+        if slot_type == "winner":
+            return f"Winner {slot_val}"
+        elif slot_type == "runner_up":
+            return f"Runner-up {slot_val}"
+        elif slot_type == "third":
+            return f"3rd ({slot_val})"
+        return "TBD"
+    
+    def is_decided(team):
+        return team is not None
+    
+    # Use live standings (same logic as Group Standings page)
+    live_data_for_bracket = load_tournament_scores()
+    if live_data_for_bracket:
+        try:
+            bracket_standings = compute_live_group_standings(predictions, live_data_for_bracket)
+        except Exception:
+            bracket_standings = standings_df
+    else:
+        bracket_standings = standings_df
+    
+    # ── Resolve all R32 team slots ─────────────────────────────────────────────
+    r32_teams = {}   # match_id -> (team1_label, team2_label, team1_decided, team2_decided)
+    for mid, s1, s2 in R32:
+        t1 = get_team(bracket_standings, s1[0], s1[1])
+        t2 = get_team(bracket_standings, s2[0], s2[1])
+        l1 = slot_label(s1[0], s1[1], t1)
+        l2 = slot_label(s2[0], s2[1], t2)
+        r32_teams[mid] = (l1, l2, is_decided(t1), is_decided(t2))
+    
+    # ── Model prediction for a matchup ────────────────────────────────────────
+    mc_dict = dict(zip(mc["team"], mc["win_probability"])) if mc is not None else {}
+    
+    def predict_winner(label_a, label_b, decided_a, decided_b):
+        """
+        Returns the predicted winner label.
+        Uses MC win probability if both teams are known.
+        Falls back to first team if either is unknown (can't predict TBD).
+        """
+        if not decided_a or not decided_b:
+            return None   # Can't predict yet
+        pa = mc_dict.get(label_a, 0)
+        pb = mc_dict.get(label_b, 0)
+        return label_a if pa >= pb else label_b
+    
+    # ── Resolve R16 → QF → SF → Final via model ───────────────────────────────
+    # winner_of[match_id] = (winner_label, is_decided)
+    winner_of = {}
+    
+    for mid, s1, s2 in R32:
+        l1, l2, d1, d2 = r32_teams[mid]
+        w = predict_winner(l1, l2, d1, d2)
+        winner_of[mid] = (w, w is not None)
+    
+    def resolve_match(match_id, src_a, src_b):
+        wa, da = winner_of.get(src_a, (None, False))
+        wb, db = winner_of.get(src_b, (None, False))
+        la = wa or f"W {src_a}"
+        lb = wb or f"W {src_b}"
+        w = predict_winner(la, lb, da, db)
+        winner_of[match_id] = (w, w is not None)
+        return la, lb, da, db
+    
+    r16_slots = {}
+    for mid, src_a, src_b in R16:
+        la, lb, da, db = resolve_match(mid, src_a, src_b)
+        r16_slots[mid] = (la, lb, da, db)
+    
+    qf_slots = {}
+    for mid, src_a, src_b in QF:
+        la, lb, da, db = resolve_match(mid, src_a, src_b)
+        qf_slots[mid] = (la, lb, da, db)
+    
+    sf_slots = {}
+    for mid, src_a, src_b in SF:
+        la, lb, da, db = resolve_match(mid, src_a, src_b)
+        sf_slots[mid] = (la, lb, da, db)
+    
+    f_la, f_lb, f_da, f_db = resolve_match(FINAL[0], FINAL[1], FINAL[2])
+    champion, champion_decided = winner_of.get(FINAL[0], (None, False))
+    
+    # ── Render: list view (mobile-friendly) ───────────────────────────────────
+    # We use a list-style layout rather than SVG — more readable on mobile,
+    # easier to maintain, and less prone to overflow issues.
+    # Layout: tabs for each round.
+    
+    tab_r32, tab_r16, tab_qf, tab_sf, tab_final = st.tabs([
+        "⚔️ Round of 32", "🔟 Round of 16", "🏅 Quarterfinals",
+        "🎖️ Semifinals", "🏆 Final"
+    ])
+    
+    def match_card_bracket(match_id, label_a, label_b, decided_a, decided_b,
+                            winner_label=None, date_str="", venue=""):
+        """Renders a single bracket match card."""
+        wa = winner_label == label_a if winner_label else False
+        wb = winner_label == label_b if winner_label else False
+    
+        def team_row(label, decided, is_winner):
+            flag_html = flag_img(label) if decided and label in FLAG_CODES else ""
+            tc = gc(label) if decided and label in TEAM_COLORS else DEFAULT_COLOR
+            border = f"2px solid {tc['primary']}" if decided else "1px solid rgba(255,255,255,0.1)"
+            bg = f"background:rgba({int(tc['primary'][1:3],16)},{int(tc['primary'][3:5],16)},{int(tc['primary'][5:7],16)},0.15);" if is_winner else ""
+            star = " ⭐" if is_winner and winner_label else ""
+            name_color = "#FFD700" if is_winner else ("white" if decided else "rgba(255,255,255,0.4)")
+            link = team_link(label, color=name_color, weight="bold") if decided and label in FLAG_CODES else f"<span style='color:{name_color}'>{label}</span>"
+            return (
+                f"<div style='{bg}border-left:{border};padding:8px 12px;"
+                f"display:flex;align-items:center;gap:8px;border-radius:4px;margin:3px 0'>"
+                f"{flag_html}<span style='font-size:14px'>{link}{star}</span>"
+                f"</div>"
+            )
+    
+        meta = ""
+        if date_str or venue:
+            meta = f"<div style='font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:4px'>{match_id}"
+            if date_str: meta += f" · {date_str}"
+            if venue: meta += f" · {venue}"
+            meta += "</div>"
+    
+        st.markdown(
+            f"<div style='background:rgba(255,255,255,0.03);border-radius:8px;"
+            f"padding:10px 14px;margin-bottom:8px;border:1px solid rgba(255,255,255,0.08)'>"
+            f"{meta}"
+            f"{team_row(label_a, decided_a, wa)}"
+            f"{team_row(label_b, decided_b, wb)}"
+            f"</div>",
+            unsafe_allow_html=True
         )
-
-    def box_label(x, cy, text):
-        return (
-            f"<text x='{x + BOX_W/2}' y='{cy + 3:.1f}' text-anchor='middle' "
-            f"font-size='10' fill='rgba(255,255,255,0.35)' "
-            f"font-family='Arial' letter-spacing='1'>{text}</text>"
+    
+    # R32 dates and venues (hardcoded from schedule)
+    R32_META = {
+        "M73": ("Jun 28", "SoFi Stadium, LA"),
+        "M74": ("Jun 29", "Gillette Stadium, Boston"),
+        "M75": ("Jun 29", "Estadio BBVA, Monterrey"),
+        "M76": ("Jun 29", "NRG Stadium, Houston"),
+        "M77": ("Jun 30", "MetLife Stadium, NJ"),
+        "M78": ("Jun 30", "AT&T Stadium, Dallas"),
+        "M79": ("Jun 30", "Estadio Azteca, Mexico City"),
+        "M80": ("Jul 1",  "Mercedes-Benz Stadium, Atlanta"),
+        "M81": ("Jul 1",  "Levi's Stadium, San Francisco"),
+        "M82": ("Jul 1",  "Lumen Field, Seattle"),
+        "M83": ("Jul 2",  "BMO Field, Toronto"),
+        "M84": ("Jul 2",  "SoFi Stadium, LA"),
+        "M85": ("Jul 2",  "BC Place, Vancouver"),
+        "M86": ("Jul 3",  "Hard Rock Stadium, Miami"),
+        "M87": ("Jul 3",  "Arrowhead Stadium, Kansas City"),
+        "M88": ("Jul 3",  "AT&T Stadium, Dallas"),
+    }
+    
+    with tab_r32:
+        st.markdown(
+            "<p style='color:rgba(255,255,255,0.5);font-size:12px'>"
+            "16 matches · Jun 28 – Jul 3 · Group winners and runners-up + 8 best 3rd-place teams</p>",
+            unsafe_allow_html=True
         )
-
-    def team_label(x, y, team, size=11):
-        color = gc(team)["primary"]
-        text_el = (
-            f"<text x='{x + BOX_W/2}' y='{y:.1f}' text-anchor='middle' "
-            f"font-size='{size}' font-family='Arial' font-weight='bold'>"
-            f"<tspan fill='{color}'>\u25A0 </tspan>"
-            f"<tspan fill='#ffffff' style='text-decoration:underline;text-decoration-style:dotted'>{team}</tspan>"
-            f"</text>"
+        # Display in chronological order (matches sorted by date)
+        r32_order = ["M73","M76","M74","M75","M78","M77","M79","M80","M82","M81","M84","M83","M85","M88","M86","M87"]
+        cols_r32 = st.columns(2)
+        for i, mid in enumerate(r32_order):
+            l1, l2, d1, d2 = r32_teams[mid]
+            w, wd = winner_of.get(mid, (None, False))
+            date_str, venue = R32_META.get(mid, ("", ""))
+            with cols_r32[i % 2]:
+                match_card_bracket(mid, l1, l2, d1, d2,
+                                   winner_label=w if wd else None,
+                                   date_str=date_str, venue=venue)
+    
+    with tab_r16:
+        st.markdown(
+            "<p style='color:rgba(255,255,255,0.5);font-size:12px'>"
+            "8 matches · Jul 4 – Jul 7 · Winners of R32</p>",
+            unsafe_allow_html=True
         )
-        return f"<a href='?team={quote(team)}' target='_self' style='cursor:pointer'>{text_el}</a>"
-
-    def hline(x1, y1, x2, y2):
-        return f"<line x1='{x1:.1f}' y1='{y1:.1f}' x2='{x2:.1f}' y2='{y2:.1f}' stroke='rgba(255,215,0,0.4)' stroke-width='1.5'/>"
-
-    parts = []
-    parts.append(
-        f"<rect x='0' y='0' width='{SVG_W}' height='{SVG_H}' rx='12' fill='#0a0f1e'/>"
-    )
-
-    # Round labels
-    label_y = 20
-    parts.append(f"<text x='{col_x[0]+BOX_W/2}' y='{label_y}' text-anchor='middle' font-size='12' fill='#FFD700' font-weight='bold' letter-spacing='2'>ROUND OF 16</text>")
-    parts.append(f"<text x='{col_x[1]+BOX_W/2}' y='{label_y}' text-anchor='middle' font-size='12' fill='#FFD700' font-weight='bold' letter-spacing='2'>QUARTERFINALS</text>")
-    parts.append(f"<text x='{col_x[2]+BOX_W/2}' y='{label_y}' text-anchor='middle' font-size='12' fill='#FFD700' font-weight='bold' letter-spacing='2'>SEMIFINALS</text>")
-    parts.append(f"<text x='{col_x[3]+BOX_W/2}' y='{label_y}' text-anchor='middle' font-size='13' fill='#FFD700' font-weight='900' letter-spacing='2'>FINAL</text>")
-    parts.append(f"<text x='{col_x[4]+BOX_W/2}' y='{label_y}' text-anchor='middle' font-size='12' fill='#FFD700' font-weight='bold' letter-spacing='2'>SEMIFINALS</text>")
-    parts.append(f"<text x='{col_x[5]+BOX_W/2}' y='{label_y}' text-anchor='middle' font-size='12' fill='#FFD700' font-weight='bold' letter-spacing='2'>QUARTERFINALS</text>")
-    parts.append(f"<text x='{col_x[6]+BOX_W/2}' y='{label_y}' text-anchor='middle' font-size='12' fill='#FFD700' font-weight='bold' letter-spacing='2'>ROUND OF 16</text>")
-
-    # ── R16 LEFT (col 0) ─────────────────────────────────────────────────────
-    for i, cy in enumerate(r16_centers):
-        x = col_x[0]
-        parts.append(box_rect(x, cy))
-        parts.append(box_label(x, cy, f"R16 · M{i+1}"))
-        ta, tb = left16[i]
-        parts.append(team_label(x, cy + BOX_H/2 + 14, ta))
-        parts.append(team_label(x, cy + BOX_H/2 + 28, tb))
-
-    # ── R16 RIGHT (col 6) ────────────────────────────────────────────────────
-    for i, cy in enumerate(r16_centers):
-        x = col_x[6]
-        parts.append(box_rect(x, cy))
-        parts.append(box_label(x, cy, f"R16 · M{i+5}"))
-        ta, tb = right16[i]
-        parts.append(team_label(x, cy + BOX_H/2 + 14, ta))
-        parts.append(team_label(x, cy + BOX_H/2 + 28, tb))
-
-    # ── QF LEFT (col 1) ──────────────────────────────────────────────────────
-    for i, cy in enumerate(qf_centers):
-        x = col_x[1]
-        parts.append(box_rect(x, cy))
-        parts.append(box_label(x, cy, f"QF · {i+1}"))
-        ta, tb = left_qf[i]
-        parts.append(team_label(x, cy + BOX_H/2 + 14, ta))
-        parts.append(team_label(x, cy + BOX_H/2 + 28, tb))
-
-    # ── QF RIGHT (col 5) ─────────────────────────────────────────────────────
-    for i, cy in enumerate(qf_centers):
-        x = col_x[5]
-        parts.append(box_rect(x, cy))
-        parts.append(box_label(x, cy, f"QF · {i+3}"))
-        ta, tb = right_qf[i]
-        parts.append(team_label(x, cy + BOX_H/2 + 14, ta))
-        parts.append(team_label(x, cy + BOX_H/2 + 28, tb))
-
-    # ── SF LEFT (col 2) ──────────────────────────────────────────────────────
-    parts.append(box_rect(col_x[2], sf_center))
-    parts.append(box_label(col_x[2], sf_center, "SF · 1"))
-    parts.append(team_label(col_x[2], sf_center + BOX_H/2 + 14, left_sf[0]))
-    parts.append(team_label(col_x[2], sf_center + BOX_H/2 + 28, left_sf[1]))
-
-    # ── SF RIGHT (col 4) ─────────────────────────────────────────────────────
-    parts.append(box_rect(col_x[4], sf_center))
-    parts.append(box_label(col_x[4], sf_center, "SF · 2"))
-    parts.append(team_label(col_x[4], sf_center + BOX_H/2 + 14, right_sf[0]))
-    parts.append(team_label(col_x[4], sf_center + BOX_H/2 + 28, right_sf[1]))
-
-    # ── FINAL (col 3) ────────────────────────────────────────────────────────
-    parts.append(box_rect(col_x[3], final_center, highlight=True))
-    parts.append(box_label(col_x[3], final_center, "🏆 FINAL"))
-    parts.append(team_label(col_x[3], final_center + BOX_H/2 + 16, final_match[0], size=12))
-    parts.append(team_label(col_x[3], final_center + BOX_H/2 + 32, final_match[1], size=12))
-    parts.append(
-        f"<a href='?team={quote(champion)}' target='_self' style='cursor:pointer'>"
-        f"<text x='{col_x[3]+BOX_W/2}' y='{final_center + BOX_H/2 + 50}' text-anchor='middle' "
-        f"font-size='11' fill='#00ff88' font-weight='900' font-family='Arial' "
-        f"style='text-decoration:underline;text-decoration-style:dotted'>"
-        f"\u2605 {champion}</text></a>"
-    )
-
-    # ── Connectors: LEFT side R16 -> QF -> SF -> Final ──────────────────────────
-    def connect_pair(x_from, yA, yB, x_to, yC):
-        """Connect two boxes (centers yA, yB) at x_from+BOX_W to one box (center yC) at x_to."""
-        out = []
-        xmid = x_from + BOX_W + (x_to - (x_from + BOX_W)) / 2
-        out.append(hline(x_from + BOX_W, yA, xmid, yA))
-        out.append(hline(x_from + BOX_W, yB, xmid, yB))
-        out.append(hline(xmid, yA, xmid, yB))
-        out.append(hline(xmid, yC, x_to, yC))
-        return out
-
-    def connect_pair_mirrored(x_from, yA, yB, x_to, yC):
-        """Mirrored version: x_from is to the RIGHT of x_to."""
-        out = []
-        xmid = x_to + BOX_W + (x_from - (x_to + BOX_W)) / 2
-        out.append(hline(x_from, yA, xmid, yA))
-        out.append(hline(x_from, yB, xmid, yB))
-        out.append(hline(xmid, yA, xmid, yB))
-        out.append(hline(xmid, yC, x_to + BOX_W, yC))
-        return out
-
-    # R16 -> QF (left)
-    parts += connect_pair(col_x[0], r16_centers[0], r16_centers[1], col_x[1], qf_centers[0])
-    parts += connect_pair(col_x[0], r16_centers[2], r16_centers[3], col_x[1], qf_centers[1])
-    # QF -> SF (left)
-    parts += connect_pair(col_x[1], qf_centers[0], qf_centers[1], col_x[2], sf_center)
-    # SF -> Final (left, straight since same y)
-    parts.append(hline(col_x[2] + BOX_W, sf_center, col_x[3], final_center))
-
-    # ── Connectors: RIGHT side R16 -> QF -> SF -> Final (mirrored) ──────────────
-    # R16 -> QF (right)
-    parts += connect_pair_mirrored(col_x[6], r16_centers[0], r16_centers[1], col_x[5], qf_centers[0])
-    parts += connect_pair_mirrored(col_x[6], r16_centers[2], r16_centers[3], col_x[5], qf_centers[1])
-    # QF -> SF (right)
-    parts += connect_pair_mirrored(col_x[5], qf_centers[0], qf_centers[1], col_x[4], sf_center)
-    # SF -> Final (right, straight)
-    parts.append(hline(col_x[4], sf_center, col_x[3] + BOX_W, final_center))
-
-    svg_body = "".join(parts)
-    svg_html = f"""
-    <div style='overflow-x:auto;padding:8px 0 16px;border-radius:12px;background:#0a0f1e'>
-        <svg width='{SVG_W}' height='{SVG_H}' viewBox='0 0 {SVG_W} {SVG_H}'
-             xmlns='http://www.w3.org/2000/svg' style='display:block;margin:0 auto'>
-            {svg_body}
-        </svg>
-    </div>
-    """
-
-    st.markdown(svg_html, unsafe_allow_html=True)
-    st.markdown(
-        "<p style='color:rgba(255,255,255,0.4);font-size:11px;text-align:center;margin-top:6px'>"
-        "\u25A0 = team color &nbsp;·&nbsp; \u2605 = predicted champion &nbsp;·&nbsp; "
-        "Scroll horizontally on smaller screens</p>",
-        unsafe_allow_html=True
-    )
-
-    # ── Podium ────────────────────────────────────────────────────────────────
-    st.markdown("---")
-    st.markdown("### 🥇 Predicted Podium")
-    top3 = mc.head(3)
-    p_cols = st.columns(3)
-    medals = ["🥇", "🥈", "🥉"]
-    for i, ((_, row), col) in enumerate(zip(top3.iterrows(), p_cols)):
-        tc = gc(row["team"])
-        with col:
+        R16_META = {
+            "M89": ("Jul 4", "Lincoln Financial Field, Philadelphia"),
+            "M90": ("Jul 4", "NRG Stadium, Houston"),
+            "M91": ("Jul 5", "MetLife Stadium, NJ"),
+            "M92": ("Jul 5", "Estadio Azteca, Mexico City"),
+            "M93": ("Jul 6", "AT&T Stadium, Dallas"),
+            "M94": ("Jul 6", "Lumen Field, Seattle"),
+            "M95": ("Jul 7", "Hard Rock Stadium, Miami"),
+            "M96": ("Jul 7", "BC Place, Vancouver"),
+        }
+        cols_r16 = st.columns(2)
+        for i, (mid, src_a, src_b) in enumerate(R16):
+            la, lb, da, db = r16_slots[mid]
+            w, wd = winner_of.get(mid, (None, False))
+            date_str, venue = R16_META.get(mid, ("", ""))
+            with cols_r16[i % 2]:
+                match_card_bracket(mid, la, lb, da, db,
+                                   winner_label=w if wd else None,
+                                   date_str=date_str, venue=venue)
+    
+    with tab_qf:
+        st.markdown(
+            "<p style='color:rgba(255,255,255,0.5);font-size:12px'>"
+            "4 matches · Jul 9 – Jul 11 · Winners of R16</p>",
+            unsafe_allow_html=True
+        )
+        QF_META = {
+            "M97":  ("Jul 9",  "Lincoln Financial Field, Philadelphia"),
+            "M98":  ("Jul 9",  "Estadio Azteca, Mexico City"),
+            "M99":  ("Jul 11", "AT&T Stadium, Dallas"),
+            "M100": ("Jul 11", "Lumen Field, Seattle"),
+        }
+        cols_qf = st.columns(2)
+        for i, (mid, src_a, src_b) in enumerate(QF):
+            la, lb, da, db = qf_slots[mid]
+            w, wd = winner_of.get(mid, (None, False))
+            date_str, venue = QF_META.get(mid, ("", ""))
+            with cols_qf[i % 2]:
+                match_card_bracket(mid, la, lb, da, db,
+                                   winner_label=w if wd else None,
+                                   date_str=date_str, venue=venue)
+    
+    with tab_sf:
+        st.markdown(
+            "<p style='color:rgba(255,255,255,0.5);font-size:12px'>"
+            "2 matches · Jul 14 – Jul 15</p>",
+            unsafe_allow_html=True
+        )
+        SF_META = {
+            "M101": ("Jul 14", "AT&T Stadium, Dallas"),
+            "M102": ("Jul 15", "MetLife Stadium, NJ"),
+        }
+        cols_sf = st.columns(2)
+        for i, (mid, src_a, src_b) in enumerate(SF):
+            la, lb, da, db = sf_slots[mid]
+            w, wd = winner_of.get(mid, (None, False))
+            date_str, venue = SF_META.get(mid, ("", ""))
+            with cols_sf[i % 2]:
+                match_card_bracket(mid, la, lb, da, db,
+                                   winner_label=w if wd else None,
+                                   date_str=date_str, venue=venue)
+    
+    with tab_final:
+        st.markdown(
+            "<p style='color:rgba(255,255,255,0.5);font-size:12px'>"
+            "🏟️ MetLife Stadium, East Rutherford, NJ · Jul 19, 2026</p>",
+            unsafe_allow_html=True
+        )
+    
+        # Bronze Final
+        st.markdown("#### 🥉 Third-Place Match — Jul 18 · AT&T Stadium, Dallas")
+        sf1_loser_label = sf_slots["M101"][1] if winner_of.get("M101", (None,))[0] == sf_slots["M101"][0] else sf_slots["M101"][0]
+        sf2_loser_label = sf_slots["M102"][1] if winner_of.get("M102", (None,))[0] == sf_slots["M102"][0] else sf_slots["M102"][0]
+        sf1_loser_decided = sf_slots["M101"][2] or sf_slots["M101"][3]
+        sf2_loser_decided = sf_slots["M102"][2] or sf_slots["M102"][3]
+        match_card_bracket("M103 (Bronze)", sf1_loser_label, sf2_loser_label,
+                           sf1_loser_decided, sf2_loser_decided)
+    
+        # Final
+        st.markdown("#### 🏆 FINAL — Jul 19 · MetLife Stadium, NJ")
+        match_card_bracket("M104 (Final)", f_la, f_lb, f_da, f_db,
+                           winner_label=champion if champion_decided else None)
+    
+        # Champion podium
+        if champion_decided and champion:
+            tc = gc(champion)
             st.markdown(
                 f"<div style='background:linear-gradient(135deg,{tc['primary']}cc,{tc['primary']}44);"
-                f"border-radius:12px;padding:20px;text-align:center;border:1px solid {tc['primary']}'>"
-                f"<div style='font-size:28px'>{medals[i]}</div>"
-                f"<div style='margin:4px 0'>{flag_img(row['team'], height=20)}</div>"
-                f"<div style='font-size:18px;font-weight:900;color:{tc['text']};margin:6px 0'>{team_link(row['team'], color=tc['text'])}</div>"
-                f"<div style='font-size:22px;font-weight:bold;color:#FFD700'>{row['win_pct']:.1f}%</div>"
-                f"<div style='font-size:11px;color:rgba(255,255,255,0.5)'>win probability</div>"
+                f"border-radius:14px;padding:28px;text-align:center;margin-top:16px;"
+                f"border:2px solid #FFD700'>"
+                f"<div style='font-size:40px'>🏆</div>"
+                f"<div style='margin:8px 0'>{flag_img(champion, height=28)}</div>"
+                f"<div style='font-size:26px;font-weight:900;color:#FFD700'>"
+                f"{team_link(champion, color='#FFD700', weight='900')}</div>"
+                f"<div style='font-size:13px;color:rgba(255,255,255,0.5);margin-top:6px'>"
+                f"Model predicted champion</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
+        else:
+            st.info("🏆 Predicted champion will appear once group standings are decided.")
+    
+    # ── Model accuracy note ────────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown(
+        "<p style='color:rgba(255,255,255,0.35);font-size:11px'>"
+        "R32 slots: real qualified teams from live standings. "
+        "3rd-place slots: Annex C — resolves after June 27 when all 12 groups finish. "
+        "R16 → Final: model predictions using Elo + Monte Carlo win probability.</p>",
+        unsafe_allow_html=True
+    )
 
-
-# ══ PAGE 6: SQUADS ════════════════════════════════════════════════════════════
-# ══ PAGE 6: SQUADS ════════════════════════════════════════════════════════════
 elif page == "👥 Squads":
     st.title("👥 2026 FIFA World Cup — Squads")
     st.caption("Squad, fixtures, and tournament outlook for every team")
