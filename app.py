@@ -932,6 +932,15 @@ if page == "📅 Today's Matches":
                 teams: info for teams, info in tournament_data.items()
                 if teams in day_team_pairs
             }
+            # Always overlay the fresh 60s-cached live feed on top, regardless
+            # of date. This catches late-evening matches that cross midnight UTC
+            # (e.g. a 11pm ET kickoff = 3am UTC next day) — the tournament feed
+            # has a 10min cache and may still show "pre" for a match that just
+            # kicked off, while load_live_scores() always has the current state.
+            fresh_live = load_live_scores()
+            for teams, info in fresh_live.items():
+                if teams in day_team_pairs:
+                    live_data[teams] = info  # fresh data wins over stale cache
 
         # Sort by ESPN kickoff time when we have it for this date (more reliable
         # than our own data, which only stores date not time-of-day); matches
