@@ -811,6 +811,10 @@ except FileNotFoundError:
 
 # ══ PAGE 1: TODAY'S MATCHES ═══════════════════════════════════════════════════
 if page == "📅 Today's Matches":
+    # Auto-refresh every 60s when a match is live
+    _lv = load_live_scores()
+    if any(info["status"] == "in" for info in (_lv or {}).values()):
+        st.markdown("<meta http-equiv='refresh' content='60'>", unsafe_allow_html=True)
     st.markdown(
         f"<h1 style='display:flex;align-items:center;gap:10px'>{soccer_ball(36)} "
         f"2026 FIFA World Cup Predictions</h1>",
@@ -1312,7 +1316,7 @@ elif page == "🔲 Bracket":
         r32_teams[mid] = (slot_label(s1[0],s1[1],t1), slot_label(s2[0],s2[1],t2),
                           t1 is not None, t2 is not None)
 
-    mc_dict = dict(zip(mc["team"], mc["win_probability"])) if mc is not None else {}
+    mc_dict = dict(zip(mc["team"], mc["win_pct"])) if mc is not None else {}
 
     def predict_winner(la, lb, da, db):
         if not da or not db:
