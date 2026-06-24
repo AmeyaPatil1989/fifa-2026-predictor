@@ -864,39 +864,11 @@ if page == "📅 Today's Matches":
 
     all_dates = sorted(predictions["date"].dt.date.unique())
 
-    # ── Get client local date via JS → query param ───────────────────────────
-    # JS reads viewer's local date and writes it as ?local_date=YYYY-MM-DD.
-    # First load uses ET fallback; every subsequent load uses real local date.
-    if "local_date" not in st.query_params:
-        components.html(
-            """<script>
-            (function(){
-                var d = new Date();
-                var yyyy = d.getFullYear();
-                var mm = String(d.getMonth()+1).padStart(2,'0');
-                var dd = String(d.getDate()).padStart(2,'0');
-                var local = yyyy+'-'+mm+'-'+dd;
-                var url = new URL(window.parent.location.href);
-                if(!url.searchParams.get('local_date')){
-                    url.searchParams.set('local_date', local);
-                    window.parent.history.replaceState({}, '', url.toString());
-                    window.parent.location.reload();
-                }
-            })();
-            </script>""",
-            height=0,
-        )
-
-    _client_date = None
-    _raw_ld = st.query_params.get("local_date", "")
-    if _raw_ld:
-        try:
-            _client_date = datetime.date.fromisoformat(_raw_ld)
-            if _client_date not in all_dates:
-                _client_date = None
-        except Exception:
-            _client_date = None
-
+    # Use tournament-wide ESPN feed to find the correct default date.
+    # This avoids relying on datetime.date.today() (server UTC, wrong timezone)
+    # and avoids stale load_live_scores() cache issues.
+    # Logic: find the latest date that has any finished or live matches —
+    # that's the "current" match day regardless of server timezone.
     try:
         _tourney = load_tournament_scores()
         _played_dates = set()
@@ -907,6 +879,7 @@ if page == "📅 Today's Matches":
                 continue
             try:
                 dt = datetime.datetime.fromisoformat(kt.replace("Z", "+00:00"))
+                # Use ET date (UTC-4 in summer) to match US match day convention
                 et_date = (dt - datetime.timedelta(hours=4)).date()
                 match_date = et_date if et_date in all_dates else dt.date()
                 if info["status"] in ("in", "post"):
@@ -916,20 +889,14 @@ if page == "📅 Today's Matches":
             except Exception:
                 continue
 
-        if _client_date:
-            # Client told us their local date — use it directly
-            default_date = _client_date
-        elif _played_dates:
-            # Check if today (ET) has upcoming matches — show today not yesterday
-            _today_et = (datetime.datetime.utcnow() - datetime.timedelta(hours=4)).date()
-            _max_played = max(d for d in _played_dates if d in all_dates)
-            if _today_et in all_dates and _today_et > _max_played:
-                default_date = _today_et
-            else:
-                default_date = _max_played
+        if _played_dates:
+            # Show the most recent day that has played/live matches
+            default_date = max(d for d in _played_dates if d in all_dates)
         elif _upcoming_dates:
+            # Nothing played yet today — show next upcoming match day
             default_date = min(d for d in _upcoming_dates if d in all_dates)
         else:
+            # ESPN feed empty — fall back to first future date
             today = datetime.date.today()
             future = [d for d in all_dates if d >= today]
             default_date = future[0] if future else all_dates[-1]
@@ -955,7 +922,19 @@ if page == "📅 Today's Matches":
         # own pipeline hasn't synced yet) falls back to the slower-cached
         # tournament-wide feed, which still has historical results.
         if selected_date == datetime.date.today():
-            live_data = load_live_scores()
+            # Apply same swap fix as tournament branch — ESPN sometimes returns
+            # (away, home) ordering vs our CSV's (home, away) for late matches.
+            _raw_today = load_live_scores()
+            day_team_pairs = set(zip(day_matches["home_team"], day_matches["away_team"]))
+            live_data = {}
+            for espn_key, info in _raw_today.items():
+                a, b = espn_key
+                if (a, b) in day_team_pairs:
+                    live_data[(a, b)] = info
+                elif (b, a) in day_team_pairs:
+                    swapped = dict(info)
+                    swapped["home_score"], swapped["away_score"] = info["away_score"], info["home_score"]
+                    live_data[(b, a)] = swapped
         else:
             tournament_data = load_tournament_scores()
             # Match by team pair, not by comparing kickoff_time's UTC calendar
@@ -965,33 +944,19 @@ if page == "📅 Today's Matches":
             # which would silently fail a plain date-string comparison even
             # though it's unambiguously the correct match.
             day_team_pairs = set(zip(day_matches["home_team"], day_matches["away_team"]))
-            # ESPN sometimes swaps home/away vs our CSV ordering (e.g. ESPN has
-            # ('Switzerland','Canada') but CSV has ('Canada','Switzerland')).
-            # Build a reverse-lookup so we always store under our CSV's key.
-            live_data = {}
-            for espn_key, info in tournament_data.items():
-                a, b = espn_key
-                if (a, b) in day_team_pairs:
-                    live_data[(a, b)] = info
-                elif (b, a) in day_team_pairs:
-                    # Swapped — store under our ordering, swap scores too
-                    swapped = dict(info)
-                    swapped["home_score"], swapped["away_score"] = info["away_score"], info["home_score"]
-                    live_data[(b, a)] = swapped
+            live_data = {
+                teams: info for teams, info in tournament_data.items()
+                if teams in day_team_pairs
+            }
             # Always overlay the fresh 60s-cached live feed on top, regardless
             # of date. This catches late-evening matches that cross midnight UTC
             # (e.g. a 11pm ET kickoff = 3am UTC next day) — the tournament feed
             # has a 10min cache and may still show "pre" for a match that just
             # kicked off, while load_live_scores() always has the current state.
             fresh_live = load_live_scores()
-            for espn_key, info in fresh_live.items():
-                a, b = espn_key
-                if (a, b) in day_team_pairs:
-                    live_data[(a, b)] = info
-                elif (b, a) in day_team_pairs:
-                    swapped = dict(info)
-                    swapped["home_score"], swapped["away_score"] = info["away_score"], info["home_score"]
-                    live_data[(b, a)] = swapped
+            for teams, info in fresh_live.items():
+                if teams in day_team_pairs:
+                    live_data[teams] = info  # fresh data wins over stale cache
 
         # Sort by ESPN kickoff time when we have it for this date (more reliable
         # than our own data, which only stores date not time-of-day); matches
