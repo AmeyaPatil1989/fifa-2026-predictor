@@ -1498,34 +1498,51 @@ elif page == "🔲 Bracket":
         cy = r32_ys[pair_idx * 2 + match_in_pair]
         l1, l2, d1, d2 = r32_teams[mid]
         w, wd = winner_of.get(mid, (None, False))
-        parts.append(box(x, cy))
-        parts.append(mid_label(x, cy, mid))
-        # Two team names below box (stacked)
+        # M# label ABOVE box
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH/2-4:.1f}' text-anchor='middle' "
+                     f"font-size='8' fill='rgba(255,255,255,0.3)' font-family='Arial' "
+                     f"letter-spacing='0.5'>{mid}</text>")
+        # Box is now taller to fit 2 team names inside
+        bh2 = BH * 2 + 4
+        fill = "#1a2438"
+        parts.append(f"<rect x='{x}' y='{cy-bh2/2:.1f}' width='{BW}' height='{bh2}' "
+                     f"rx='5' fill='{fill}' stroke='rgba(255,255,255,0.25)' stroke-width='1'/>")
+        # Team names inside box
         c1 = "#FFD700" if (wd and w == l1) else ("white" if d1 else "rgba(255,255,255,0.38)")
         c2 = "#FFD700" if (wd and w == l2) else ("white" if d2 else "rgba(255,255,255,0.38)")
         s1 = 9 if len(l1) > 13 else 10
         s2 = 9 if len(l2) > 13 else 10
-        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+13:.1f}' text-anchor='middle' "
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-8:.1f}' text-anchor='middle' "
                      f"font-size='{s1}' fill='{c1}' font-family='Arial' font-weight='bold'>{l1}</text>")
-        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+24:.1f}' text-anchor='middle' "
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+10:.1f}' text-anchor='middle' "
                      f"font-size='{s2}' fill='{c2}' font-family='Arial' font-weight='bold'>{l2}</text>")
+        # Divider line between the two teams
+        parts.append(f"<line x1='{x+6}' y1='{cy:.1f}' x2='{x+BW-6}' y2='{cy:.1f}' "
+                     f"stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/>")
         return cy
 
     def draw_inner_box(x, cy, mid, slots_dict, show_pred=True):
         la, lb, da, db = slots_dict[mid]
         w, wd = winner_of.get(mid, (None, False))
+        # M# label ABOVE box
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH/2-4:.1f}' text-anchor='middle' "
+                     f"font-size='8' fill='rgba(255,255,255,0.3)' font-family='Arial' "
+                     f"letter-spacing='0.5'>{mid}</text>")
         parts.append(box(x, cy))
-        parts.append(mid_label(x, cy, mid))
+        # Predicted winner BELOW box in italic gold
         if show_pred and wd:
-            # Show predicted winner below — italic, gold
             parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+13:.1f}' text-anchor='middle' "
                          f"font-size='10' fill='#FFD700' font-family='Arial' "
                          f"font-weight='bold' font-style='italic'>→ {w}</text>")
         return cy
 
     def draw_final_box(x, cy):
+        # 🏆 FINAL label above box
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH/2-4:.1f}' text-anchor='middle' "
+                     f"font-size='9' fill='#FFD700' font-family='Arial' "
+                     f"font-weight='900' letter-spacing='1'>🏆 FINAL</text>")
         parts.append(box(x, cy, highlight=True))
-        parts.append(mid_label(x, cy, "🏆 FINAL"))
+        # Champion below box
         if champ_decided and champion:
             parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+14:.1f}' text-anchor='middle' "
                          f"font-size='11' fill='#FFD700' font-family='Arial' "
