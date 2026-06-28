@@ -811,22 +811,10 @@ except FileNotFoundError:
 
 # ══ PAGE 1: TODAY'S MATCHES ═══════════════════════════════════════════════════
 if page == "📅 Today's Matches":
-    # Auto-refresh every 60s when a match is live — uses st.rerun() via
-    # a time-based check so session state (current page) is preserved.
-    # meta refresh would reset the page; this doesn't.
+    # Auto-refresh every 60s when a match is live
     _lv = load_live_scores()
-    _has_live = any(info["status"] == "in" for info in (_lv or {}).values())
-    if _has_live:
-        if "last_live_rerun" not in st.session_state:
-            st.session_state.last_live_rerun = datetime.datetime.utcnow()
-        _elapsed = (datetime.datetime.utcnow() - st.session_state.last_live_rerun).total_seconds()
-        if _elapsed >= 60:
-            st.session_state.last_live_rerun = datetime.datetime.utcnow()
-            st.rerun()
-        else:
-            # Show a subtle countdown so user knows it's live-updating
-            _remaining = int(60 - _elapsed)
-            st.caption(f"🔴 Live — refreshing in {_remaining}s")
+    if any(info["status"] == "in" for info in (_lv or {}).values()):
+        st.markdown("<meta http-equiv='refresh' content='60'>", unsafe_allow_html=True)
     st.markdown(
         f"<h1 style='display:flex;align-items:center;gap:10px'>{soccer_ball(36)} "
         f"2026 FIFA World Cup Predictions</h1>",
@@ -1303,11 +1291,24 @@ elif page == "🔲 Bracket":
     BRONZE = ("M103","M101","M102")
 
     # ── Slot resolution helpers ────────────────────────────────────────────────
+    # Confirmed Annex C third-place assignments (verified June 28, 2026)
+    # Groups B,D,E,F,I,J,K,L produced the best 8 third-place teams
+    THIRD_PLACE_LOOKUP = {
+        "A/B/C/D/F":   "Paraguay",           # 3rd D → M74
+        "C/D/F/G/H":   "Sweden",             # 3rd F → M77
+        "C/E/F/H/I":   "Ecuador",            # 3rd E → M79
+        "E/H/I/J/K":   "DR Congo",           # 3rd K → M80
+        "B/E/F/I/J":   "Bosnia and Herzegovina",  # 3rd B → M81
+        "A/E/H/I/J":   "Senegal",            # 3rd I → M82
+        "E/F/G/I/J":   "Algeria",            # 3rd J → M85
+        "D/E/I/J/L":   "Ghana",              # 3rd L → M87
+    }
+
     def get_team(standings, slot_type, slot_val):
         if standings is None:
             return None
         if slot_type == "third":
-            return None
+            return THIRD_PLACE_LOOKUP.get(slot_val)
         pos = 1 if slot_type == "winner" else 2
         row = standings[(standings["group"] == slot_val) & (standings["position"] == pos)]
         return row.iloc[0]["team"] if len(row) > 0 else None
