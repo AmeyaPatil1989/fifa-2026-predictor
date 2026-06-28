@@ -1245,7 +1245,7 @@ elif page == "🗂️ Group Standings":
 elif page == "🔲 Bracket":
     st.title("🔲 2026 FIFA World Cup — Knockout Bracket")
 
-    # ── Status caption ─────────────────────────────────────────────────────────
+    # ── Load live tournament data ──────────────────────────────────────────────
     live_data_for_bracket = load_tournament_scores()
     if live_data_for_bracket:
         try:
@@ -1259,10 +1259,7 @@ elif page == "🔲 Bracket":
     if bracket_standings is not None and "played" in bracket_standings.columns:
         all_groups_done = bracket_standings[bracket_standings["played"] == 3]["group"].nunique() == 12
 
-    if all_groups_done:
-        st.caption("✅ All groups complete — R32 slots confirmed. R16 onward shows model predictions.")
-    else:
-        st.caption("🔄 Group stage in progress — confirmed slots shown where decided. 3rd-place slots resolve June 27.")
+    st.caption("✅ Group stage complete — R32 bracket live. Winners advance automatically as results come in.")
 
     # ── R32 slot definitions ───────────────────────────────────────────────────
     R32 = [
@@ -1287,23 +1284,55 @@ elif page == "🔲 Bracket":
            ("M93","M83","M84"),("M94","M81","M82"),("M95","M86","M88"),("M96","M85","M87")]
     QF  = [("M97","M89","M90"),("M98","M91","M92"),("M99","M93","M94"),("M100","M95","M96")]
     SF  = [("M101","M97","M98"),("M102","M99","M100")]
-    FINAL  = ("M104","M101","M102")
-    BRONZE = ("M103","M101","M102")
+    FINAL = ("M104","M101","M102")
 
-    # ── Slot resolution helpers ────────────────────────────────────────────────
-    # Confirmed Annex C third-place assignments (verified June 28, 2026)
-    # Groups B,D,E,F,I,J,K,L produced the best 8 third-place teams
+    # ── Confirmed Annex C third-place assignments ──────────────────────────────
     THIRD_PLACE_LOOKUP = {
-        "A/B/C/D/F":   "Paraguay",           # 3rd D → M74
-        "C/D/F/G/H":   "Sweden",             # 3rd F → M77
-        "C/E/F/H/I":   "Ecuador",            # 3rd E → M79
-        "E/H/I/J/K":   "DR Congo",           # 3rd K → M80
-        "B/E/F/I/J":   "Bosnia and Herzegovina",  # 3rd B → M81
-        "A/E/H/I/J":   "Senegal",            # 3rd I → M82
-        "E/F/G/I/J":   "Algeria",            # 3rd J → M85
-        "D/E/I/J/L":   "Ghana",              # 3rd L → M87
+        "A/B/C/D/F":   "Paraguay",
+        "C/D/F/G/H":   "Sweden",
+        "C/E/F/H/I":   "Ecuador",
+        "E/H/I/J/K":   "DR Congo",
+        "B/E/F/I/J":   "Bosnia and Herzegovina",
+        "A/E/H/I/J":   "Senegal",
+        "E/F/G/I/J":   "Algeria",
+        "D/E/I/J/L":   "Ghana",
     }
 
+    # ── Map ESPN team pairs → actual knockout results ──────────────────────────
+    # ESPN returns knockout matches in fetch_tournament_scores() alongside group games
+    espn_ko = {}  # (team1, team2) normalized → {status, home_score, away_score, home_team, away_team}
+    if live_data_for_bracket:
+        for (ht, at), info in live_data_for_bracket.items():
+            espn_ko[(ht, at)] = info
+            espn_ko[(at, ht)] = {**info,
+                "home_score": info["away_score"],
+                "away_score": info["home_score"],
+                "home_team": at, "away_team": ht,
+            }
+
+    def get_espn_result(team1, team2):
+        """Returns (status, winner, home_score, away_score) or None if not found/played."""
+        if not team1 or not team2:
+            return None
+        info = espn_ko.get((team1, team2)) or espn_ko.get((team2, team1))
+        if not info or info.get("status") != "post":
+            return None
+        hs, as_ = info.get("home_score"), info.get("away_score")
+        if hs is None or as_ is None:
+            return None
+        # Determine winner (no draws in knockout — extra time/pens possible but ESPN marks winner)
+        ht = info.get("home_team") or team1
+        at = info.get("away_team") or team2
+        if hs > as_:
+            winner = ht
+        elif as_ > hs:
+            winner = at
+        else:
+            winner = None  # draw displayed, winner TBD (e.g. pens not yet decided)
+        return {"status": "post", "winner": winner, "home_score": hs, "away_score": as_,
+                "home_team": ht, "away_team": at}
+
+    # ── Slot resolution ────────────────────────────────────────────────────────
     def get_team(standings, slot_type, slot_val):
         if standings is None:
             return None
@@ -1314,14 +1343,13 @@ elif page == "🔲 Bracket":
         return row.iloc[0]["team"] if len(row) > 0 else None
 
     def slot_label(slot_type, slot_val, team):
-        if team:
-            return team
+        if team: return team
         if slot_type == "winner":    return f"W {slot_val}"
         if slot_type == "runner_up": return f"2nd {slot_val}"
         if slot_type == "third":     return f"3rd ({slot_val})"
         return "TBD"
 
-    # Resolve R32
+    # Resolve R32 teams
     r32_teams = {}
     for mid, s1, s2 in R32:
         t1 = get_team(bracket_standings, s1[0], s1[1])
@@ -1332,290 +1360,282 @@ elif page == "🔲 Bracket":
     mc_dict = dict(zip(mc["team"], mc["win_pct"])) if mc is not None else {}
 
     def predict_winner(la, lb, da, db):
-        if not da or not db:
-            return None
+        if not da or not db: return None
         return la if mc_dict.get(la, 0) >= mc_dict.get(lb, 0) else lb
 
-    winner_of = {}
+    # ── Build winner_of: actual result first, then prediction ─────────────────
+    winner_of   = {}  # match_id → (winner_label, is_confirmed_actual)
+    scoreline_of = {}  # match_id → "0 — 1" string or None
+    loser_of    = {}  # match_id → loser_label
+
+    def resolve_match(match_id, src_a, src_b, la, lb, da, db):
+        """Try ESPN first, fall back to model prediction."""
+        result = get_espn_result(la, lb) if (da and db) else None
+        if result and result["winner"]:
+            w = result["winner"]
+            l = lb if w == la else la
+            winner_of[match_id]    = (w, True)   # True = actual confirmed result
+            loser_of[match_id]     = l
+            scoreline_of[match_id] = f"{result['home_score']} — {result['away_score']}"
+        else:
+            w = predict_winner(la, lb, da, db)
+            winner_of[match_id]    = (w, False)  # False = model prediction
+            loser_of[match_id]     = None
+            scoreline_of[match_id] = None
+
+    # R32
     for mid, s1, s2 in R32:
         l1, l2, d1, d2 = r32_teams[mid]
-        w = predict_winner(l1, l2, d1, d2)
-        winner_of[mid] = (w, w is not None)
+        resolve_match(mid, None, None, l1, l2, d1, d2)
 
-    def resolve(match_id, src_a, src_b):
-        wa, da = winner_of.get(src_a, (None, False))
-        wb, db = winner_of.get(src_b, (None, False))
+    # R16 → QF → SF → Final: chain actual/predicted winners
+    r16_s, qf_s, sf_s = {}, {}, {}
+
+    def chain_resolve(match_id, src_a, src_b, slots_dict):
+        wa, ca = winner_of.get(src_a, (None, False))
+        wb, cb = winner_of.get(src_b, (None, False))
         la = wa or f"W{src_a}"
         lb = wb or f"W{src_b}"
-        w = predict_winner(la, lb, da, db)
-        winner_of[match_id] = (w, w is not None)
-        return la, lb, da, db
+        da = ca or (wa is not None)
+        db = cb or (wb is not None)
+        slots_dict[match_id] = (la, lb, da, db)
+        resolve_match(match_id, None, None, la, lb, da, db)
 
-    r16_s, qf_s, sf_s = {}, {}, {}
     for mid, a, b in R16:
-        r16_s[mid] = resolve(mid, a, b)
+        chain_resolve(mid, a, b, r16_s)
     for mid, a, b in QF:
-        qf_s[mid] = resolve(mid, a, b)
+        chain_resolve(mid, a, b, qf_s)
     for mid, a, b in SF:
-        sf_s[mid] = resolve(mid, a, b)
-    f_la, f_lb, f_da, f_db = resolve(FINAL[0], FINAL[1], FINAL[2])
-    champion, champ_decided = winner_of.get(FINAL[0], (None, False))
+        chain_resolve(mid, a, b, sf_s)
 
-    # ── SVG bracket builder ────────────────────────────────────────────────────
-    # Layout: R32 on far left & right (8 matches each side)
-    # feeding inward: R16(4 each) → QF(2 each) → SF(1 each) → FINAL(center)
-    # Boxes are empty rectangles. Team names + predictions rendered BELOW each box.
+    f_la = winner_of.get(SF[0][0], (None,))[0] or f"W{SF[0][0]}"
+    f_lb = winner_of.get(SF[1][0], (None,))[0] or f"W{SF[1][0]}"
+    f_da = winner_of.get(SF[0][0], (None, False))[1] or winner_of.get(SF[0][0], (None,))[0] is not None
+    f_db = winner_of.get(SF[1][0], (None, False))[1] or winner_of.get(SF[1][0], (None,))[0] is not None
+    final_slots = {FINAL[0]: (f_la, f_lb, f_da, f_db)}
+    resolve_match(FINAL[0], None, None, f_la, f_lb, f_da, f_db)
+    champion, champ_confirmed = winner_of.get(FINAL[0], (None, False))
 
-    BW   = 110   # box width
-    BH   = 28    # box height
-    HGAP = 52    # horizontal gap between rounds
-    COL  = BW + HGAP  # column stride
-
-    # 8 R32 matches per side, spaced vertically
-    # Pairs: matches 0+1 feed R16[0], 2+3 feed R16[1], 4+5 feed R16[2], 6+7 feed R16[3]
-    R32_VSTEP = 80   # vertical spacing between R32 matches within a pair
-    PAIR_GAP  = 52   # extra gap between pairs
+    # ── SVG constants ──────────────────────────────────────────────────────────
+    BW   = 120
+    BH   = 28
+    HGAP = 52
+    COL  = BW + HGAP
+    R32_VSTEP = 90
+    PAIR_GAP  = 56
 
     def r32_y(pair_idx, match_in_pair):
-        """Y center of a R32 match box."""
         return 60 + pair_idx * (2 * R32_VSTEP + PAIR_GAP) + match_in_pair * R32_VSTEP
 
-    # Left side: columns 0=R32, 1=R16, 2=QF, 3=SF
-    # Right side: columns 6=R32, 5=R16, 4=QF, 3=SF (mirror)
-    # Center: column 3 = FINAL
-
-    # Y centers for each round (left side)
-    r32_ys = [r32_y(p, m) for p in range(4) for m in range(2)]  # 8 values
+    r32_ys = [r32_y(p, m) for p in range(4) for m in range(2)]
     r16_ys = [(r32_ys[i*2] + r32_ys[i*2+1]) / 2 for i in range(4)]
     qf_ys  = [(r16_ys[i*2] + r16_ys[i*2+1]) / 2 for i in range(2)]
     sf_y   = (qf_ys[0] + qf_ys[1]) / 2
     final_y = sf_y
 
-    SVG_H = int(r32_ys[-1] + BH/2 + 80)
-    # 7 columns total (0-6), center at col 3
-    SVG_W = 7 * COL + BW + 160  # extra center gap for Final box
+    SVG_H = int(r32_ys[-1] + BH + 80)
+    SVG_W = 7 * COL + BW + 160
 
-    # Left side X positions
-    lx = [20 + c * COL for c in range(4)]   # lx[0]=R32, lx[1]=R16, lx[2]=QF, lx[3]=SF
-    # Right side X positions (mirrored)
-    rx = [SVG_W - 20 - BW - c * COL for c in range(4)]  # rx[0]=R32, rx[1]=R16, rx[2]=QF, rx[3]=SF
-    # Final x
-    fx = (SVG_W - BW) // 2  # always dead center
-
-    def box(x, cy, highlight=False):
-        stroke = "#FFD700" if highlight else "rgba(255,255,255,0.25)"
-        sw = 2 if highlight else 1
-        fill = "#1a2438" if not highlight else "#2a1a00"
-        return (f"<rect x='{x}' y='{cy-BH/2:.1f}' width='{BW}' height='{BH}' "
-                f"rx='5' fill='{fill}' stroke='{stroke}' stroke-width='{sw}'/>")
-
-    def name_below(x, cy, label, decided, is_pred=False, is_winner=False):
-        """Team name rendered below the box."""
-        color = "#FFD700" if is_winner else ("white" if decided else "rgba(255,255,255,0.38)")
-        size  = 9 if len(label) > 14 else 10
-        style = "font-style:italic;" if is_pred else ""
-        fi    = flag_img(label, height=10) if (decided and label in FLAG_CODES) else ""
-        # We render as SVG foreignObject for flag+text
-        return (f"<text x='{x + BW/2:.1f}' y='{cy + BH/2 + 13:.1f}' "
-                f"text-anchor='middle' font-size='{size}' fill='{color}' "
-                f"font-family='Arial' font-weight=\"{'bold' if decided else 'normal'}\" "
-                f"style='{style}'>{label}</text>")
-
-    def mid_label(x, cy, text):
-        return (f"<text x='{x+BW/2:.1f}' y='{cy+4:.1f}' text-anchor='middle' "
-                f"font-size='8' fill='rgba(255,255,255,0.3)' font-family='Arial' "
-                f"letter-spacing='0.5'>{text}</text>")
+    lx = [20 + c * COL for c in range(4)]
+    rx = [SVG_W - 20 - BW - c * COL for c in range(4)]
+    fx = (SVG_W - BW) // 2
 
     def hline(x1, y1, x2, y2):
         return f"<line x1='{x1:.1f}' y1='{y1:.1f}' x2='{x2:.1f}' y2='{y2:.1f}' stroke='rgba(255,215,0,0.35)' stroke-width='1.2'/>"
 
     def connect_lr(x_box_right, yA, yB, x_next_box, yC):
-        """Connect two left-side boxes (at yA, yB) to one box at yC, going right."""
         xm = x_box_right + (x_next_box - x_box_right) / 2
-        out = []
-        out.append(hline(x_box_right, yA, xm, yA))
-        out.append(hline(x_box_right, yB, xm, yB))
-        out.append(hline(xm, yA, xm, yB))
-        out.append(hline(xm, yC, x_next_box, yC))
-        return out
+        return [hline(x_box_right,yA,xm,yA), hline(x_box_right,yB,xm,yB),
+                hline(xm,yA,xm,yB), hline(xm,yC,x_next_box,yC)]
 
     def connect_rl(x_box_left, yA, yB, x_next_box_right, yC):
-        """Connect two right-side boxes (at yA, yB) to one box at x_next_box_right, going left."""
         xm = x_next_box_right + BW + (x_box_left - (x_next_box_right + BW)) / 2
-        out = []
-        out.append(hline(x_box_left, yA, xm, yA))
-        out.append(hline(x_box_left, yB, xm, yB))
-        out.append(hline(xm, yA, xm, yB))
-        out.append(hline(xm, yC, x_next_box_right + BW, yC))
-        return out
+        return [hline(x_box_left,yA,xm,yA), hline(x_box_left,yB,xm,yB),
+                hline(xm,yA,xm,yB), hline(xm,yC,x_next_box_right+BW,yC)]
 
     parts = []
     parts.append(f"<rect x='0' y='0' width='{SVG_W}' height='{SVG_H}' rx='12' fill='#0a0f1e'/>")
 
     # Round labels
-    label_y = 22
-    round_labels = [
-        (lx[0], "R32"), (lx[1], "R16"), (lx[2], "QF"), (lx[3], "SF"),
-        (fx,    "FINAL"),
-        (rx[3], "SF"),  (rx[2], "QF"), (rx[1], "R16"), (rx[0], "R32"),
-    ]
-    for lbx, lbt in round_labels:
+    for lbx, lbt in [(lx[0],"R32"),(lx[1],"R16"),(lx[2],"QF"),(lx[3],"SF"),
+                      (fx,"FINAL"),(rx[3],"SF"),(rx[2],"QF"),(rx[1],"R16"),(rx[0],"R32")]:
         fw = "900" if lbt == "FINAL" else "bold"
-        parts.append(f"<text x='{lbx+BW/2:.1f}' y='{label_y}' text-anchor='middle' "
+        parts.append(f"<text x='{lbx+BW/2:.1f}' y='22' text-anchor='middle' "
                      f"font-size='11' fill='#FFD700' font-weight='{fw}' "
                      f"font-family='Arial' letter-spacing='1'>{lbt}</text>")
 
-    # ── Left side: R32 matches → R16 → QF → SF ───────────────────────────────
-    # Match order on left side (top to bottom):
-    # Pair 0: M90(top), M89 feeds R16[M89-top needs M74,M77]
-    # Actual left-side R32 order feeding into R16:
-    # R16 M89 = W(M74) vs W(M77)  → pair 0
-    # R16 M90 = W(M73) vs W(M75)  → pair 1
-    # R16 M91 = W(M76) vs W(M78)  → pair 2
-    # R16 M92 = W(M79) vs W(M80)  → pair 3
-
-    left_r32_pairs = [
-        ("M74","M77"),  # → R16 M89
-        ("M73","M75"),  # → R16 M90
-        ("M76","M78"),  # → R16 M91
-        ("M79","M80"),  # → R16 M92
-    ]
-    left_r16 = ["M89","M90","M91","M92"]
-    left_qf  = ["M97","M98"]
-    left_sf  = "M101"
-
-    right_r32_pairs = [
-        ("M83","M84"),  # → R16 M93
-        ("M81","M82"),  # → R16 M94
-        ("M86","M88"),  # → R16 M95
-        ("M85","M87"),  # → R16 M96
-    ]
-    right_r16 = ["M93","M94","M95","M96"]
-    right_qf  = ["M99","M100"]
-    right_sf  = "M102"
-
+    # ── Box drawing functions ──────────────────────────────────────────────────
     def draw_r32_box(x, pair_idx, match_in_pair, mid):
         cy = r32_ys[pair_idx * 2 + match_in_pair]
         l1, l2, d1, d2 = r32_teams[mid]
-        w, wd = winner_of.get(mid, (None, False))
-        # M# label ABOVE box
-        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH/2-4:.1f}' text-anchor='middle' "
-                     f"font-size='8' fill='rgba(255,255,255,0.3)' font-family='Arial' "
-                     f"letter-spacing='0.5'>{mid}</text>")
-        # Box is now taller to fit 2 team names inside
+        w, confirmed = winner_of.get(mid, (None, False))
+        score = scoreline_of.get(mid)
+        loser = loser_of.get(mid)
+
+        # M# above box
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH-6:.1f}' text-anchor='middle' "
+                     f"font-size='8' fill='rgba(255,255,255,0.25)' font-family='Arial'>{mid}</text>")
+
+        # Tall box fitting 2 teams
         bh2 = BH * 2 + 4
-        fill = "#1a2438"
+        if confirmed:
+            stroke, sw = "#00cc66", 1.5
+        else:
+            stroke, sw = "rgba(255,255,255,0.2)", 1
         parts.append(f"<rect x='{x}' y='{cy-bh2/2:.1f}' width='{BW}' height='{bh2}' "
-                     f"rx='5' fill='{fill}' stroke='rgba(255,255,255,0.25)' stroke-width='1'/>")
-        # Team names inside box
-        c1 = "#FFD700" if (wd and w == l1) else ("white" if d1 else "rgba(255,255,255,0.38)")
-        c2 = "#FFD700" if (wd and w == l2) else ("white" if d2 else "rgba(255,255,255,0.38)")
-        s1 = 9 if len(l1) > 13 else 10
-        s2 = 9 if len(l2) > 13 else 10
-        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-8:.1f}' text-anchor='middle' "
-                     f"font-size='{s1}' fill='{c1}' font-family='Arial' font-weight='bold'>{l1}</text>")
-        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+10:.1f}' text-anchor='middle' "
-                     f"font-size='{s2}' fill='{c2}' font-family='Arial' font-weight='bold'>{l2}</text>")
-        # Divider line between the two teams
+                     f"rx='5' fill='#1a2438' stroke='{stroke}' stroke-width='{sw}'/>")
+
+        # Divider between teams
         parts.append(f"<line x1='{x+6}' y1='{cy:.1f}' x2='{x+BW-6}' y2='{cy:.1f}' "
-                     f"stroke='rgba(255,255,255,0.1)' stroke-width='0.5'/>")
+                     f"stroke='rgba(255,255,255,0.08)' stroke-width='0.5'/>")
+
+        # Team 1 color
+        if confirmed and w == l1:
+            c1, fw1 = "#00ff88", "900"   # winner = green
+        elif confirmed and loser == l1:
+            c1, fw1 = "rgba(255,255,255,0.3)", "normal"  # loser = faded
+        elif w == l1 and not confirmed:
+            c1, fw1 = "#FFD700", "bold"  # predicted winner = gold
+        else:
+            c1, fw1 = "white" if d1 else "rgba(255,255,255,0.38)", "bold"
+
+        # Team 2 color
+        if confirmed and w == l2:
+            c2, fw2 = "#00ff88", "900"
+        elif confirmed and loser == l2:
+            c2, fw2 = "rgba(255,255,255,0.3)", "normal"
+        elif w == l2 and not confirmed:
+            c2, fw2 = "#FFD700", "bold"
+        else:
+            c2, fw2 = "white" if d2 else "rgba(255,255,255,0.38)", "bold"
+
+        s1 = 9 if len(l1) > 14 else 10
+        s2 = 9 if len(l2) > 14 else 10
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-6:.1f}' text-anchor='middle' "
+                     f"font-size='{s1}' fill='{c1}' font-family='Arial' font-weight='{fw1}'>{l1}</text>")
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+14:.1f}' text-anchor='middle' "
+                     f"font-size='{s2}' fill='{c2}' font-family='Arial' font-weight='{fw2}'>{l2}</text>")
+
+        # Scoreline below box (confirmed results only)
+        if confirmed and score:
+            parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+bh2/2+14:.1f}' text-anchor='middle' "
+                         f"font-size='10' fill='#00ff88' font-family='Arial' font-weight='bold'>{score}</text>")
+        elif not confirmed and w:
+            # Show predicted winner label
+            parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+bh2/2+14:.1f}' text-anchor='middle' "
+                         f"font-size='9' fill='#FFD700' font-family='Arial' "
+                         f"font-style='italic'>→ {w}</text>")
         return cy
 
-    def draw_inner_box(x, cy, mid, slots_dict, show_pred=True):
+    def draw_inner_box(x, cy, mid, slots_dict):
         la, lb, da, db = slots_dict[mid]
-        w, wd = winner_of.get(mid, (None, False))
-        # M# label ABOVE box
-        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH/2-4:.1f}' text-anchor='middle' "
-                     f"font-size='8' fill='rgba(255,255,255,0.3)' font-family='Arial' "
-                     f"letter-spacing='0.5'>{mid}</text>")
-        parts.append(box(x, cy))
-        # Predicted winner BELOW box in italic gold
-        if show_pred and wd:
+        w, confirmed = winner_of.get(mid, (None, False))
+        score = scoreline_of.get(mid)
+        loser = loser_of.get(mid)
+
+        # M# above box
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH/2-5:.1f}' text-anchor='middle' "
+                     f"font-size='8' fill='rgba(255,255,255,0.25)' font-family='Arial'>{mid}</text>")
+
+        if confirmed:
+            stroke, sw, fill = "#00cc66", 1.5, "#0d2218"
+        else:
+            stroke, sw, fill = "rgba(255,255,255,0.2)", 1, "#1a2438"
+
+        parts.append(f"<rect x='{x}' y='{cy-BH/2:.1f}' width='{BW}' height='{BH}' "
+                     f"rx='5' fill='{fill}' stroke='{stroke}' stroke-width='{sw}'/>")
+
+        if confirmed and w:
+            # Show actual winner name inside box in green
+            sz = 9 if len(w) > 14 else 10
+            parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+4:.1f}' text-anchor='middle' "
+                         f"font-size='{sz}' fill='#00ff88' font-family='Arial' font-weight='900'>{w}</text>")
+            if score:
+                parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+12:.1f}' text-anchor='middle' "
+                             f"font-size='9' fill='rgba(255,255,255,0.4)' font-family='Arial'>{score}</text>")
+        elif w:
+            # Predicted winner below box
             parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+13:.1f}' text-anchor='middle' "
-                         f"font-size='10' fill='#FFD700' font-family='Arial' "
-                         f"font-weight='bold' font-style='italic'>→ {w}</text>")
+                         f"font-size='9' fill='#FFD700' font-family='Arial' "
+                         f"font-style='italic'>→ {w}</text>")
         return cy
 
     def draw_final_box(x, cy):
-        # 🏆 FINAL label above box
-        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH/2-4:.1f}' text-anchor='middle' "
-                     f"font-size='9' fill='#FFD700' font-family='Arial' "
-                     f"font-weight='900' letter-spacing='1'>🏆 FINAL</text>")
-        parts.append(box(x, cy, highlight=True))
-        # Champion below box
-        if champ_decided and champion:
+        w, confirmed = winner_of.get(FINAL[0], (None, False))
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH/2-5:.1f}' text-anchor='middle' "
+                     f"font-size='9' fill='#FFD700' font-family='Arial' font-weight='900' "
+                     f"letter-spacing='1'>🏆 FINAL</text>")
+        stroke = "#FFD700" if not confirmed else "#00cc66"
+        fill   = "#2a1a00" if not confirmed else "#0d2218"
+        parts.append(f"<rect x='{x}' y='{cy-BH/2:.1f}' width='{BW}' height='{BH}' "
+                     f"rx='5' fill='{fill}' stroke='{stroke}' stroke-width='2'/>")
+        if confirmed and w:
+            sz = 9 if len(w) > 14 else 11
+            parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+4:.1f}' text-anchor='middle' "
+                         f"font-size='{sz}' fill='#00ff88' font-family='Arial' font-weight='900'>★ {w}</text>")
+        elif w:
             parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+14:.1f}' text-anchor='middle' "
-                         f"font-size='11' fill='#FFD700' font-family='Arial' "
-                         f"font-weight='900'>★ {champion}</text>")
+                         f"font-size='11' fill='#FFD700' font-family='Arial' font-weight='900'>★ {w}</text>")
 
-    # Draw left R32
+    # ── Draw left side ─────────────────────────────────────────────────────────
+    left_r32_pairs = [("M74","M77"),("M73","M75"),("M76","M78"),("M79","M80")]
+    left_r16 = ["M89","M90","M91","M92"]
+    left_qf  = ["M97","M98"]
+
     for pi, (ma, mb) in enumerate(left_r32_pairs):
         ya = draw_r32_box(lx[0], pi, 0, ma)
         yb = draw_r32_box(lx[0], pi, 1, mb)
-        r16_mid = left_r16[pi]
         yc = r16_ys[pi]
         parts += connect_lr(lx[0]+BW, ya, yb, lx[1], yc)
-        draw_inner_box(lx[1], yc, r16_mid, r16_s)
+        draw_inner_box(lx[1], yc, left_r16[pi], r16_s)
 
-    # Draw left QF
     for qi in range(2):
-        ya = r16_ys[qi*2]
-        yb = r16_ys[qi*2+1]
-        yc = qf_ys[qi]
-        parts += connect_lr(lx[1]+BW, ya, yb, lx[2], yc)
-        draw_inner_box(lx[2], yc, left_qf[qi], qf_s)
+        parts += connect_lr(lx[1]+BW, r16_ys[qi*2], r16_ys[qi*2+1], lx[2], qf_ys[qi])
+        draw_inner_box(lx[2], qf_ys[qi], left_qf[qi], qf_s)
 
-    # Draw left SF
     parts += connect_lr(lx[2]+BW, qf_ys[0], qf_ys[1], lx[3], sf_y)
-    draw_inner_box(lx[3], sf_y, left_sf, sf_s)
-
-    # SF → Final (left)
+    draw_inner_box(lx[3], sf_y, SF[0][0], sf_s)
     parts.append(hline(lx[3]+BW, sf_y, fx, final_y))
 
-    # Draw right R32
+    # ── Draw right side ────────────────────────────────────────────────────────
+    right_r32_pairs = [("M83","M84"),("M81","M82"),("M86","M88"),("M85","M87")]
+    right_r16 = ["M93","M94","M95","M96"]
+    right_qf  = ["M99","M100"]
+
     for pi, (ma, mb) in enumerate(right_r32_pairs):
         ya = draw_r32_box(rx[0], pi, 0, ma)
         yb = draw_r32_box(rx[0], pi, 1, mb)
-        r16_mid = right_r16[pi]
         yc = r16_ys[pi]
         parts += connect_rl(rx[0], ya, yb, rx[1], yc)
-        draw_inner_box(rx[1], yc, r16_mid, r16_s)
+        draw_inner_box(rx[1], yc, right_r16[pi], r16_s)
 
-    # Draw right QF
     for qi in range(2):
-        ya = r16_ys[qi*2]
-        yb = r16_ys[qi*2+1]
-        yc = qf_ys[qi]
-        parts += connect_rl(rx[1], ya, yb, rx[2], yc)
-        draw_inner_box(rx[2], yc, right_qf[qi], qf_s)
+        parts += connect_rl(rx[1], r16_ys[qi*2], r16_ys[qi*2+1], rx[2], qf_ys[qi])
+        draw_inner_box(rx[2], qf_ys[qi], right_qf[qi], qf_s)
 
-    # Draw right SF
     parts += connect_rl(rx[2], qf_ys[0], qf_ys[1], rx[3], sf_y)
-    draw_inner_box(rx[3], sf_y, right_sf, sf_s)
-
-    # SF → Final (right)
+    draw_inner_box(rx[3], sf_y, SF[1][0], sf_s)
     parts.append(hline(rx[3], sf_y, fx+BW, final_y))
 
-    # Draw Final
     draw_final_box(fx, final_y)
 
-    svg_body = "".join(parts)
     svg_html = (
-        f"<div style='overflow-x:auto;padding:8px 0 16px;border-radius:12px;background:#0a0f1e'>"
+        f"<div style='overflow-x:auto;padding:8px 0 20px;border-radius:12px;background:#0a0f1e'>"
         f"<svg width='{SVG_W}' height='{SVG_H}' viewBox='0 0 {SVG_W} {SVG_H}' "
         f"xmlns='http://www.w3.org/2000/svg' style='display:block;margin:0 auto'>"
-        f"{svg_body}"
+        f"{''.join(parts)}"
         f"</svg></div>"
     )
     st.markdown(svg_html, unsafe_allow_html=True)
     st.markdown(
         "<p style='color:rgba(255,255,255,0.35);font-size:11px;text-align:center;margin-top:4px'>"
-        "Boxes = real qualified teams. → italic gold = model prediction. "
-        "3rd-place slots resolve June 27.</p>",
+        "<span style='color:#00ff88'>■</span> Confirmed result &nbsp;·&nbsp; "
+        "<span style='color:#FFD700'>■</span> Model prediction &nbsp;·&nbsp; "
+        "Scores shown below confirmed matches</p>",
         unsafe_allow_html=True
     )
 
-    # ── Predicted podium below SVG ─────────────────────────────────────────────
+    # ── Podium ─────────────────────────────────────────────────────────────────
     st.markdown("---")
     st.markdown("### 🥇 Model Predicted Podium")
     top3 = mc.head(3)
