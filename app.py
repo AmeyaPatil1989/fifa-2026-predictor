@@ -6,7 +6,7 @@ from urllib.parse import quote
 import datetime
 import streamlit.components.v1 as components
 from background_image import BG_IMAGE_B64
-from live_scores import fetch_live_scores, fetch_match_events, fetch_tournament_scores, fetch_match_scorers
+from live_scores import fetch_live_scores, fetch_match_events, fetch_tournament_scores, fetch_match_scorers, fetch_match_winner
 from live_predictions import live_win_probability, parse_minutes_elapsed
 from live_standings import compute_live_group_standings
 
@@ -423,6 +423,15 @@ def load_tournament_scores():
 def load_match_events(event_id):
     """Cached for 60s, keyed by event_id so each live match gets its own cache entry."""
     return fetch_match_events(event_id)
+
+@st.cache_data(ttl=300)
+def load_match_winner(event_id):
+    """
+    Cached for 5 minutes. Fetches the confirmed winner of a knockout match,
+    including penalty shootout results where the 90-minute score is a draw.
+    """
+    return fetch_match_winner(event_id)
+
 
 @st.cache_data(ttl=300)
 def load_match_scorers(event_id, home_team, away_team):
@@ -1311,7 +1320,7 @@ elif page == "🔲 Bracket":
             }
 
     def get_espn_result(team1, team2):
-        """Returns (status, winner, home_score, away_score) or None if not found/played."""
+        """Returns (status, winner, home_score, away_score, went_to_pens) or None if not found/played."""
         if not team1 or not team2:
             return None
         info = espn_ko.get((team1, team2)) or espn_ko.get((team2, team1))
@@ -1320,17 +1329,26 @@ elif page == "🔲 Bracket":
         hs, as_ = info.get("home_score"), info.get("away_score")
         if hs is None or as_ is None:
             return None
-        # Determine winner (no draws in knockout — extra time/pens possible but ESPN marks winner)
         ht = info.get("home_team") or team1
         at = info.get("away_team") or team2
+        went_to_pens = False
         if hs > as_:
             winner = ht
         elif as_ > hs:
             winner = at
         else:
-            winner = None  # draw displayed, winner TBD (e.g. pens not yet decided)
+            # Knockout tie at 90 min — check penalty shootout winner via the
+            # match summary endpoint (ESPN's score fields don't include pens,
+            # but the competitor "winner" flag does).
+            winner = None
+            event_id = info.get("event_id")
+            if event_id:
+                pen_result = load_match_winner(event_id)
+                if pen_result.get("winner"):
+                    winner = pen_result["winner"]
+                    went_to_pens = pen_result.get("went_to_pens", False)
         return {"status": "post", "winner": winner, "home_score": hs, "away_score": as_,
-                "home_team": ht, "away_team": at}
+                "home_team": ht, "away_team": at, "went_to_pens": went_to_pens}
 
     # ── Slot resolution ────────────────────────────────────────────────────────
     def get_team(standings, slot_type, slot_val):
@@ -1376,7 +1394,10 @@ elif page == "🔲 Bracket":
             l = lb if w == la else la
             winner_of[match_id]    = (w, True)   # True = actual confirmed result
             loser_of[match_id]     = l
-            scoreline_of[match_id] = f"{result['home_score']} — {result['away_score']}"
+            score_str = f"{result['home_score']} — {result['away_score']}"
+            if result.get("went_to_pens"):
+                score_str += " (pens)"
+            scoreline_of[match_id] = score_str
         else:
             w = predict_winner(la, lb, da, db)
             winner_of[match_id]    = (w, False)  # False = model prediction

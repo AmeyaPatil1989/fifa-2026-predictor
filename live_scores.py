@@ -146,6 +146,47 @@ def fetch_match_scorers(event_id: str, home_team: str = None, away_team: str = N
     return scorers
 
 
+def fetch_match_winner(event_id: str, timeout=8) -> dict:
+    """
+    Fetches the confirmed winner of a match using ESPN's summary endpoint,
+    including matches decided by a penalty shootout (where the 90-minute
+    scoreline alone is a draw and doesn't reflect who actually advanced).
+
+    Returns:
+        {
+            "winner": str or None (normalized team name of the winner, or
+                      None if no winner field is set / not yet decided),
+            "went_to_pens": bool,
+            "detail": str (e.g. "FT-Pens", "FT", "AET")
+        }
+    Returns {"winner": None, "went_to_pens": False, "detail": ""} on any failure.
+    """
+    url = f"https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/summary?event={event_id}"
+    fallback = {"winner": None, "went_to_pens": False, "detail": ""}
+    try:
+        resp = requests.get(url, timeout=timeout)
+        resp.raise_for_status()
+        data = resp.json()
+    except Exception:
+        return fallback
+
+    try:
+        comp = data.get("header", {}).get("competitions", [{}])[0]
+        status_type = comp.get("status", {}).get("type", {})
+        detail = status_type.get("shortDetail", "")
+        went_to_pens = status_type.get("name", "") == "STATUS_FINAL_PEN"
+
+        winner_name = None
+        for c in comp.get("competitors", []):
+            if c.get("winner") is True:
+                winner_name = normalise_espn_team(c.get("team", {}).get("displayName", ""))
+                break
+
+        return {"winner": winner_name, "went_to_pens": went_to_pens, "detail": detail}
+    except Exception:
+        return fallback
+
+
 def fetch_live_scores(timeout=8, dates=None) -> dict:
     """
     Returns a dict keyed by (home_team, away_team) normalized tuple, with values:
