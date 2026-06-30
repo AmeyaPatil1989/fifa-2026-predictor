@@ -820,10 +820,21 @@ except FileNotFoundError:
 
 # ══ PAGE 1: TODAY'S MATCHES ═══════════════════════════════════════════════════
 if page == "📅 Today's Matches":
-    # Auto-refresh every 60s when a match is live
+    # Auto-refresh every 60s when a match is live — uses st.rerun() via
+    # a time-based check so session state (current page) is preserved.
+    # meta refresh would reset the page; this doesn't.
     _lv = load_live_scores()
-    if any(info["status"] == "in" for info in (_lv or {}).values()):
-        st.markdown("<meta http-equiv='refresh' content='60'>", unsafe_allow_html=True)
+    _has_live = any(info["status"] == "in" for info in (_lv or {}).values())
+    if _has_live:
+        if "last_live_rerun" not in st.session_state:
+            st.session_state.last_live_rerun = datetime.datetime.utcnow()
+        _elapsed = (datetime.datetime.utcnow() - st.session_state.last_live_rerun).total_seconds()
+        if _elapsed >= 60:
+            st.session_state.last_live_rerun = datetime.datetime.utcnow()
+            st.rerun()
+        else:
+            _remaining = int(60 - _elapsed)
+            st.caption(f"🔴 Live — refreshing in {_remaining}s")
     st.markdown(
         f"<h1 style='display:flex;align-items:center;gap:10px'>{soccer_ball(36)} "
         f"2026 FIFA World Cup Predictions</h1>",
@@ -1415,10 +1426,14 @@ elif page == "🔲 Bracket":
     def chain_resolve(match_id, src_a, src_b, slots_dict):
         wa, ca = winner_of.get(src_a, (None, False))
         wb, cb = winner_of.get(src_b, (None, False))
-        la = wa or f"W{src_a}"
-        lb = wb or f"W{src_b}"
-        da = ca or (wa is not None)
-        db = cb or (wb is not None)
+        # "Known" team = only when the SOURCE match is a CONFIRMED actual
+        # result, never a model prediction. This prevents fictional certainty
+        # (e.g. "France beat Brazil" before that match has even been played)
+        # from cascading down into showing a populated Final/SF box.
+        la = wa if ca else f"W{src_a}"
+        lb = wb if cb else f"W{src_b}"
+        da = ca
+        db = cb
         slots_dict[match_id] = (la, lb, da, db)
         resolve_match(match_id, None, None, la, lb, da, db)
 
