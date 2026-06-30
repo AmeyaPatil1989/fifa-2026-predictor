@@ -1553,6 +1553,7 @@ elif page == "🔲 Bracket":
         w, confirmed = winner_of.get(mid, (None, False))
         score = scoreline_of.get(mid)
         loser = loser_of.get(mid)
+        both_known = da and db  # both feeding matches have real (non-placeholder) teams
 
         # M# above box
         parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH/2-5:.1f}' text-anchor='middle' "
@@ -1560,25 +1561,50 @@ elif page == "🔲 Bracket":
 
         if confirmed:
             stroke, sw, fill = "#00cc66", 1.5, "#0d2218"
+        elif both_known:
+            stroke, sw, fill = "rgba(255,255,255,0.3)", 1, "#1a2438"
         else:
-            stroke, sw, fill = "rgba(255,255,255,0.2)", 1, "#1a2438"
-
-        parts.append(f"<rect x='{x}' y='{cy-BH/2:.1f}' width='{BW}' height='{BH}' "
-                     f"rx='5' fill='{fill}' stroke='{stroke}' stroke-width='{sw}'/>")
+            stroke, sw, fill = "rgba(255,255,255,0.15)", 1, "#1a2438"
 
         if confirmed and w:
-            # Show actual winner name inside box in green
+            # Match played: single green winner name, normal height box
+            parts.append(f"<rect x='{x}' y='{cy-BH/2:.1f}' width='{BW}' height='{BH}' "
+                         f"rx='5' fill='{fill}' stroke='{stroke}' stroke-width='{sw}'/>")
             sz = 9 if len(w) > 14 else 10
             parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+4:.1f}' text-anchor='middle' "
                          f"font-size='{sz}' fill='#00ff88' font-family='Arial' font-weight='900'>{w}</text>")
             if score:
                 parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+12:.1f}' text-anchor='middle' "
                              f"font-size='9' fill='rgba(255,255,255,0.4)' font-family='Arial'>{score}</text>")
-        elif w:
-            # Predicted winner below box
-            parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+13:.1f}' text-anchor='middle' "
-                         f"font-size='9' fill='#FFD700' font-family='Arial' "
-                         f"font-style='italic'>→ {w}</text>")
+        elif both_known:
+            # Both teams known, match not yet played: show both names stacked
+            # inside a taller box (same style as R32 boxes), prediction below.
+            bh2 = BH * 2 + 4
+            parts.append(f"<rect x='{x}' y='{cy-bh2/2:.1f}' width='{BW}' height='{bh2}' "
+                         f"rx='5' fill='{fill}' stroke='{stroke}' stroke-width='{sw}'/>")
+            parts.append(f"<line x1='{x+6}' y1='{cy:.1f}' x2='{x+BW-6}' y2='{cy:.1f}' "
+                         f"stroke='rgba(255,255,255,0.08)' stroke-width='0.5'/>")
+            c1 = "#FFD700" if w == la else "white"
+            c2 = "#FFD700" if w == lb else "white"
+            s1 = 9 if len(la) > 14 else 10
+            s2 = 9 if len(lb) > 14 else 10
+            parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-6:.1f}' text-anchor='middle' "
+                         f"font-size='{s1}' fill='{c1}' font-family='Arial' font-weight='bold'>{la}</text>")
+            parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+14:.1f}' text-anchor='middle' "
+                         f"font-size='{s2}' fill='{c2}' font-family='Arial' font-weight='bold'>{lb}</text>")
+            if w:
+                parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+bh2/2+14:.1f}' text-anchor='middle' "
+                             f"font-size='9' fill='#FFD700' font-family='Arial' "
+                             f"font-style='italic'>→ {w}</text>")
+            return cy
+        else:
+            # Neither feeder confirmed yet — empty box, prediction below only
+            parts.append(f"<rect x='{x}' y='{cy-BH/2:.1f}' width='{BW}' height='{BH}' "
+                         f"rx='5' fill='{fill}' stroke='{stroke}' stroke-width='{sw}'/>")
+            if w:
+                parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+13:.1f}' text-anchor='middle' "
+                             f"font-size='9' fill='#FFD700' font-family='Arial' "
+                             f"font-style='italic'>→ {w}</text>")
         return cy
 
     def draw_final_box(x, cy):
