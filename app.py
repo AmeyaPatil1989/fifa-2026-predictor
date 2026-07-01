@@ -1306,6 +1306,26 @@ elif page == "🔲 Bracket":
     SF  = [("M101","M97","M98"),("M102","M99","M100")]
     FINAL = ("M104","M101","M102")
 
+    # ── R32 match schedule (date + kickoff time ET) ───────────────────────────
+    R32_SCHEDULE = {
+        "M73": ("Sat, Jun 28", "12:00 PM"),
+        "M74": ("Sun, Jun 29", "12:00 PM"),
+        "M75": ("Sun, Jun 29", "3:00 PM"),
+        "M76": ("Sun, Jun 29", "6:00 PM"),
+        "M77": ("Mon, Jun 30", "12:00 PM"),
+        "M78": ("Mon, Jun 30", "3:00 PM"),
+        "M79": ("Mon, Jun 30", "9:00 PM"),
+        "M80": ("Tue, Jul 1",  "12:00 PM"),
+        "M81": ("Tue, Jul 1",  "3:00 PM"),
+        "M82": ("Tue, Jul 1",  "6:00 PM"),
+        "M83": ("Wed, Jul 2",  "12:00 PM"),
+        "M84": ("Wed, Jul 2",  "3:00 PM"),
+        "M85": ("Wed, Jul 2",  "6:00 PM"),
+        "M86": ("Thu, Jul 3",  "12:00 PM"),
+        "M87": ("Thu, Jul 3",  "3:00 PM"),
+        "M88": ("Thu, Jul 3",  "6:00 PM"),
+    }
+
     # ── Confirmed Annex C third-place assignments ──────────────────────────────
     THIRD_PLACE_LOOKUP = {
         "A/B/C/D/F":   "Paraguay",
@@ -1461,7 +1481,7 @@ elif page == "🔲 Bracket":
     PAIR_GAP  = 56
 
     def r32_y(pair_idx, match_in_pair):
-        return 60 + pair_idx * (2 * R32_VSTEP + PAIR_GAP) + match_in_pair * R32_VSTEP
+        return 80 + pair_idx * (2 * R32_VSTEP + PAIR_GAP) + match_in_pair * R32_VSTEP
 
     r32_ys = [r32_y(p, m) for p in range(4) for m in range(2)]
     r16_ys = [(r32_ys[i*2] + r32_ys[i*2+1]) / 2 for i in range(4)]
@@ -1507,10 +1527,17 @@ elif page == "🔲 Bracket":
         w, confirmed = winner_of.get(mid, (None, False))
         score = scoreline_of.get(mid)
         loser = loser_of.get(mid)
+        sched = R32_SCHEDULE.get(mid, ("", ""))
 
-        # M# above box
+        # Date + time above box
+        if sched[0]:
+            date_str = f"{sched[0]}, {sched[1]}"
+            parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH-18:.1f}' text-anchor='middle' "
+                         f"font-size='8' fill='rgba(255,215,0,0.6)' font-family='Arial' "
+                         f"font-weight='bold'>{date_str}</text>")
+        # M# below date
         parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH-6:.1f}' text-anchor='middle' "
-                     f"font-size='8' fill='rgba(255,255,255,0.25)' font-family='Arial'>{mid}</text>")
+                     f"font-size='7' fill='rgba(255,255,255,0.2)' font-family='Arial'>{mid}</text>")
 
         # Tall box fitting 2 teams
         bh2 = BH * 2 + 4
