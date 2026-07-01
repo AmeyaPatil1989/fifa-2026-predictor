@@ -1080,10 +1080,65 @@ elif page == "📊 All Predictions":
 # ══ PAGE 3: TOURNAMENT ODDS ════════════════════════════════════════════════════
 elif page == "🏆 Tournament Odds":
     st.title("🏆 World Cup Win Probabilities")
-    st.caption("Each team's chance of winning the entire tournament")
 
-    top_n = st.slider("Show top N teams", 10, 48, 24)
-    chart_data = mc.head(top_n).copy()
+    # ── Filter to still-alive teams only ──────────────────────────────────────
+    # Determine which teams are still in the tournament by checking:
+    # 1. Knockout stage: use ESPN live knockout results to see who has been
+    #    eliminated (lost a R32/R16/QF/SF match).
+    # 2. Group stage: E = eliminated, Q/M = still alive.
+    # Build a set of eliminated teams from ESPN knockout results.
+    _ko_data = load_tournament_scores()
+    _eliminated = set()
+    _ko_team_pairs = [
+        ("South Africa","Canada"),("Germany","Paraguay"),("Netherlands","Morocco"),
+        ("Ivory Coast","Norway"),("France","Sweden"),("Mexico","Ecuador"),
+        ("England","DR Congo"),("Belgium","Senegal"),("United States","Bosnia and Herzegovina"),
+        ("Spain","Austria"),("Portugal","Croatia"),("Switzerland","Algeria"),
+        ("Australia","Egypt"),("Argentina","Cape Verde"),("Colombia","Ghana"),
+        ("Brazil","Japan"),
+    ]
+    for ht, at in _ko_team_pairs:
+        info = (_ko_data or {}).get((ht, at)) or (_ko_data or {}).get((at, ht))
+        if not info or info.get("status") != "post":
+            continue
+        hs, as_ = info.get("home_score"), info.get("away_score")
+        if hs is None or as_ is None:
+            continue
+        # For draws (pens), fetch actual winner
+        if hs == as_:
+            eid = info.get("event_id")
+            if eid:
+                try:
+                    pen = load_match_winner(eid)
+                    winner_name = pen.get("winner")
+                    if winner_name:
+                        loser_name = at if winner_name == ht else ht
+                        _eliminated.add(loser_name)
+                except Exception:
+                    pass
+        else:
+            loser_name = at if hs > as_ else ht
+            _eliminated.add(loser_name)
+
+    # Also add group-stage eliminated teams
+    if standings_df is not None:
+        _gs_elim = set(standings_df[standings_df["qualified"] == "E"]["team"].tolist())
+        _eliminated.update(_gs_elim)
+
+    # Filter MC dataframe to alive teams only, rescale to 100%
+    mc_alive = mc[~mc["team"].isin(_eliminated)].copy()
+    total_pct = mc_alive["win_pct"].sum()
+    if total_pct > 0:
+        mc_alive["win_pct"] = (mc_alive["win_pct"] / total_pct * 100).round(2)
+        mc_alive["win_probability"] = mc_alive["win_pct"] / 100
+    mc_alive = mc_alive.reset_index(drop=True)
+    mc_alive["rank"] = range(1, len(mc_alive) + 1)
+
+    n_alive = len(mc_alive)
+    st.caption(f"{n_alive} teams remaining · Probabilities rescaled to 100% among active teams")
+
+    top_n = st.slider("Show top N teams", min(10, n_alive), n_alive, min(n_alive, 24))
+    chart_data = mc_alive.head(top_n).copy()
 
     fig = go.Figure()
     for _, row in chart_data.iterrows():
@@ -1130,7 +1185,7 @@ elif page == "🏆 Tournament Odds":
     col1, col2 = st.columns(2)
     with col1:
         st.markdown("### Full Rankings")
-        disp = mc[["rank", "team", "group", "win_pct", "elo"]].copy()
+        disp = mc_alive[["rank", "team", "group", "win_pct", "elo"]].copy()
         disp["win_pct"] = disp["win_pct"].apply(lambda x: f"{x:.2f}%")
         disp["elo"] = disp["elo"].apply(lambda x: f"{x:.0f}")
         st.dataframe(disp.rename(columns={
@@ -1140,8 +1195,8 @@ elif page == "🏆 Tournament Odds":
 
     with col2:
         st.markdown("### Group Favorites")
-        for grp in sorted(mc["group"].unique()):
-            top = mc[mc["group"] == grp].iloc[0]
+        for grp in sorted(mc_alive["group"].unique()):
+            top = mc_alive[mc_alive["group"] == grp].iloc[0]
             color = gc(top["team"])["primary"]
             st.markdown(
                 f"<div style='border-left:4px solid {color};padding:7px 14px;"
