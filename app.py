@@ -1584,18 +1584,19 @@ elif page == "🔲 Bracket":
         loser = loser_of.get(mid)
         sched = R32_SCHEDULE.get(mid, ("", ""))
 
-        # Date + time above box
-        if sched[0]:
-            date_str = f"{sched[0]}, {sched[1]}"
-            parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH-18:.1f}' text-anchor='middle' "
-                         f"font-size='8' fill='rgba(255,215,0,0.6)' font-family='Arial' "
-                         f"font-weight='bold'>{date_str}</text>")
-        # M# below date
-        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH-6:.1f}' text-anchor='middle' "
+        # Tall box height — needed for label positioning below
+        bh2 = BH * 2 + 4
+
+        # M# above box
+        parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-bh2/2-5:.1f}' text-anchor='middle' "
                      f"font-size='7' fill='rgba(255,255,255,0.2)' font-family='Arial'>{mid}</text>")
 
-        # Tall box fitting 2 teams
-        bh2 = BH * 2 + 4
+        # Date + time: only for upcoming (unplayed) matches, shown below the box
+        if sched[0] and not confirmed:
+            date_str = f"{sched[0]}, {sched[1]}"
+            parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+bh2/2+26:.1f}' text-anchor='middle' "
+                         f"font-size='8' fill='rgba(255,215,0,0.55)' font-family='Arial' "
+                         f"font-weight='bold'>{date_str}</text>")
         if confirmed:
             stroke, sw = "#00cc66", 1.5
         else:
