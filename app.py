@@ -1646,6 +1646,30 @@ elif page == "🔲 Bracket":
                          f"font-style='italic'>→ {w}</text>")
         return cy
 
+    def get_kickoff_label(team1, team2):
+        """
+        Look up ESPN kickoff time for an upcoming inner-round match.
+        Returns a formatted string like "Sat, Jul 4, 10:00 AM" or "" if not found.
+        team1/team2 are the actual confirmed team names (not placeholders).
+        """
+        if not team1 or not team2:
+            return ""
+        info = espn_ko.get((team1, team2)) or espn_ko.get((team2, team1))
+        if not info or info.get("status") != "pre":
+            return ""
+        kt = info.get("kickoff_time", "")
+        if not kt:
+            return ""
+        try:
+            from zoneinfo import ZoneInfo
+            dt = datetime.datetime.fromisoformat(kt.replace("Z", "+00:00"))
+            dt_et = dt.astimezone(ZoneInfo("America/New_York"))
+            day = dt_et.strftime("%a, %b %-d")
+            time = dt_et.strftime("%-I:%M %p")
+            return f"{day}, {time}"
+        except Exception:
+            return ""
+
     def draw_inner_box(x, cy, mid, slots_dict):
         la, lb, da, db = slots_dict[mid]
         w, confirmed = winner_of.get(mid, (None, False))
@@ -1694,6 +1718,13 @@ elif page == "🔲 Bracket":
                 parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+bh2/2+14:.1f}' text-anchor='middle' "
                              f"font-size='9' fill='#FFD700' font-family='Arial' "
                              f"font-style='italic'>→ {w}</text>")
+            # Kickoff date/time from ESPN for upcoming matches
+            _kt_label = get_kickoff_label(la, lb)
+            if _kt_label:
+                _kt_y = cy + bh2/2 + (28 if w else 14)
+                parts.append(f"<text x='{x+BW/2:.1f}' y='{_kt_y:.1f}' text-anchor='middle' "
+                             f"font-size='8' fill='rgba(255,215,0,0.55)' font-family='Arial' "
+                             f"font-weight='bold'>{_kt_label}</text>")
             return cy
         else:
             # Neither feeder confirmed yet — empty box, prediction below only
