@@ -110,6 +110,53 @@ def get_wc_2026_fixtures(results: pd.DataFrame) -> pd.DataFrame:
         (results["tournament"] == "FIFA World Cup") &
         (results["date"].dt.year == 2026)
     ].copy().reset_index(drop=True)
+
+    # ── Merge ESPN knockout results ────────────────────────────────────────────
+    # espn_sync.py writes knockout_results.csv with confirmed scores and
+    # upcoming fixtures that the international_results repo may be missing.
+    ko_path = BASE_DIR / "knockout_results.csv"
+    if ko_path.exists():
+        try:
+            ko = pd.read_csv(ko_path, parse_dates=["date"])
+
+            # For each ESPN fixture, check if it already exists in wc.
+            # If yes: update scores/completed. If no: append as new row.
+            for _, kr in ko.iterrows():
+                mask = (
+                    (wc["home_team"] == kr["home_team"]) &
+                    (wc["away_team"] == kr["away_team"]) &
+                    (wc["date"].dt.date == kr["date"].date())
+                )
+                if mask.any():
+                    # Update existing row with ESPN scores if available
+                    if pd.notna(kr.get("home_score")) and pd.notna(kr.get("away_score")):
+                        wc.loc[mask, "home_score"] = float(kr["home_score"])
+                        wc.loc[mask, "away_score"] = float(kr["away_score"])
+                        wc.loc[mask, "completed"] = True
+                else:
+                    # New fixture not in repo — append it
+                    new_row = {
+                        "date": kr["date"],
+                        "home_team": kr["home_team"],
+                        "away_team": kr["away_team"],
+                        "home_score": float(kr["home_score"]) if pd.notna(kr.get("home_score")) else None,
+                        "away_score": float(kr["away_score"]) if pd.notna(kr.get("away_score")) else None,
+                        "tournament": "FIFA World Cup",
+                        "city": kr.get("city", ""),
+                        "country": kr.get("country", ""),
+                        "neutral": True,
+                        "completed": pd.notna(kr.get("home_score")) and pd.notna(kr.get("away_score")),
+                        "tournament_weight": 4.0,
+                    }
+                    wc = pd.concat(
+                        [wc, pd.DataFrame([new_row])],
+                        ignore_index=True
+                    )
+
+            wc = wc.sort_values("date").reset_index(drop=True)
+        except Exception as e:
+            print(f"Warning: could not merge knockout_results.csv: {e}")
+
     return wc
 
 
