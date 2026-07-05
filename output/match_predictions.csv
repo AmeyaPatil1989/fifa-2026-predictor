@@ -80,23 +80,24 @@ date,home_team,away_team,city,country,home_elo,away_elo,p_home_win,p_draw,p_away
 2026-06-30,Netherlands,Morocco,Guadalupe,Mexico,2115.7,2123.9,0.3229,0.2665,0.4106,1.17,1.36,Away Win,True,1.0,1.0,Draw
 2026-06-30,Mexico,Ecuador,Mexico City,Mexico,2070.8,2044.1,0.4704,0.2659,0.2637,1.44,1.0,Home Win,False,,,Upcoming
 2026-07-01,England,DR Congo,Atlanta,United States,2167.5,1934.9,0.5545,0.2516,0.194,1.59,0.82,Home Win,True,2.0,1.0,Home Win
-2026-07-01,Belgium,Senegal,Seattle,United States,1985.0,1969.2,0.3881,0.2668,0.3451,1.32,1.23,Home Win,True,3.0,2.0,Home Win
-2026-07-01,United States,Bosnia and Herzegovina,Santa Clara,United States,1978.5,1806.9,0.6362,0.2076,0.1563,2.0,0.88,Home Win,False,,,Upcoming
 2026-07-01,Mexico,Ecuador,Mexico City,Mexico,2070.8,2044.1,0.3935,0.2781,0.3284,1.25,1.12,Home Win,True,2.0,0.0,Home Win
+2026-07-01,United States,Bosnia and Herzegovina,Santa Clara,United States,1978.5,1806.9,0.6362,0.2076,0.1563,2.0,0.88,Home Win,False,,,Upcoming
+2026-07-01,Belgium,Senegal,Seattle,United States,1985.0,1969.2,0.3881,0.2668,0.3451,1.32,1.23,Home Win,True,3.0,2.0,Home Win
 2026-07-02,Spain,Austria,Inglewood,United States,2211.6,1912.8,0.5686,0.2306,0.2008,1.8,0.97,Home Win,True,3.0,0.0,Home Win
-2026-07-02,Portugal,Croatia,Toronto,Canada,2060.6,2009.6,0.4838,0.2436,0.2726,1.65,1.18,Home Win,True,2.0,1.0,Home Win
-2026-07-02,Switzerland,Algeria,Vancouver,Canada,2085.9,1926.1,0.3779,0.2543,0.3679,1.4,1.37,Home Win,False,,,Upcoming
 2026-07-02,United States,Bosnia and Herzegovina,"Santa Clara, California",USA,1978.5,1806.9,0.5543,0.2361,0.2096,1.74,0.97,Home Win,True,2.0,0.0,Home Win
-2026-07-03,Argentina,Cape Verde,Miami Gardens,United States,2243.8,1804.4,0.6505,0.2219,0.1276,1.79,0.64,Home Win,True,3.0,2.0,Home Win
+2026-07-02,Switzerland,Algeria,Vancouver,Canada,2085.9,1926.1,0.3779,0.2543,0.3679,1.4,1.37,Home Win,False,,,Upcoming
+2026-07-02,Portugal,Croatia,Toronto,Canada,2060.6,2009.6,0.4838,0.2436,0.2726,1.65,1.18,Home Win,True,2.0,1.0,Home Win
 2026-07-03,Switzerland,Algeria,Vancouver,Canada,2085.9,1926.1,0.3779,0.2543,0.3679,1.4,1.37,Home Win,True,2.0,0.0,Home Win
 2026-07-03,Australia,Egypt,Arlington,United States,2002.4,1936.7,0.4028,0.2776,0.3196,1.27,1.1,Home Win,True,1.0,1.0,Draw
+2026-07-03,Argentina,Cape Verde,Miami Gardens,United States,2243.8,1804.4,0.6505,0.2219,0.1276,1.79,0.64,Home Win,True,3.0,2.0,Home Win
 2026-07-03,Colombia,Ghana,Kansas City,United States,2130.8,1825.6,0.5483,0.2516,0.2,1.59,0.85,Home Win,False,,,Upcoming
-2026-07-04,Paraguay,France,"Philadelphia, Pennsylvania",USA,1992.1,2308.0,0.1486,0.2179,0.6336,0.77,1.87,Away Win,False,,,Upcoming
-2026-07-04,Canada,Morocco,Houston,United States,1898.5,2123.9,0.2376,0.2609,0.5015,0.94,1.5,Away Win,False,,,Upcoming
+2026-07-04,Canada,Morocco,Houston,United States,1898.5,2123.9,0.2376,0.2609,0.5015,0.94,1.5,Away Win,True,0.0,3.0,Away Win
 2026-07-04,Colombia,Ghana,"Kansas City, Missouri",USA,2130.8,1825.6,0.5483,0.2516,0.2,1.59,0.85,Home Win,True,1.0,0.0,Home Win
-2026-07-05,Brazil,Norway,"East Rutherford, New Jersey",USA,2195.9,2083.3,0.4613,0.2563,0.2824,1.51,1.12,Home Win,False,,,Upcoming
-2026-07-06,Mexico,England,Mexico City,Mexico,2070.8,2167.5,0.2607,0.2595,0.4798,1.03,1.5,Away Win,False,,,Upcoming
+2026-07-04,Paraguay,France,"Philadelphia, Pennsylvania",USA,1992.1,2308.0,0.1486,0.2179,0.6336,0.77,1.87,Away Win,True,0.0,1.0,Away Win
+2026-07-05,Brazil,Norway,"East Rutherford, New Jersey",USA,2195.9,2083.3,0.4613,0.2563,0.2824,1.51,1.12,Home Win,True,1.0,2.0,Away Win
 2026-07-06,Portugal,Spain,"Arlington, Texas",USA,2060.6,2211.6,0.3022,0.2533,0.4445,1.21,1.52,Away Win,False,,,Upcoming
+2026-07-06,Mexico,England,Mexico City,Mexico,2070.8,2167.5,0.2607,0.2595,0.4798,1.03,1.5,Away Win,False,,,Upcoming
 2026-07-07,United States,Belgium,"Seattle, Washington",USA,1978.5,1985.0,0.3247,0.253,0.4223,1.28,1.49,Away Win,False,,,Upcoming
 2026-07-07,Argentina,Egypt,"Atlanta, Georgia",USA,2243.8,1936.7,0.5452,0.2569,0.1979,1.54,0.81,Home Win,False,,,Upcoming
 2026-07-07,Switzerland,Colombia,Vancouver,Canada,2085.9,2130.8,0.3356,0.2631,0.4013,1.23,1.37,Away Win,False,,,Upcoming
+2026-07-09,France,Morocco,"Foxborough, Massachusetts",USA,2308.0,2123.9,0.4125,0.271,0.3165,1.33,1.13,Home Win,False,,,Upcoming
