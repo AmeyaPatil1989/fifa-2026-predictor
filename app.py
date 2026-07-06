@@ -964,7 +964,12 @@ if page == "📅 Today's Matches":
             return result
 
         if _is_today:
-            live_data = _build_live_data(load_live_scores())
+            # Always use tournament feed as base � today-only feed drops finished matches
+            _tourney_base = load_tournament_scores()
+            live_data = _build_live_data(_tourney_base)
+            # Overlay fresh live feed for in-progress matches
+            _fresh = _build_live_data(load_live_scores())
+            live_data.update(_fresh)
         else:
             tournament_data = load_tournament_scores()
             live_data = _build_live_data(tournament_data)
@@ -2097,4 +2102,5 @@ elif page == "🔍 Head to Head":
                 f"</div>",
                 unsafe_allow_html=True
             )
+
 
