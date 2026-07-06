@@ -941,30 +941,37 @@ if page == "📅 Today's Matches":
         # matches update quickly. Any other date (including past matches our
         # own pipeline hasn't synced yet) falls back to the slower-cached
         # tournament-wide feed, which still has historical results.
-        if selected_date == datetime.date.today():
-            live_data = load_live_scores()
+        # Use client local date (from query param) for today comparison —
+        # server datetime.date.today() is UTC and wrong for non-UTC viewers.
+        _client_today = _client_date  # set earlier from ?local_date= param
+        _is_today = (_client_today is not None and selected_date == _client_today) or (
+            _client_today is None and selected_date == datetime.date.today()
+        )
+
+        day_team_pairs = set(zip(day_matches["home_team"], day_matches["away_team"]))
+
+        def _build_live_data(source_dict):
+            """Build live_data with ESPN home/away swap fix applied."""
+            result = {}
+            for espn_key, info in source_dict.items():
+                a, b = espn_key
+                if (a, b) in day_team_pairs:
+                    result[(a, b)] = info
+                elif (b, a) in day_team_pairs:
+                    swapped = dict(info)
+                    swapped["home_score"], swapped["away_score"] = info["away_score"], info["home_score"]
+                    result[(b, a)] = swapped
+            return result
+
+        if _is_today:
+            live_data = _build_live_data(load_live_scores())
         else:
             tournament_data = load_tournament_scores()
-            # Match by team pair, not by comparing kickoff_time's UTC calendar
-            # date against selected_date — ESPN's kickoff_time is in UTC, but
-            # an evening match in the Americas can cross into the next UTC
-            # day (e.g. a 7pm Mexico kickoff is 1am UTC the following day),
-            # which would silently fail a plain date-string comparison even
-            # though it's unambiguously the correct match.
-            day_team_pairs = set(zip(day_matches["home_team"], day_matches["away_team"]))
-            live_data = {
-                teams: info for teams, info in tournament_data.items()
-                if teams in day_team_pairs
-            }
-            # Always overlay the fresh 60s-cached live feed on top, regardless
-            # of date. This catches late-evening matches that cross midnight UTC
-            # (e.g. a 11pm ET kickoff = 3am UTC next day) — the tournament feed
-            # has a 10min cache and may still show "pre" for a match that just
-            # kicked off, while load_live_scores() always has the current state.
+            live_data = _build_live_data(tournament_data)
+            # Overlay fresh live feed on top for any late matches
             fresh_live = load_live_scores()
-            for teams, info in fresh_live.items():
-                if teams in day_team_pairs:
-                    live_data[teams] = info  # fresh data wins over stale cache
+            fresh_built = _build_live_data(fresh_live)
+            live_data.update(fresh_built)
 
         # Sort by ESPN kickoff time when we have it for this date (more reliable
         # than our own data, which only stores date not time-of-day); matches
@@ -978,7 +985,7 @@ if page == "📅 Today's Matches":
             ).sort_values("_sort_key").drop(columns="_sort_key")
 
         st.markdown(f"**{selected_date.strftime('%A, %B %d, %Y')} · {len(day_matches)} match(es)**")
-        if selected_date == datetime.date.today():
+        if _is_today:
             n_live = sum(1 for info in live_data.values() if info["status"] == "in") if live_data else 0
             if n_live > 0:
                 st.caption(f"🔴 {n_live} match(es) live now")
