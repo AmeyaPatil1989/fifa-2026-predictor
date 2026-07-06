@@ -1099,36 +1099,40 @@ elif page == "🏆 Tournament Odds":
     # Build a set of eliminated teams from ESPN knockout results.
     _ko_data = load_tournament_scores()
     _eliminated = set()
-    _ko_team_pairs = [
-        ("South Africa","Canada"),("Germany","Paraguay"),("Netherlands","Morocco"),
-        ("Ivory Coast","Norway"),("France","Sweden"),("Mexico","Ecuador"),
-        ("England","DR Congo"),("Belgium","Senegal"),("United States","Bosnia and Herzegovina"),
-        ("Spain","Austria"),("Portugal","Croatia"),("Switzerland","Algeria"),
-        ("Australia","Egypt"),("Argentina","Cape Verde"),("Colombia","Ghana"),
-        ("Brazil","Japan"),
-    ]
-    for ht, at in _ko_team_pairs:
-        info = (_ko_data or {}).get((ht, at)) or (_ko_data or {}).get((at, ht))
-        if not info or info.get("status") != "post":
-            continue
-        hs, as_ = info.get("home_score"), info.get("away_score")
-        if hs is None or as_ is None:
-            continue
-        # For draws (pens), fetch actual winner
-        if hs == as_:
-            eid = info.get("event_id")
-            if eid:
-                try:
-                    pen = load_match_winner(eid)
-                    winner_name = pen.get("winner")
-                    if winner_name:
-                        loser_name = at if winner_name == ht else ht
-                        _eliminated.add(loser_name)
-                except Exception:
-                    pass
-        else:
-            loser_name = at if hs > as_ else ht
-            _eliminated.add(loser_name)
+
+    # Dynamically find all eliminated teams from ANY completed knockout match.
+    # This covers R32, R16, QF, SF automatically — no hardcoded pairs needed.
+    # A knockout match is identified by: post-group-stage date + FIFA World Cup.
+    # We scan all ESPN matches and add losers from any post-Jun-27 completed match.
+    if _ko_data:
+        for (ht, at), info in _ko_data.items():
+            if info.get("status") != "post":
+                continue
+            # Only knockout stage (after group stage end date)
+            kt = info.get("kickoff_time", "")
+            if kt and kt[:10] <= "2026-06-27":
+                continue
+            hs, as_ = info.get("home_score"), info.get("away_score")
+            if hs is None or as_ is None:
+                continue
+            # Skip placeholder team names
+            if any(w in ht or w in at for w in ["Winner", "Loser", "Round", "Semifinal"]):
+                continue
+            if hs == as_:
+                # Penalty shootout — fetch actual winner
+                eid = info.get("event_id")
+                if eid:
+                    try:
+                        pen = load_match_winner(eid)
+                        winner_name = pen.get("winner")
+                        if winner_name:
+                            loser_name = at if winner_name == ht else ht
+                            _eliminated.add(loser_name)
+                    except Exception:
+                        pass
+            else:
+                loser_name = at if hs > as_ else ht
+                _eliminated.add(loser_name)
 
     # Also add group-stage eliminated teams
     if standings_df is not None:
