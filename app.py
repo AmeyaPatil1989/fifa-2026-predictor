@@ -943,7 +943,7 @@ if page == "📅 Today's Matches":
         # tournament-wide feed, which still has historical results.
         # Use client local date (from query param) for today comparison —
         # server datetime.date.today() is UTC and wrong for non-UTC viewers.
-        _client_today = _client_date  # set earlier from ?local_date= param
+        _client_today = _client_date if "_client_date" in dir() else None
         _is_today = (_client_today is not None and selected_date == _client_today) or (
             _client_today is None and selected_date == datetime.date.today()
         )
@@ -2097,3 +2097,4 @@ elif page == "🔍 Head to Head":
                 f"</div>",
                 unsafe_allow_html=True
             )
+
