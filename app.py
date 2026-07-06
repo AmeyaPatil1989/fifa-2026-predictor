@@ -1,4 +1,4 @@
-import streamlit as st
+﻿import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from pathlib import Path
@@ -12,27 +12,27 @@ from live_standings import compute_live_group_standings
 
 st.set_page_config(
     page_title="2026 FIFA World Cup Predictor",
-    page_icon="⚽",
+    page_icon="ΓÜ╜",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
-# ── Click-to-navigate routing ───────────────────────────────────────────────
+# ΓöÇΓöÇ Click-to-navigate routing ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 # Clicking a team name anywhere (HTML link with ?team=... or a chart point)
 # routes here, sets the selected team, and switches to the Squads page with that team selected.
 if "nav_page" not in st.session_state:
-    st.session_state.nav_page = "📅 Today's Matches"
+    st.session_state.nav_page = "≡ƒôà Today's Matches"
 if "selected_team" not in st.session_state:
     st.session_state.selected_team = None
 
 _qp = st.query_params
 if "team" in _qp:
     st.session_state.selected_team = _qp["team"]
-    st.session_state.nav_page = "👥 Squads"
+    st.session_state.nav_page = "≡ƒæÑ Squads"
     st.query_params.clear()
     st.rerun()
 
-# ── Team Colors ────────────────────────────────────────────────────────────────
+# ΓöÇΓöÇ Team Colors ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 TEAM_COLORS = {
     "Argentina":              {"primary": "#74ACDF", "text": "#FFFFFF"},
     "Australia":              {"primary": "#FFCD00", "text": "#006400"},
@@ -44,7 +44,7 @@ TEAM_COLORS = {
     "Cape Verde":             {"primary": "#003893", "text": "#FFFFFF"},
     "Colombia":               {"primary": "#FCD116", "text": "#003087"},
     "Croatia":                {"primary": "#CC0000", "text": "#FFFFFF"},
-    "Curaçao":                {"primary": "#002B7F", "text": "#F9E814"},
+    "Cura├ºao":                {"primary": "#002B7F", "text": "#F9E814"},
     "Czech Republic":         {"primary": "#D7141A", "text": "#FFFFFF"},
     "DR Congo":               {"primary": "#007FFF", "text": "#F7D618"},
     "Ecuador":                {"primary": "#FFD100", "text": "#003087"},
@@ -85,12 +85,12 @@ TEAM_COLORS = {
 }
 DEFAULT_COLOR = {"primary": "#1a1a2e", "text": "#FFFFFF"}
 
-# ── Flag image URLs (via flagcdn.com) ─────────────────────────────────────────
+# ΓöÇΓöÇ Flag image URLs (via flagcdn.com) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 FLAG_CODES = {
     "Argentina": "ar", "Australia": "au", "Austria": "at",
     "Belgium": "be", "Bosnia and Herzegovina": "ba", "Brazil": "br",
     "Canada": "ca", "Cape Verde": "cv", "Colombia": "co",
-    "Croatia": "hr", "Curaçao": "cw", "Czech Republic": "cz",
+    "Croatia": "hr", "Cura├ºao": "cw", "Czech Republic": "cz",
     "DR Congo": "cd", "Ecuador": "ec", "Egypt": "eg",
     "England": "gb-eng", "France": "fr", "Germany": "de",
     "Ghana": "gh", "Haiti": "ht", "Iran": "ir",
@@ -117,7 +117,7 @@ def flag_url(team):
 
 
 def soccer_ball(size=24, inline_style="vertical-align:-4px;margin-right:6px"):
-    """Original SVG soccer ball (classic pentagon/hexagon pattern) — generic,
+    """Original SVG soccer ball (classic pentagon/hexagon pattern) ΓÇö generic,
     not a depiction of any official/licensed match ball. Safe to use anywhere
     emoji was used for a more polished look."""
     return (
@@ -152,7 +152,7 @@ def flag_img(team, height=16):
 
 
 def flag(team):
-    """For text contexts — returns img tag."""
+    """For text contexts ΓÇö returns img tag."""
     return flag_img(team)
 
 
@@ -176,10 +176,10 @@ def team_link(team, label=None, color="#FFFFFF", underline=True, weight="inherit
 
 
 POSITION_LABELS = {
-    "GK": "🧤 Goalkeepers",
-    "DEF": "🛡️ Defenders",
-    "MID": "⚙️ Midfielders",
-    "FWD": "⚡ Forwards",
+    "GK": "≡ƒºñ Goalkeepers",
+    "DEF": "≡ƒ¢í∩╕Å Defenders",
+    "MID": "ΓÜÖ∩╕Å Midfielders",
+    "FWD": "ΓÜí Forwards",
 }
 
 
@@ -195,7 +195,7 @@ def render_team_squad(team_df, sel_team, show_header=True):
         star_chips += (
             f"<div style='margin-top:8px'>"
             f"<span style='font-size:17px;font-weight:900;color:white'>{sr['player']}</span> "
-            f"<span style='font-size:13px;color:rgba(255,255,255,0.6)'>· {sr['club']}</span>"
+            f"<span style='font-size:13px;color:rgba(255,255,255,0.6)'>┬╖ {sr['club']}</span>"
             f"</div>"
         )
 
@@ -208,12 +208,12 @@ def render_team_squad(team_df, sel_team, show_header=True):
             f"{flag_img(sel_team, height=36)}"
             f"<div>"
             f"<div style='font-size:26px;font-weight:900;color:{tc['text']}'>{sel_team}</div>"
-            f"<div style='font-size:13px;color:rgba(255,255,255,0.65)'>Group {group} · 2026 FIFA World Cup</div>"
+            f"<div style='font-size:13px;color:rgba(255,255,255,0.65)'>Group {group} ┬╖ 2026 FIFA World Cup</div>"
             f"</div>"
             f"</div>"
             + (
                 f"<div style='margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,0.15)'>"
-                f"<span style='font-size:11px;color:#FFD700;letter-spacing:2px;font-weight:bold'>★ PLAYERS TO WATCH</span>"
+                f"<span style='font-size:11px;color:#FFD700;letter-spacing:2px;font-weight:bold'>Γÿà PLAYERS TO WATCH</span>"
                 f"{star_chips}"
                 f"</div>"
                 if len(star_rows) else ""
@@ -224,13 +224,13 @@ def render_team_squad(team_df, sel_team, show_header=True):
     elif len(star_rows):
         st.markdown(
             f"<div style='margin-bottom:16px'>"
-            f"<span style='font-size:11px;color:#FFD700;letter-spacing:2px;font-weight:bold'>★ PLAYERS TO WATCH</span>"
+            f"<span style='font-size:11px;color:#FFD700;letter-spacing:2px;font-weight:bold'>Γÿà PLAYERS TO WATCH</span>"
             f"{star_chips}"
             f"</div>",
             unsafe_allow_html=True
         )
 
-    # ── Squad by position ────────────────────────────────────────────────────
+    # ΓöÇΓöÇ Squad by position ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     cols = st.columns(2)
     for i, pos in enumerate(["GK", "DEF", "MID", "FWD"]):
         pos_df = team_df[team_df["position"] == pos]
@@ -240,7 +240,7 @@ def render_team_squad(team_df, sel_team, show_header=True):
             rows_html = ""
             for _, r in pos_df.iterrows():
                 is_star = r["star_rank"] != ""
-                star = " ★" if is_star else ""
+                star = " Γÿà" if is_star else ""
                 name_color = "#FFD700" if is_star else "#FFFFFF"
                 rows_html += (
                     f"<tr>"
@@ -261,16 +261,16 @@ def render_team_squad(team_df, sel_team, show_header=True):
                 unsafe_allow_html=True
             )
 
-    # ── Club distribution ────────────────────────────────────────────────────
+    # ΓöÇΓöÇ Club distribution ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     st.markdown("---")
-    st.markdown("### 🌍 Club Breakdown")
+    st.markdown("### ≡ƒîì Club Breakdown")
     club_counts = team_df["club"].value_counts()
     multi_club = club_counts[club_counts > 1]
     if len(multi_club) > 0:
         chips = "".join(
             f"<span style='display:inline-block;background:rgba(255,215,0,0.12);"
             f"border:1px solid rgba(255,215,0,0.3);border-radius:20px;padding:5px 14px;"
-            f"margin:3px;font-size:13px;color:white'>{club} <b style='color:#FFD700'>×{n}</b></span>"
+            f"margin:3px;font-size:13px;color:white'>{club} <b style='color:#FFD700'>├ù{n}</b></span>"
             for club, n in multi_club.items()
         )
         st.markdown(
@@ -286,7 +286,7 @@ def render_team_squad(team_df, sel_team, show_header=True):
         )
 
 
-# ── Background image (stadium photo, dark overlay for text readability) ────────
+# ΓöÇΓöÇ Background image (stadium photo, dark overlay for text readability) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 st.markdown(
     f"""
     <style>
@@ -303,7 +303,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ── CSS ────────────────────────────────────────────────────────────────────────
+# ΓöÇΓöÇ CSS ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 st.markdown("""
 <style>
     header[data-testid="stHeader"] {
@@ -315,7 +315,7 @@ st.markdown("""
     [data-testid="stDecoration"] {
         background-color: #060b18 !important;
     }
-    /* Sidebar collapse / expand toggle (the « » arrow) */
+    /* Sidebar collapse / expand toggle (the ┬½ ┬╗ arrow) */
     [data-testid="collapsedControl"],
     [data-testid="stSidebarCollapsedControl"],
     [data-testid="stSidebarCollapseButton"] {
@@ -412,7 +412,7 @@ def load_live_scores(dates=None):
 def load_tournament_scores():
     """
     Cached for 10 minutes. Covers the WHOLE tournament date range, not just
-    today — used as a bridge for any date being viewed (including past dates)
+    today ΓÇö used as a bridge for any date being viewed (including past dates)
     when our own match_predictions.csv hasn't been synced yet by the daily
     pipeline. Longer cache than the today-only loader since this is mostly
     used to backfill already-finished matches, not track a live in-progress one.
@@ -437,7 +437,7 @@ def load_match_winner(event_id):
 def load_match_scorers(event_id, home_team, away_team):
     """
     Cached for 5 minutes (longer than the 60s live-data cache, since scorer
-    history only grows — re-fetching constantly adds no value once a goal
+    history only grows ΓÇö re-fetching constantly adds no value once a goal
     has been confirmed, and this stays useful after full-time too, unlike
     the 'in-progress' specific live score/feed caches).
     """
@@ -492,18 +492,18 @@ def prob_bar(p_home, p_draw, p_away, home, away, key):
 
 
 EVENT_TYPE_STYLE = {
-    "goal": ("⚽", "#00ff88"),
-    "penalty - scored": ("⚽", "#00ff88"),
-    "penalty - missed": ("❌", "#ff4d4d"),
-    "yellow card": ("🟨", "#FFD700"),
-    "red card": ("🟥", "#ff4d4d"),
-    "substitution": ("🔄", "rgba(255,255,255,0.6)"),
-    "kickoff": ("▶️", "rgba(255,255,255,0.5)"),
-    "halftime": ("⏸️", "#FFD700"),
-    "start 2nd half": ("▶️", "rgba(255,255,255,0.5)"),
-    "end regular time": ("⏹️", "#FFD700"),
-    "start delay": ("⏱️", "rgba(255,255,255,0.4)"),
-    "end delay": ("⏱️", "rgba(255,255,255,0.4)"),
+    "goal": ("ΓÜ╜", "#00ff88"),
+    "penalty - scored": ("ΓÜ╜", "#00ff88"),
+    "penalty - missed": ("Γ¥î", "#ff4d4d"),
+    "yellow card": ("≡ƒƒ¿", "#FFD700"),
+    "red card": ("≡ƒƒÑ", "#ff4d4d"),
+    "substitution": ("≡ƒöä", "rgba(255,255,255,0.6)"),
+    "kickoff": ("Γû╢∩╕Å", "rgba(255,255,255,0.5)"),
+    "halftime": ("ΓÅ╕∩╕Å", "#FFD700"),
+    "start 2nd half": ("Γû╢∩╕Å", "rgba(255,255,255,0.5)"),
+    "end regular time": ("ΓÅ╣∩╕Å", "#FFD700"),
+    "start delay": ("ΓÅ▒∩╕Å", "rgba(255,255,255,0.4)"),
+    "end delay": ("ΓÅ▒∩╕Å", "rgba(255,255,255,0.4)"),
 }
 
 
@@ -519,9 +519,9 @@ def render_scorer_list(event_id, home, away, hc, ac):
         minute_html = f"<span style='color:rgba(255,255,255,0.45);font-size:11px'>{minute}</span>"
         if align == "right":
             # Minute first, name last, so it reads naturally right-to-left
-            content = f"{minute_html} {s['scorer']}{og_tag}{pen_tag} ⚽"
+            content = f"{minute_html} {s['scorer']}{og_tag}{pen_tag} ΓÜ╜"
         else:
-            content = f"⚽ {s['scorer']}{og_tag}{pen_tag} {minute_html}"
+            content = f"ΓÜ╜ {s['scorer']}{og_tag}{pen_tag} {minute_html}"
         return f"<div style='font-size:13px;color:white;padding:3px 0;text-align:{align}'>{content}</div>"
 
     home_scorers = [s for s in scorers if s["team"] == home]
@@ -554,7 +554,7 @@ def render_live_feed(event_id, home, away):
     rows_html = ""
     # Newest first: reverse chronological order
     for ev in reversed(events):
-        icon, color = EVENT_TYPE_STYLE.get(ev["type"].lower(), ("•", "rgba(255,255,255,0.5)"))
+        icon, color = EVENT_TYPE_STYLE.get(ev["type"].lower(), ("ΓÇó", "rgba(255,255,255,0.5)"))
         minute = ev["minute"] or ""
         text = ev["text"]
         rows_html += (
@@ -568,7 +568,7 @@ def render_live_feed(event_id, home, away):
 
     st.markdown(
         f"<div style='margin-top:10px;margin-bottom:6px;color:#FFD700;font-size:12px;"
-        f"font-weight:bold;letter-spacing:1px'>📋 LIVE COMMENTARY — {home} vs {away}</div>"
+        f"font-weight:bold;letter-spacing:1px'>≡ƒôï LIVE COMMENTARY ΓÇö {home} vs {away}</div>"
         f"<div style='max-height:280px;overflow-y:auto;background:rgba(255,255,255,0.02);"
         f"border-radius:8px;padding:6px 12px;border:1px solid rgba(255,255,255,0.08)'>"
         f"{rows_html}"
@@ -601,7 +601,7 @@ def render_match_card(row, live_data=None):
     display_p_draw = live_probs["p_draw"] if live_probs else row["p_draw"]
     display_p_away = live_probs["p_away_win"] if live_probs else row["p_away_win"]
     # ESPN says finished but our own pipeline hasn't picked up the result yet
-    # (daily_update.bat hasn't run since kickoff) — show ESPN's final score
+    # (daily_update.bat hasn't run since kickoff) ΓÇö show ESPN's final score
     # rather than falling through to the pre-match "VS / xG" view.
     espn_finished_not_yet_synced = (
         not done and live is not None and live["status"] == "post"
@@ -619,16 +619,16 @@ def render_match_card(row, live_data=None):
             et_str = dt_et.strftime("%-I:%M %p ET")
             uid = f"kt{abs(hash(home+away)) % 99999}"
             # Show ET immediately (server-side, no blank span, no layout gap)
-            kickoff_label = f"&nbsp;·&nbsp;<span id='{uid}'>{et_str}</span>"
+            kickoff_label = f"&nbsp;┬╖&nbsp;<span id='{uid}'>{et_str}</span>"
             # Then replace with local time via JS if available
             kickoff_js = (uid, kickoff_utc)
         except Exception:
             pass
 
     st.markdown(
-        f"<div class='match-label'>{soccer_ball(14, 'vertical-align:-2px;margin-right:4px')} FIFA WORLD CUP 2026 &nbsp;·&nbsp; {str(row['date'])[:10]}"
+        f"<div class='match-label'>{soccer_ball(14, 'vertical-align:-2px;margin-right:4px')} FIFA WORLD CUP 2026 &nbsp;┬╖&nbsp; {str(row['date'])[:10]}"
         + kickoff_label
-        + ("&nbsp;·&nbsp;<span style='color:#ff4d4d;font-weight:900'>🔴 LIVE</span>" if is_live_now else "")
+        + ("&nbsp;┬╖&nbsp;<span style='color:#ff4d4d;font-weight:900'>≡ƒö┤ LIVE</span>" if is_live_now else "")
         + "</div>",
         unsafe_allow_html=True
     )
@@ -669,27 +669,27 @@ def render_match_card(row, live_data=None):
         if is_live_now:
             st.markdown(
                 f"<div class='center-box' style='border:1px solid rgba(255,77,77,0.5)'>"
-                f"<div class='score-label' style='color:#ff4d4d'>{live['home_score']} — {live['away_score']}</div>"
-                f"<div style='color:#ff4d4d;font-size:10px;letter-spacing:1px;font-weight:900'>⏱ {live['status_detail']}</div>"
-                f"<div class='venue-label'>📍 {row['city']}</div>"
+                f"<div class='score-label' style='color:#ff4d4d'>{live['home_score']} ΓÇö {live['away_score']}</div>"
+                f"<div style='color:#ff4d4d;font-size:10px;letter-spacing:1px;font-weight:900'>ΓÅ▒ {live['status_detail']}</div>"
+                f"<div class='venue-label'>≡ƒôì {row['city']}</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
         elif espn_finished_not_yet_synced:
             st.markdown(
                 f"<div class='center-box'>"
-                f"<div class='score-label'>{live['home_score']} — {live['away_score']}</div>"
+                f"<div class='score-label'>{live['home_score']} ΓÇö {live['away_score']}</div>"
                 f"<div style='color:rgba(255,255,255,0.4);font-size:10px;letter-spacing:1px'>FULL TIME</div>"
-                f"<div class='venue-label'>📍 {row['city']}</div>"
+                f"<div class='venue-label'>≡ƒôì {row['city']}</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
         elif done:
             st.markdown(
                 f"<div class='center-box'>"
-                f"<div class='score-label'>{int(row['actual_home_score'])} — {int(row['actual_away_score'])}</div>"
+                f"<div class='score-label'>{int(row['actual_home_score'])} ΓÇö {int(row['actual_away_score'])}</div>"
                 f"<div style='color:rgba(255,255,255,0.4);font-size:10px;letter-spacing:1px'>FULL TIME</div>"
-                f"<div class='venue-label'>📍 {row['city']}</div>"
+                f"<div class='venue-label'>≡ƒôì {row['city']}</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
@@ -697,8 +697,8 @@ def render_match_card(row, live_data=None):
             st.markdown(
                 f"<div class='center-box'>"
                 f"<div class='vs-label'>VS</div>"
-                f"<div class='xg-label'>xG {row['exp_home_goals']:.2f} — {row['exp_away_goals']:.2f}</div>"
-                f"<div class='venue-label'>📍 {row['city']}</div>"
+                f"<div class='xg-label'>xG {row['exp_home_goals']:.2f} ΓÇö {row['exp_away_goals']:.2f}</div>"
+                f"<div class='venue-label'>≡ƒôì {row['city']}</div>"
                 f"</div>",
                 unsafe_allow_html=True
             )
@@ -722,7 +722,7 @@ def render_match_card(row, live_data=None):
         config={"displayModeBar": False},
     )
 
-    # Goal scorers — shown whenever ESPN has data for this match (live,
+    # Goal scorers ΓÇö shown whenever ESPN has data for this match (live,
     # finished-but-not-yet-synced, or already-synced but still within ESPN's
     # tournament feed window), not just while strictly in-progress, so this
     # persists alongside the final score after full-time too.
@@ -731,15 +731,15 @@ def render_match_card(row, live_data=None):
 
     if live_probs:
         st.caption(
-            f"🔴 Live win probability — recalculated from current score and time remaining "
-            f"(expected additional goals: {live_probs['exp_additional_home_goals']:.2f} — "
+            f"≡ƒö┤ Live win probability ΓÇö recalculated from current score and time remaining "
+            f"(expected additional goals: {live_probs['exp_additional_home_goals']:.2f} ΓÇö "
             f"{live_probs['exp_additional_away_goals']:.2f})"
         )
 
     c1, c2, c3 = st.columns(3)
-    c1.metric(f"🟢 {home}", f"{display_p_home:.1%}")
-    c2.metric("⚪ Draw", f"{display_p_draw:.1%}")
-    c3.metric(f"🔴 {away}", f"{display_p_away:.1%}")
+    c1.metric(f"≡ƒƒó {home}", f"{display_p_home:.1%}")
+    c2.metric("ΓÜ¬ Draw", f"{display_p_draw:.1%}")
+    c3.metric(f"≡ƒö┤ {away}", f"{display_p_away:.1%}")
 
     bc1, bc2 = st.columns(2)
     with bc1:
@@ -748,24 +748,24 @@ def render_match_card(row, live_data=None):
                 {"Home Win": display_p_home, "Draw": display_p_draw, "Away Win": display_p_away},
                 key=lambda k: {"Home Win": display_p_home, "Draw": display_p_draw, "Away Win": display_p_away}[k]
             )
-            st.warning(f"🔴 Live Prediction (updated from current score): **{live_predicted}**")
+            st.warning(f"≡ƒö┤ Live Prediction (updated from current score): **{live_predicted}**")
         elif is_live_now:
-            st.warning(f"🔴 Live now — model prediction shown pre-match: **{row['predicted_result']}**")
+            st.warning(f"≡ƒö┤ Live now ΓÇö model prediction shown pre-match: **{row['predicted_result']}**")
         else:
-            st.info(f"📊 Model Prediction: **{row['predicted_result']}**")
+            st.info(f"≡ƒôè Model Prediction: **{row['predicted_result']}**")
     if done:
         with bc2:
             ok = row["predicted_result"] == row["actual_result"]
             if ok:
-                st.success(f"✅ Actual: **{row['actual_result']}**")
+                st.success(f"Γ£à Actual: **{row['actual_result']}**")
             else:
-                st.error(f"❌ Actual: **{row['actual_result']}**")
+                st.error(f"Γ¥î Actual: **{row['actual_result']}**")
     elif espn_finished_not_yet_synced:
         with bc2:
             hs, as_ = live["home_score"], live["away_score"]
             actual = "Home Win" if hs > as_ else ("Away Win" if as_ > hs else "Draw")
             ok = row["predicted_result"] == actual
-            label = f"{'✅' if ok else '❌'} Actual: **{actual}** (via live feed, syncing soon)"
+            label = f"{'Γ£à' if ok else 'Γ¥î'} Actual: **{actual}** (via live feed, syncing soon)"
             if ok:
                 st.success(label)
             else:
@@ -777,7 +777,7 @@ def render_match_card(row, live_data=None):
     st.markdown("<hr class='divider'>", unsafe_allow_html=True)
 
 
-# ── Sidebar ────────────────────────────────────────────────────────────────────
+# ΓöÇΓöÇ Sidebar ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 with st.sidebar:
     st.markdown(
         f"<h2 style='color:#FFD700!important;font-family:Arial Black;letter-spacing:1px'>{soccer_ball(22)} 2026 WC PREDICTOR</h2>",
@@ -785,27 +785,27 @@ with st.sidebar:
     )
     st.markdown("---")
     page = st.radio("Navigate", [
-        "📅 Today's Matches",
-        "📊 All Predictions",
-        "🏆 Tournament Odds",
-        "🗂️ Group Standings",
-        "🔲 Bracket",
-        "👥 Squads",
-        "🔍 Head to Head",
+        "≡ƒôà Today's Matches",
+        "≡ƒôè All Predictions",
+        "≡ƒÅå Tournament Odds",
+        "≡ƒùé∩╕Å Group Standings",
+        "≡ƒö▓ Bracket",
+        "≡ƒæÑ Squads",
+        "≡ƒöì Head to Head",
     ], key="nav_page")
     st.markdown("---")
     st.markdown(
         f"<p style='color:white!important;font-size:13px;line-height:2'>"
-        f"<span style='color:#FFD700'>📅 Updated:</span> {datetime.date.today().strftime('%b %d, %Y')}<br>"
-        f"<span style='color:#FFD700'>📊 Matches:</span> 49,478 historical<br>"
-        f"<span style='color:#FFD700'>🎲 Simulations:</span> 10,000 Monte Carlo<br>"
-        f"<span style='color:#FFD700'>⚙️ Model:</span> Elo + Poisson"
+        f"<span style='color:#FFD700'>≡ƒôà Updated:</span> {datetime.date.today().strftime('%b %d, %Y')}<br>"
+        f"<span style='color:#FFD700'>≡ƒôè Matches:</span> 49,478 historical<br>"
+        f"<span style='color:#FFD700'>≡ƒÄ▓ Simulations:</span> 10,000 Monte Carlo<br>"
+        f"<span style='color:#FFD700'>ΓÜÖ∩╕Å Model:</span> Elo + Poisson"
         f"</p>",
         unsafe_allow_html=True
     )
 
 
-# ── Load data ──────────────────────────────────────────────────────────────────
+# ΓöÇΓöÇ Load data ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 try:
     predictions = load_predictions()
     mc = load_mc()
@@ -814,13 +814,13 @@ try:
     squads_df = load_squads()
     scorers_df = load_scorers()
 except FileNotFoundError:
-    st.error("⚠️ Run `python main.py` first to generate output files.")
+    st.error("ΓÜá∩╕Å Run `python main.py` first to generate output files.")
     st.stop()
 
 
-# ══ PAGE 1: TODAY'S MATCHES ═══════════════════════════════════════════════════
-if page == "📅 Today's Matches":
-    # Auto-refresh every 60s when a match is live — uses st.rerun() via
+# ΓòÉΓòÉ PAGE 1: TODAY'S MATCHES ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+if page == "≡ƒôà Today's Matches":
+    # Auto-refresh every 60s when a match is live ΓÇö uses st.rerun() via
     # a time-based check so session state (current page) is preserved.
     # meta refresh would reset the page; this doesn't.
     _lv = load_live_scores()
@@ -834,14 +834,14 @@ if page == "📅 Today's Matches":
             st.rerun()
         else:
             _remaining = int(60 - _elapsed)
-            st.caption(f"🔴 Live — refreshing in {_remaining}s")
+            st.caption(f"≡ƒö┤ Live ΓÇö refreshing in {_remaining}s")
     st.markdown(
         f"<h1 style='display:flex;align-items:center;gap:10px'>{soccer_ball(36)} "
         f"2026 FIFA World Cup Predictions</h1>",
         unsafe_allow_html=True
     )
 
-    # Top countdown — shown when no match is currently live.
+    # Top countdown ΓÇö shown when no match is currently live.
     # Uses the tournament-wide feed so it works even between match days.
     _top_live = load_live_scores()
     _any_live = any(info["status"] == "in" for info in _top_live.values()) if _top_live else False
@@ -857,7 +857,7 @@ if page == "📅 Today's Matches":
                 f"""<div style='font-family:sans-serif;font-size:15px;
                     color:rgba(255,255,255,0.85);background:transparent;
                     padding:4px 0 8px 0'>
-                    ⏱️ Next match in:&nbsp;
+                    ΓÅ▒∩╕Å Next match in:&nbsp;
                     <span id='top_countdown'
                         style='color:#FFD700;font-weight:bold;font-size:17px'></span>
                 </div>
@@ -887,7 +887,7 @@ if page == "📅 Today's Matches":
     # Use tournament-wide ESPN feed to find the correct default date.
     # This avoids relying on datetime.date.today() (server UTC, wrong timezone)
     # and avoids stale load_live_scores() cache issues.
-    # Logic: find the latest date that has any finished or live matches —
+    # Logic: find the latest date that has any finished or live matches ΓÇö
     # that's the "current" match day regardless of server timezone.
     try:
         _tourney = load_tournament_scores()
@@ -913,10 +913,10 @@ if page == "📅 Today's Matches":
             # Show the most recent day that has played/live matches
             default_date = max(d for d in _played_dates if d in all_dates)
         elif _upcoming_dates:
-            # Nothing played yet today — show next upcoming match day
+            # Nothing played yet today ΓÇö show next upcoming match day
             default_date = min(d for d in _upcoming_dates if d in all_dates)
         else:
-            # ESPN feed empty — fall back to first future date
+            # ESPN feed empty ΓÇö fall back to first future date
             today = datetime.date.today()
             future = [d for d in all_dates if d >= today]
             default_date = future[0] if future else all_dates[-1]
@@ -941,7 +941,7 @@ if page == "📅 Today's Matches":
         # matches update quickly. Any other date (including past matches our
         # own pipeline hasn't synced yet) falls back to the slower-cached
         # tournament-wide feed, which still has historical results.
-        # Use client local date (from query param) for today comparison —
+        # Use client local date (from query param) for today comparison ΓÇö
         # server datetime.date.today() is UTC and wrong for non-UTC viewers.
         _client_today = _client_date if "_client_date" in dir() else None
         _is_today = (_client_today is not None and selected_date == _client_today) or (
@@ -964,12 +964,10 @@ if page == "📅 Today's Matches":
             return result
 
         if _is_today:
-            # Always use tournament feed as base � today-only feed drops finished matches
-            _tourney_base = load_tournament_scores()
-            live_data = _build_live_data(_tourney_base)
-            # Overlay fresh live feed for in-progress matches
-            _fresh = _build_live_data(load_live_scores())
-            live_data.update(_fresh)
+            # Use tournament feed as base — today-only feed drops finished matches.
+            # Overlay fresh live feed on top for in-progress match updates.
+            live_data = _build_live_data(load_tournament_scores())
+            live_data.update(_build_live_data(load_live_scores()))
         else:
             tournament_data = load_tournament_scores()
             live_data = _build_live_data(tournament_data)
@@ -989,22 +987,22 @@ if page == "📅 Today's Matches":
                 _sort_key=day_matches.apply(kickoff_sort_key, axis=1)
             ).sort_values("_sort_key").drop(columns="_sort_key")
 
-        st.markdown(f"**{selected_date.strftime('%A, %B %d, %Y')} · {len(day_matches)} match(es)**")
+        st.markdown(f"**{selected_date.strftime('%A, %B %d, %Y')} ┬╖ {len(day_matches)} match(es)**")
         if _is_today:
             n_live = sum(1 for info in live_data.values() if info["status"] == "in") if live_data else 0
             if n_live > 0:
-                st.caption(f"🔴 {n_live} match(es) live now")
+                st.caption(f"≡ƒö┤ {n_live} match(es) live now")
             else:
-                st.caption("⚪ No matches live right now")
+                st.caption("ΓÜ¬ No matches live right now")
         st.markdown("---")
         for _, row in day_matches.iterrows():
             render_match_card(row, live_data=live_data)
 
 
-# ══ PAGE 2: ALL PREDICTIONS ═══════════════════════════════════════════════════
-elif page == "📊 All Predictions":
-    st.title("📊 All 2026 WC Match Predictions")
-    tab1, tab2 = st.tabs(["📅 Upcoming", "✅ Completed"])
+# ΓòÉΓòÉ PAGE 2: ALL PREDICTIONS ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+elif page == "≡ƒôè All Predictions":
+    st.title("≡ƒôè All 2026 WC Match Predictions")
+    tab1, tab2 = st.tabs(["≡ƒôà Upcoming", "Γ£à Completed"])
 
     def pred_table(rows, cols, col_labels, col_align=None):
         """Renders a styled dark HTML table matching the dashboard theme."""
@@ -1028,8 +1026,8 @@ elif page == "📊 All Predictions":
                 if col == "predicted_result" or col == "Predicted":
                     color = "#FFD700"
                 elif col == "actual_result" or col == "Actual":
-                    color = "#aaffaa" if row.get("✓", "") == "✅" else "#ffaaaa"
-                elif col == "✓":
+                    color = "#aaffaa" if row.get("Γ£ô", "") == "Γ£à" else "#ffaaaa"
+                elif col == "Γ£ô":
                     pass
                 cells += (
                     f"<td style='text-align:{align};color:{color};font-size:13px;"
@@ -1075,25 +1073,25 @@ elif page == "📊 All Predictions":
             c2.metric("Correct Predictions", correct)
             c3.metric("Model Accuracy", f"{correct / len(done) * 100:.1f}%")
             done["Score"] = done.apply(
-                lambda r: f"{int(r['actual_home_score'])} — {int(r['actual_away_score'])}", axis=1)
-            done["✓"] = (done["predicted_result"] == done["actual_result"]).map(
-                {True: "✅", False: "❌"})
+                lambda r: f"{int(r['actual_home_score'])} ΓÇö {int(r['actual_away_score'])}", axis=1)
+            done["Γ£ô"] = (done["predicted_result"] == done["actual_result"]).map(
+                {True: "Γ£à", False: "Γ¥î"})
             done["date"] = done["date"].dt.strftime("%Y-%m-%d")
             done["home_team"] = done["home_team"].apply(lambda t: team_link(t))
             done["away_team"] = done["away_team"].apply(lambda t: team_link(t))
             pred_table(
                 done,
-                cols=["date","home_team","away_team","Score","predicted_result","actual_result","✓"],
+                cols=["date","home_team","away_team","Score","predicted_result","actual_result","Γ£ô"],
                 col_labels=["Date","Home","Away","Score","Predicted","Actual",""],
                 col_align=["left","left","left","center","center","center","center"],
             )
 
 
-# ══ PAGE 3: TOURNAMENT ODDS ════════════════════════════════════════════════════
-elif page == "🏆 Tournament Odds":
-    st.title("🏆 World Cup Win Probabilities")
+# ΓòÉΓòÉ PAGE 3: TOURNAMENT ODDS ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+elif page == "≡ƒÅå Tournament Odds":
+    st.title("≡ƒÅå World Cup Win Probabilities")
 
-    # ── Filter to still-alive teams only ──────────────────────────────────────
+    # ΓöÇΓöÇ Filter to still-alive teams only ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     # Determine which teams are still in the tournament by checking:
     # 1. Knockout stage: use ESPN live knockout results to see who has been
     #    eliminated (lost a R32/R16/QF/SF match).
@@ -1147,7 +1145,7 @@ elif page == "🏆 Tournament Odds":
     mc_alive["rank"] = range(1, len(mc_alive) + 1)
 
     n_alive = len(mc_alive)
-    st.caption(f"{n_alive} teams remaining · Probabilities rescaled to 100% among active teams")
+    st.caption(f"{n_alive} teams remaining ┬╖ Probabilities rescaled to 100% among active teams")
 
     top_n = st.slider("Show top N teams", min(10, n_alive), n_alive, min(n_alive, 24))
     chart_data = mc_alive.head(top_n).copy()
@@ -1177,7 +1175,7 @@ elif page == "🏆 Tournament Odds":
             tickfont=dict(color="rgba(255,255,255,0.4)"),
             title=dict(text="Win Probability (%)", font=dict(color="#FFD700")),
         ),
-        title=dict(text="2026 FIFA World Cup — Tournament Win Probability",
+        title=dict(text="2026 FIFA World Cup ΓÇö Tournament Win Probability",
                    font=dict(color="#FFD700", size=16)),
         margin=dict(l=10, r=80, t=50, b=40),
     )
@@ -1190,9 +1188,9 @@ elif page == "🏆 Tournament Odds":
         clicked_team = event["selection"]["points"][0].get("y")
         if clicked_team:
             st.session_state.selected_team = clicked_team
-            st.session_state.nav_page = "👥 Squads"
+            st.session_state.nav_page = "≡ƒæÑ Squads"
             st.rerun()
-    st.caption("💡 Click any bar to view that team's squad and outlook")
+    st.caption("≡ƒÆí Click any bar to view that team's squad and outlook")
 
     col1, col2 = st.columns(2)
     with col1:
@@ -1221,14 +1219,14 @@ elif page == "🏆 Tournament Odds":
             )
 
 
-# ══ PAGE 4: GROUP STANDINGS ════════════════════════════════════════════════════
-elif page == "🗂️ Group Standings":
-    st.title("🗂️ 2026 FIFA World Cup — Group Standings")
+# ΓòÉΓòÉ PAGE 4: GROUP STANDINGS ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+elif page == "≡ƒùé∩╕Å Group Standings":
+    st.title("≡ƒùé∩╕Å 2026 FIFA World Cup ΓÇö Group Standings")
 
     # Use live-recalculated standings (ESPN scores overlaid on predictions)
     # whenever there's any tournament data available; otherwise fall back to
     # the static daily-batch CSV. Uses the tournament-wide feed (not just
-    # today) since standings are cumulative across the whole group stage —
+    # today) since standings are cumulative across the whole group stage ΓÇö
     # a match from yesterday that our own pipeline hasn't synced yet should
     # still count here.
     live_data_for_standings = load_tournament_scores()
@@ -1236,11 +1234,11 @@ elif page == "🗂️ Group Standings":
         try:
             standings_df_live = compute_live_group_standings(predictions, live_data_for_standings)
             standings_df = standings_df_live
-            st.caption("🔴 Live — includes in-progress and just-finished matches via live feed")
+            st.caption("≡ƒö┤ Live ΓÇö includes in-progress and just-finished matches via live feed")
         except Exception:
-            st.caption("Updated after each completed match · Top 2 qualify · Best 8 third-place teams also advance")
+            st.caption("Updated after each completed match ┬╖ Top 2 qualify ┬╖ Best 8 third-place teams also advance")
     else:
-        st.caption("Updated after each completed match · Top 2 qualify · Best 8 third-place teams also advance")
+        st.caption("Updated after each completed match ┬╖ Top 2 qualify ┬╖ Best 8 third-place teams also advance")
 
     if standings_df is None:
         st.error("Run `python main.py` first.")
@@ -1249,10 +1247,10 @@ elif page == "🗂️ Group Standings":
     from monte_carlo import WC_GROUPS
 
     col_l1, col_l2, col_l3, col_l4 = st.columns(4)
-    col_l1.markdown("🟢 **Q** = Qualified")
-    col_l2.markdown("🟡 **M** = Maybe (best 3rd)")
-    col_l3.markdown("🔴 **E** = Eliminated")
-    col_l4.markdown("⚪ = In progress")
+    col_l1.markdown("≡ƒƒó **Q** = Qualified")
+    col_l2.markdown("≡ƒƒí **M** = Maybe (best 3rd)")
+    col_l3.markdown("≡ƒö┤ **E** = Eliminated")
+    col_l4.markdown("ΓÜ¬ = In progress")
     st.markdown("---")
 
     groups = sorted(WC_GROUPS.keys())
@@ -1277,13 +1275,13 @@ elif page == "🗂️ Group Standings":
                     q = tr["qualified"]
 
                     if q == "Q":
-                        status, row_bg = "🟢", "rgba(0,200,100,0.08)"
+                        status, row_bg = "≡ƒƒó", "rgba(0,200,100,0.08)"
                     elif q == "M":
-                        status, row_bg = "🟡", "rgba(255,200,0,0.08)"
+                        status, row_bg = "≡ƒƒí", "rgba(255,200,0,0.08)"
                     elif q == "E":
-                        status, row_bg = "🔴", "rgba(200,0,0,0.08)"
+                        status, row_bg = "≡ƒö┤", "rgba(200,0,0,0.08)"
                     else:
-                        status, row_bg = "⚪", "rgba(255,255,255,0.03)"
+                        status, row_bg = "ΓÜ¬", "rgba(255,255,255,0.03)"
 
                     gd_val = int(tr['gd'])
                     gd_str = f"+{gd_val}" if gd_val > 0 else str(gd_val)
@@ -1328,11 +1326,11 @@ elif page == "🗂️ Group Standings":
                 """, unsafe_allow_html=True)
 
 
-# ══ PAGE 5: BRACKET ═══════════════════════════════════════════════════════════
-elif page == "🔲 Bracket":
-    st.title("🔲 2026 FIFA World Cup — Knockout Bracket")
+# ΓòÉΓòÉ PAGE 5: BRACKET ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+elif page == "≡ƒö▓ Bracket":
+    st.title("≡ƒö▓ 2026 FIFA World Cup ΓÇö Knockout Bracket")
 
-    # ── Load live tournament data ──────────────────────────────────────────────
+    # ΓöÇΓöÇ Load live tournament data ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     live_data_for_bracket = load_tournament_scores()
     if live_data_for_bracket:
         try:
@@ -1346,9 +1344,9 @@ elif page == "🔲 Bracket":
     if bracket_standings is not None and "played" in bracket_standings.columns:
         all_groups_done = bracket_standings[bracket_standings["played"] == 3]["group"].nunique() == 12
 
-    st.caption("✅ Group stage complete — R32 bracket live. Winners advance automatically as results come in.")
+    st.caption("Γ£à Group stage complete ΓÇö R32 bracket live. Winners advance automatically as results come in.")
 
-    # ── R32 slot definitions ───────────────────────────────────────────────────
+    # ΓöÇΓöÇ R32 slot definitions ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     R32 = [
         ("M73", ("runner_up","A"), ("runner_up","B")),
         ("M74", ("winner",  "E"), ("third",    "A/B/C/D/F")),
@@ -1373,7 +1371,7 @@ elif page == "🔲 Bracket":
     SF  = [("M101","M97","M98"),("M102","M99","M100")]
     FINAL = ("M104","M101","M102")
 
-    # ── R32 match schedule (date + kickoff time ET) ───────────────────────────
+    # ΓöÇΓöÇ R32 match schedule (date + kickoff time ET) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     R32_SCHEDULE = {
         "M73": ("Sat, Jun 28", "12:00 PM"),
         "M74": ("Sun, Jun 29", "12:00 PM"),
@@ -1393,7 +1391,7 @@ elif page == "🔲 Bracket":
         "M88": ("Thu, Jul 3",  "6:00 PM"),
     }
 
-    # ── Confirmed Annex C third-place assignments ──────────────────────────────
+    # ΓöÇΓöÇ Confirmed Annex C third-place assignments ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     THIRD_PLACE_LOOKUP = {
         "A/B/C/D/F":   "Paraguay",
         "C/D/F/G/H":   "Sweden",
@@ -1405,9 +1403,9 @@ elif page == "🔲 Bracket":
         "D/E/I/J/L":   "Ghana",
     }
 
-    # ── Map ESPN team pairs → actual knockout results ──────────────────────────
+    # ΓöÇΓöÇ Map ESPN team pairs ΓåÆ actual knockout results ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     # ESPN returns knockout matches in fetch_tournament_scores() alongside group games
-    espn_ko = {}  # (team1, team2) normalized → {status, home_score, away_score, home_team, away_team}
+    espn_ko = {}  # (team1, team2) normalized ΓåÆ {status, home_score, away_score, home_team, away_team}
     if live_data_for_bracket:
         for (ht, at), info in live_data_for_bracket.items():
             espn_ko[(ht, at)] = info
@@ -1435,7 +1433,7 @@ elif page == "🔲 Bracket":
         elif as_ > hs:
             winner = at
         else:
-            # Knockout tie at 90 min — check penalty shootout winner via the
+            # Knockout tie at 90 min ΓÇö check penalty shootout winner via the
             # match summary endpoint (ESPN's score fields don't include pens,
             # but the competitor "winner" flag does).
             winner = None
@@ -1448,7 +1446,7 @@ elif page == "🔲 Bracket":
         return {"status": "post", "winner": winner, "home_score": hs, "away_score": as_,
                 "home_team": ht, "away_team": at, "went_to_pens": went_to_pens}
 
-    # ── Slot resolution ────────────────────────────────────────────────────────
+    # ΓöÇΓöÇ Slot resolution ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     def get_team(standings, slot_type, slot_val):
         if standings is None:
             return None
@@ -1479,10 +1477,10 @@ elif page == "🔲 Bracket":
         if not da or not db: return None
         return la if mc_dict.get(la, 0) >= mc_dict.get(lb, 0) else lb
 
-    # ── Build winner_of: actual result first, then prediction ─────────────────
-    winner_of   = {}  # match_id → (winner_label, is_confirmed_actual)
-    scoreline_of = {}  # match_id → "0 — 1" string or None
-    loser_of    = {}  # match_id → loser_label
+    # ΓöÇΓöÇ Build winner_of: actual result first, then prediction ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+    winner_of   = {}  # match_id ΓåÆ (winner_label, is_confirmed_actual)
+    scoreline_of = {}  # match_id ΓåÆ "0 ΓÇö 1" string or None
+    loser_of    = {}  # match_id ΓåÆ loser_label
 
     def resolve_match(match_id, src_a, src_b, la, lb, da, db):
         """Try ESPN first, fall back to model prediction."""
@@ -1492,7 +1490,7 @@ elif page == "🔲 Bracket":
             l = lb if w == la else la
             winner_of[match_id]    = (w, True)   # True = actual confirmed result
             loser_of[match_id]     = l
-            score_str = f"{result['home_score']} — {result['away_score']}"
+            score_str = f"{result['home_score']} ΓÇö {result['away_score']}"
             if result.get("went_to_pens"):
                 score_str += " (pens)"
             scoreline_of[match_id] = score_str
@@ -1507,7 +1505,7 @@ elif page == "🔲 Bracket":
         l1, l2, d1, d2 = r32_teams[mid]
         resolve_match(mid, None, None, l1, l2, d1, d2)
 
-    # R16 → QF → SF → Final: chain actual/predicted winners
+    # R16 ΓåÆ QF ΓåÆ SF ΓåÆ Final: chain actual/predicted winners
     r16_s, qf_s, sf_s = {}, {}, {}
 
     def chain_resolve(match_id, src_a, src_b, slots_dict):
@@ -1539,7 +1537,7 @@ elif page == "🔲 Bracket":
     resolve_match(FINAL[0], None, None, f_la, f_lb, f_da, f_db)
     champion, champ_confirmed = winner_of.get(FINAL[0], (None, False))
 
-    # ── SVG constants ──────────────────────────────────────────────────────────
+    # ΓöÇΓöÇ SVG constants ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     BW   = 120
     BH   = 28
     HGAP = 52
@@ -1587,7 +1585,7 @@ elif page == "🔲 Bracket":
                      f"font-size='11' fill='#FFD700' font-weight='{fw}' "
                      f"font-family='Arial' letter-spacing='1'>{lbt}</text>")
 
-    # ── Box drawing functions ──────────────────────────────────────────────────
+    # ΓöÇΓöÇ Box drawing functions ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     def draw_r32_box(x, pair_idx, match_in_pair, mid):
         cy = r32_ys[pair_idx * 2 + match_in_pair]
         l1, l2, d1, d2 = r32_teams[mid]
@@ -1596,7 +1594,7 @@ elif page == "🔲 Bracket":
         loser = loser_of.get(mid)
         sched = R32_SCHEDULE.get(mid, ("", ""))
 
-        # Tall box height — needed for label positioning below
+        # Tall box height ΓÇö needed for label positioning below
         bh2 = BH * 2 + 4
 
         # M# above box
@@ -1655,7 +1653,7 @@ elif page == "🔲 Bracket":
             # Show predicted winner label
             parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+bh2/2+14:.1f}' text-anchor='middle' "
                          f"font-size='9' fill='#FFD700' font-family='Arial' "
-                         f"font-style='italic'>→ {w}</text>")
+                         f"font-style='italic'>ΓåÆ {w}</text>")
         return cy
 
     def get_kickoff_label(team1, team2):
@@ -1729,7 +1727,7 @@ elif page == "🔲 Bracket":
             if w:
                 parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+bh2/2+14:.1f}' text-anchor='middle' "
                              f"font-size='9' fill='#FFD700' font-family='Arial' "
-                             f"font-style='italic'>→ {w}</text>")
+                             f"font-style='italic'>ΓåÆ {w}</text>")
             # Kickoff date/time from ESPN for upcoming matches
             _kt_label = get_kickoff_label(la, lb)
             if _kt_label:
@@ -1739,20 +1737,20 @@ elif page == "🔲 Bracket":
                              f"font-weight='bold'>{_kt_label}</text>")
             return cy
         else:
-            # Neither feeder confirmed yet — empty box, prediction below only
+            # Neither feeder confirmed yet ΓÇö empty box, prediction below only
             parts.append(f"<rect x='{x}' y='{cy-BH/2:.1f}' width='{BW}' height='{BH}' "
                          f"rx='5' fill='{fill}' stroke='{stroke}' stroke-width='{sw}'/>")
             if w:
                 parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+13:.1f}' text-anchor='middle' "
                              f"font-size='9' fill='#FFD700' font-family='Arial' "
-                             f"font-style='italic'>→ {w}</text>")
+                             f"font-style='italic'>ΓåÆ {w}</text>")
         return cy
 
     def draw_final_box(x, cy):
         w, confirmed = winner_of.get(FINAL[0], (None, False))
         parts.append(f"<text x='{x+BW/2:.1f}' y='{cy-BH/2-5:.1f}' text-anchor='middle' "
                      f"font-size='9' fill='#FFD700' font-family='Arial' font-weight='900' "
-                     f"letter-spacing='1'>🏆 FINAL</text>")
+                     f"letter-spacing='1'>≡ƒÅå FINAL</text>")
         stroke = "#FFD700" if not confirmed else "#00cc66"
         fill   = "#2a1a00" if not confirmed else "#0d2218"
         parts.append(f"<rect x='{x}' y='{cy-BH/2:.1f}' width='{BW}' height='{BH}' "
@@ -1760,12 +1758,12 @@ elif page == "🔲 Bracket":
         if confirmed and w:
             sz = 9 if len(w) > 14 else 11
             parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+4:.1f}' text-anchor='middle' "
-                         f"font-size='{sz}' fill='#00ff88' font-family='Arial' font-weight='900'>★ {w}</text>")
+                         f"font-size='{sz}' fill='#00ff88' font-family='Arial' font-weight='900'>Γÿà {w}</text>")
         elif w:
             parts.append(f"<text x='{x+BW/2:.1f}' y='{cy+BH/2+14:.1f}' text-anchor='middle' "
-                         f"font-size='11' fill='#FFD700' font-family='Arial' font-weight='900'>★ {w}</text>")
+                         f"font-size='11' fill='#FFD700' font-family='Arial' font-weight='900'>Γÿà {w}</text>")
 
-    # ── Draw left side ─────────────────────────────────────────────────────────
+    # ΓöÇΓöÇ Draw left side ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     left_r32_pairs = [("M74","M77"),("M73","M75"),("M76","M78"),("M79","M80")]
     left_r16 = ["M89","M90","M91","M92"]
     left_qf  = ["M97","M98"]
@@ -1785,7 +1783,7 @@ elif page == "🔲 Bracket":
     draw_inner_box(lx[3], sf_y, SF[0][0], sf_s)
     parts.append(hline(lx[3]+BW, sf_y, fx, final_y))
 
-    # ── Draw right side ────────────────────────────────────────────────────────
+    # ΓöÇΓöÇ Draw right side ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     right_r32_pairs = [("M83","M84"),("M81","M82"),("M86","M88"),("M85","M87")]
     right_r16 = ["M93","M94","M95","M96"]
     right_qf  = ["M99","M100"]
@@ -1817,18 +1815,18 @@ elif page == "🔲 Bracket":
     st.markdown(svg_html, unsafe_allow_html=True)
     st.markdown(
         "<p style='color:rgba(255,255,255,0.35);font-size:11px;text-align:center;margin-top:4px'>"
-        "<span style='color:#00ff88'>■</span> Confirmed result &nbsp;·&nbsp; "
-        "<span style='color:#FFD700'>■</span> Model prediction &nbsp;·&nbsp; "
+        "<span style='color:#00ff88'>Γûá</span> Confirmed result &nbsp;┬╖&nbsp; "
+        "<span style='color:#FFD700'>Γûá</span> Model prediction &nbsp;┬╖&nbsp; "
         "Scores shown below confirmed matches</p>",
         unsafe_allow_html=True
     )
 
-    # ── Podium ─────────────────────────────────────────────────────────────────
+    # ΓöÇΓöÇ Podium ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     st.markdown("---")
-    st.markdown("### 🥇 Model Predicted Podium")
+    st.markdown("### ≡ƒÑç Model Predicted Podium")
     top3 = mc.head(3)
     p_cols = st.columns(3)
-    medals = ["🥇","🥈","🥉"]
+    medals = ["≡ƒÑç","≡ƒÑê","≡ƒÑë"]
     for i, ((_, row), col) in enumerate(zip(top3.iterrows(), p_cols)):
         tc = gc(row["team"])
         with col:
@@ -1846,8 +1844,8 @@ elif page == "🔲 Bracket":
             )
 
 
-elif page == "👥 Squads":
-    st.title("👥 2026 FIFA World Cup — Squads")
+elif page == "≡ƒæÑ Squads":
+    st.title("≡ƒæÑ 2026 FIFA World Cup ΓÇö Squads")
     st.caption("Squad, fixtures, and tournament outlook for every team")
 
     if squads_df is None:
@@ -1872,7 +1870,7 @@ elif page == "👥 Squads":
     team_df = squads_df[squads_df["team"] == sel_team]
     render_team_squad(team_df, sel_team)
 
-    # ── 2026 World Cup Matches ──────────────────────────────────────────────────
+    # ΓöÇΓöÇ 2026 World Cup Matches ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     st.markdown("---")
     st.markdown(f"### {soccer_ball(22)} 2026 World Cup Matches", unsafe_allow_html=True)
 
@@ -1892,7 +1890,7 @@ elif page == "👥 Squads":
             if m["completed"]:
                 hs, as_ = int(m["actual_home_score"]), int(m["actual_away_score"])
                 my_score, opp_score = (hs, as_) if is_home else (as_, hs)
-                score_str = f"{my_score} – {opp_score}"
+                score_str = f"{my_score} ΓÇô {opp_score}"
                 if my_score > opp_score:
                     badge, badge_color = "W", "#2ecc71"
                 elif my_score < opp_score:
@@ -1906,13 +1904,13 @@ elif page == "👥 Squads":
                 )
             else:
                 pred = m["predicted_result"]
-                right_html = f"<span style='color:#FFD700;font-size:13px'>📊 Predicted: {pred}</span>"
+                right_html = f"<span style='color:#FFD700;font-size:13px'>≡ƒôè Predicted: {pred}</span>"
 
             st.markdown(
                 f"<div style='display:flex;justify-content:space-between;align-items:center;"
                 f"background:rgba(255,255,255,0.03);border-radius:8px;padding:10px 16px;margin-bottom:6px'>"
                 f"<div>"
-                f"<span style='color:rgba(255,255,255,0.45);font-size:12px'>{date_str} · {m['city']}</span><br>"
+                f"<span style='color:rgba(255,255,255,0.45);font-size:12px'>{date_str} ┬╖ {m['city']}</span><br>"
                 f"<span style='color:white;font-size:14px'>vs {flag_img(opponent, height=14)}"
                 f"{team_link(opponent, color=oc['primary'], weight='bold')}</span>"
                 f"</div>"
@@ -1921,12 +1919,12 @@ elif page == "👥 Squads":
                 unsafe_allow_html=True
             )
 
-    # ── Goals in the Tournament ──────────────────────────────────────────────
+    # ΓöÇΓöÇ Goals in the Tournament ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     st.markdown("---")
-    st.markdown("### ⚡ Goals in the Tournament")
+    st.markdown("### ΓÜí Goals in the Tournament")
 
     if scorers_df is None or len(scorers_df) == 0:
-        st.info("No goals recorded yet — check back once matches are completed.")
+        st.info("No goals recorded yet ΓÇö check back once matches are completed.")
     else:
         team_scorers = scorers_df[scorers_df["team"] == sel_team].sort_values("goals", ascending=False)
         if len(team_scorers) == 0:
@@ -1946,9 +1944,9 @@ elif page == "👥 Squads":
                 )
             st.markdown(chips, unsafe_allow_html=True)
 
-    # ── Tournament Outlook ───────────────────────────────────────────────────
+    # ΓöÇΓöÇ Tournament Outlook ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
     st.markdown("---")
-    st.markdown("### 🏆 Tournament Outlook")
+    st.markdown("### ≡ƒÅå Tournament Outlook")
 
     mc_row = mc[mc["team"] == sel_team]
     standings_row = standings_df[standings_df["team"] == sel_team] if standings_df is not None else None
@@ -1959,13 +1957,13 @@ elif page == "👥 Squads":
         out_cols[0].metric("Win Probability", f"{r['win_pct']:.2f}%")
         out_cols[1].metric("Predicted Rank", f"#{int(r['rank'])} of 48")
     else:
-        out_cols[0].metric("Win Probability", "—")
-        out_cols[1].metric("Predicted Rank", "—")
+        out_cols[0].metric("Win Probability", "ΓÇö")
+        out_cols[1].metric("Predicted Rank", "ΓÇö")
 
     if standings_row is not None and len(standings_row):
         s = standings_row.iloc[0]
         q = s["qualified"]
-        q_label = {"Q": "🟢 Qualified", "M": "🟡 In contention", "E": "🔴 Eliminated"}.get(q, "⚪ In progress")
+        q_label = {"Q": "≡ƒƒó Qualified", "M": "≡ƒƒí In contention", "E": "≡ƒö┤ Eliminated"}.get(q, "ΓÜ¬ In progress")
         out_cols[2].metric("Group Stage Status", q_label)
 
         st.markdown(
@@ -1989,11 +1987,11 @@ elif page == "👥 Squads":
             unsafe_allow_html=True
         )
     else:
-        out_cols[2].metric("Group Stage Status", "—")
+        out_cols[2].metric("Group Stage Status", "ΓÇö")
 
 
-elif page == "🔍 Head to Head":
-    st.title("🔍 Head-to-Head Predictor")
+elif page == "≡ƒöì Head to Head":
+    st.title("≡ƒöì Head-to-Head Predictor")
     st.caption("Select any two teams for a predicted match outcome")
 
     all_teams = sorted(mc["team"].tolist())
@@ -2081,26 +2079,25 @@ elif page == "🔍 Head to Head":
         )
 
         c1, c2, c3 = st.columns(3)
-        c1.metric(f"🟢 {team_a}", f"{p_home:.1%}")
-        c2.metric("⚪ Draw", f"{p_draw:.1%}")
-        c3.metric(f"🔴 {team_b}", f"{p_away:.1%}")
+        c1.metric(f"≡ƒƒó {team_a}", f"{p_home:.1%}")
+        c2.metric("ΓÜ¬ Draw", f"{p_draw:.1%}")
+        c3.metric(f"≡ƒö┤ {team_b}", f"{p_away:.1%}")
 
         st.markdown(
-            f"**Expected Goals:** {team_a} `{xg_home:.2f}` — "
+            f"**Expected Goals:** {team_a} `{xg_home:.2f}` ΓÇö "
             f"`{xg_away:.2f}` {team_b}"
         )
 
         probs = {team_a: p_home, "Draw": p_draw, team_b: p_away}
         winner = max(probs, key=probs.get)
         if winner == "Draw":
-            st.success("📊 Model predicts: **Draw**")
+            st.success("≡ƒôè Model predicts: **Draw**")
         else:
             st.markdown(
                 f"<div style='background:rgba(46,204,113,0.15);border:1px solid rgba(46,204,113,0.4);"
                 f"border-radius:8px;padding:12px 16px;color:#2ecc71;font-size:15px'>"
-                f"📊 Model predicts: <b>{team_link(winner, color='#2ecc71', weight='900')}</b>"
+                f"≡ƒôè Model predicts: <b>{team_link(winner, color='#2ecc71', weight='900')}</b>"
                 f"</div>",
                 unsafe_allow_html=True
             )
-
 
