@@ -100,7 +100,7 @@ date,home_team,away_team,city,country,home_elo,away_elo,p_home_win,p_draw,p_away
 2026-07-07,United States,Belgium,"Seattle, Washington",USA,1978.5,1985.0,0.3247,0.253,0.4223,1.28,1.49,Away Win,True,1.0,4.0,Away Win
 2026-07-07,Argentina,Egypt,"Atlanta, Georgia",USA,2243.8,1936.7,0.5452,0.2569,0.1979,1.54,0.81,Home Win,True,3.0,2.0,Home Win
 2026-07-07,Switzerland,Colombia,Vancouver,Canada,2085.9,2130.8,0.3356,0.2631,0.4013,1.23,1.37,Away Win,True,0.0,0.0,Draw
-2026-07-09,France,Morocco,"Foxborough, Massachusetts",USA,2308.0,2123.9,0.4125,0.271,0.3165,1.33,1.13,Home Win,False,,,Upcoming
+2026-07-09,France,Morocco,"Foxborough, Massachusetts",USA,2308.0,2123.9,0.4125,0.271,0.3165,1.33,1.13,Home Win,True,2.0,0.0,Home Win
 2026-07-10,Spain,Belgium,"Inglewood, California",USA,2211.6,1985.0,0.476,0.2476,0.2765,1.6,1.16,Home Win,False,,,Upcoming
 2026-07-11,Norway,England,"Miami Gardens, Florida",USA,2083.3,2167.5,0.2835,0.2529,0.4636,1.15,1.54,Away Win,False,,,Upcoming
 2026-07-12,Argentina,Switzerland,"Kansas City, Missouri",USA,2243.8,2085.9,0.5214,0.2458,0.2328,1.64,1.01,Home Win,False,,,Upcoming
