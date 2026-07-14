@@ -1109,8 +1109,9 @@ elif page == "🏆 Tournament Odds":
             if info.get("status") != "post":
                 continue
             # Only knockout stage (after group stage end date)
+            # If kickoff_time is missing, skip — can't confirm it's a knockout match
             kt = info.get("kickoff_time", "")
-            if kt and kt[:10] <= "2026-06-27":
+            if not kt or kt[:10] <= "2026-06-27":
                 continue
             hs, as_ = info.get("home_score"), info.get("away_score")
             if hs is None or as_ is None:
@@ -1151,6 +1152,10 @@ elif page == "🏆 Tournament Odds":
     n_alive = len(mc_alive)
     st.caption(f"{n_alive} teams remaining · Probabilities rescaled to 100% among active teams")
 
+    if n_alive == 0:
+        st.warning("Could not determine remaining teams — showing all teams.")
+        mc_alive = mc.copy()
+        n_alive = len(mc_alive)
     top_n = st.slider("Show top N teams", min(10, n_alive), n_alive, min(n_alive, 24))
     chart_data = mc_alive.head(top_n).copy()
 
