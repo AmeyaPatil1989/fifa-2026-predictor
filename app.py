@@ -1135,10 +1135,17 @@ elif page == "🏆 Tournament Odds":
                 loser_name = at if hs > as_ else ht
                 _eliminated.add(loser_name)
 
-    # Also add group-stage eliminated teams
-    if standings_df is not None:
-        _gs_elim = set(standings_df[standings_df["qualified"] == "E"]["team"].tolist())
-        _eliminated.update(_gs_elim)
+    # Also add group-stage eliminated teams — use static CSV directly
+    # (live standings overlay may recalculate qualified values differently)
+    try:
+        _static_standings = load_standings()
+        if _static_standings is not None:
+            _gs_elim = set(_static_standings[_static_standings["qualified"] == "E"]["team"].tolist())
+            _eliminated.update(_gs_elim)
+    except Exception:
+        if standings_df is not None:
+            _gs_elim = set(standings_df[standings_df["qualified"] == "E"]["team"].tolist())
+            _eliminated.update(_gs_elim)
 
     # Filter MC dataframe to alive teams only, rescale to 100%
     mc_alive = mc[~mc["team"].isin(_eliminated)].copy()
@@ -1156,7 +1163,7 @@ elif page == "🏆 Tournament Odds":
         st.warning("Could not determine remaining teams — showing all teams.")
         mc_alive = mc.copy()
         n_alive = len(mc_alive)
-    top_n = st.slider("Show top N teams", min(10, n_alive), n_alive, min(n_alive, 24))
+    top_n = st.slider("Show top N teams", 1, max(1, n_alive), min(max(1, n_alive), 24))
     chart_data = mc_alive.head(top_n).copy()
 
     fig = go.Figure()
