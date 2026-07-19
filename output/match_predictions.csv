@@ -106,5 +106,5 @@ date,home_team,away_team,city,country,home_elo,away_elo,p_home_win,p_draw,p_away
 2026-07-12,Argentina,Switzerland,"Kansas City, Missouri",USA,2243.8,2085.9,0.5214,0.2458,0.2328,1.64,1.01,Home Win,True,3.0,1.0,Home Win
 2026-07-14,France,Spain,"Arlington, Texas",USA,2308.0,2211.6,0.3876,0.2557,0.3567,1.41,1.34,Home Win,True,0.0,2.0,Away Win
 2026-07-15,England,Argentina,"Atlanta, Georgia",USA,2167.5,2243.8,0.3297,0.2736,0.3967,1.15,1.29,Away Win,True,1.0,2.0,Away Win
-2026-07-18,France,England,"Miami Gardens, Florida",USA,2308.0,2167.5,0.3937,0.2622,0.3441,1.36,1.26,Home Win,False,,,Upcoming
+2026-07-18,France,England,"Miami Gardens, Florida",USA,2308.0,2167.5,0.3937,0.2622,0.3441,1.36,1.26,Home Win,True,4.0,6.0,Away Win
 2026-07-19,Spain,Argentina,"East Rutherford, New Jersey",USA,2211.6,2243.8,0.3408,0.2672,0.392,1.21,1.32,Away Win,False,,,Upcoming
